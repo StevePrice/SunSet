@@ -1,2 +1,10 @@
-# Copy to .dev.vars (not committed). Selects which Next.js .env files load during local runs.
+# Copy to .dev.vars (not committed). Values here override wrangler.jsonc "vars" locally.
 NEXTJS_ENV=development
+BETTER_AUTH_URL=http://localhost:3000
+# Generate with: openssl rand -base64 32
+BETTER_AUTH_SECRET=
+# Optional: Google and Apple sign-in are enabled only when both values are set.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+APPLE_CLIENT_ID=
+APPLE_CLIENT_SECRET=

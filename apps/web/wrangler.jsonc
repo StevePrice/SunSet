@@ -23,6 +23,12 @@
       "localConnectionString": "postgres://sunset:sunset@localhost:5432/sunset"
     }
   ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://sunsetsoul.app",
+    "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
+  },
+  // Cloudflare Email Service (magic links, verification, password reset).
+  "send_email": [{ "name": "EMAIL" }],
   "observability": {
     "enabled": true
   }

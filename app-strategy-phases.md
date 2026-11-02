@@ -66,9 +66,18 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 ### Phase 1: Accounts and a first deploy
 **Goal:** a real user can sign up, sign in and sign out on the live site.
-- Better Auth sign-in. Methods are still to be decided (email magic link, Google, Apple)
-- Migrations for users, sessions, and the start of the entries table
-- An automatic deploy on merge to `main`, plus a separate staging environment
+- Better Auth with four sign-in methods: email magic link, email + password (verified email required, breached passwords rejected), Google, and Apple. Google and Apple switch on when their credentials are set
+- Emails (magic links, verification, password reset) go through Cloudflare Email Service from `hello@sunsetsoul.app`; in local development they are logged instead
+- Auth rate limits stored in Postgres, keyed on Cloudflare's client IP header
+- Migrations for users, sessions, accounts, verifications and rate limits; the entries table comes in Phase 2
+- Staging deploys from pushes to the `Steve` branch (for example `staging.sunsetsoul.app`). `main` is not merged until Phase 3 or 4 is tested
+
+**Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Waiting on the database connection from Phase 0 to deploy.
+
+**Owner tasks:**
+- [ ] Onboard `sunsetsoul.app` to Cloudflare Email Service (Email → Email Sending) so `hello@sunsetsoul.app` can send
+- [ ] Google: create an OAuth client in Google Cloud Console; redirect URI `https://sunsetsoul.app/api/auth/callback/google`
+- [ ] Apple: Apple Developer account ($99/yr), a Services ID and a Sign in with Apple key; return URL `https://sunsetsoul.app/api/auth/callback/apple`
 
 **Done when:** an account can be created on staging from a phone.
 
