@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pretypecheck": "npm run cf-typegen",
+    "pretypecheck": "npm run cf-typegen && next typegen",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
