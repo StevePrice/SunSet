@@ -1,0 +1,29 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "sunset-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "sunset-web"
+    }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      // Placeholder until the Hyperdrive config exists (Phase 0, after the database tunnel is up).
+      "id": "00000000000000000000000000000000",
+      // Matches the db service in the root compose.yaml.
+      "localConnectionString": "postgres://sunset:sunset@localhost:5432/sunset"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

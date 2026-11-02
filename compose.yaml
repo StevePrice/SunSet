@@ -1,0 +1,28 @@
+# Local development stack. The web app runs outside Docker with `npm run dev`
+# (Wrangler simulates R2 and connects Hyperdrive to this database).
+services:
+  db:
+    # Multi-arch build by a docker-postgis maintainer; postgis/postgis has no arm64 image.
+    # Same Postgres 17 + PostGIS 3.5 as the Droplet, which uses the official image.
+    image: imresamu/postgis:17-3.5
+    environment:
+      POSTGRES_DB: sunset
+      POSTGRES_USER: sunset
+      POSTGRES_PASSWORD: sunset
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sunset -d sunset"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  scorer:
+    build: services/scorer
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  db_data:

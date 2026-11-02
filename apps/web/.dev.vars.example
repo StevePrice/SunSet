@@ -1,0 +1,2 @@
+# Copy to .dev.vars (not committed). Selects which Next.js .env files load during local runs.
+NEXTJS_ENV=development
