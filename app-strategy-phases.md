@@ -74,10 +74,10 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Migrations for users, sessions, accounts, verifications and rate limits; the entries table comes in Phase 2
 - Staging deploys from pushes to the `Steve` branch (for example `staging.sunsetsoul.app`). `main` is not merged until Phase 3 or 4 is tested
 
-**Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Deployed to `https://staging.sunsetsoul.app` (Worker `sunset-staging`); a live sign-up reaches the Droplet database. Email delivery still needs Email Service onboarding.
+**Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Deployed to `https://staging.sunsetsoul.app` (Worker `sunset-staging`). **Done for email sign-in (2026-11-02):** a real sign-up received its confirmation email, verified, and signed in. Google and Apple switch on once their credentials are added.
 
 **Owner tasks:**
-- [ ] Onboard `sunsetsoul.app` to Cloudflare Email Service (Email → Email Sending) so `hello@sunsetsoul.app` can send
+- [x] Onboard `sunsetsoul.app` to Cloudflare Email Service (Email → Email Sending) so `hello@sunsetsoul.app` can send
 - [ ] Google: create an OAuth client in Google Cloud Console; redirect URI `https://sunsetsoul.app/api/auth/callback/google`
 - [ ] Apple: Apple Developer account ($99/yr), a Services ID and a Sign in with Apple key; return URL `https://sunsetsoul.app/api/auth/callback/apple`
 
