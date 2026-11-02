@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Cache Components and partial prerendering are off: on the Workers runtime (OpenNext) pages
+  // using them hang. Revisit when OpenNext supports them.
   turbopack: {
     rules: {
       "*.css": {

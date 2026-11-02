@@ -27,7 +27,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 | Concern | Choice |
 |---|---|
-| App and API | Next.js (TypeScript) on Cloudflare Workers, using the OpenNext adapter |
+| App and API | Next.js (TypeScript) on Cloudflare Workers, using the OpenNext adapter. Cache Components and partial prerendering are off, because pages using them hang on Workers |
 | Auth | Better Auth (runs inside the app; sessions stored in Postgres) |
 | Database | Postgres 17 + PostGIS in a container on the Droplet, reached by Hyperdrive through Workers VPC and a Cloudflare Tunnel. Postgres uses a Cloudflare Origin CA certificate, verified by Workers VPC (`verify_ca`) |
 | Photo storage | Cloudflare R2: private originals, plus generated sizes for the Journal, map and share cards |
@@ -64,6 +64,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** a placeholder page on a test address under `sunsetsoul.app` reads from the Droplet's database through Hyperdrive.
 
+**Status: done (2026-11-02).** `https://staging.sunsetsoul.app/api/health` returns PostGIS 3.5.2 from the Droplet through Hyperdrive, Workers VPC (`verify_ca`) and the tunnel.
+
 ### Phase 1: Accounts and a first deploy
 **Goal:** a real user can sign up, sign in and sign out on the live site.
 - Better Auth with four sign-in methods: email magic link, email + password (verified email required, breached passwords rejected), Google, and Apple. Google and Apple switch on when their credentials are set
@@ -72,7 +74,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Migrations for users, sessions, accounts, verifications and rate limits; the entries table comes in Phase 2
 - Staging deploys from pushes to the `Steve` branch (for example `staging.sunsetsoul.app`). `main` is not merged until Phase 3 or 4 is tested
 
-**Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Waiting on the database connection from Phase 0 to deploy.
+**Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Deployed to `https://staging.sunsetsoul.app` (Worker `sunset-staging`); a live sign-up reaches the Droplet database. Email delivery still needs Email Service onboarding.
 
 **Owner tasks:**
 - [ ] Onboard `sunsetsoul.app` to Cloudflare Email Service (Email → Email Sending) so `hello@sunsetsoul.app` can send
@@ -161,7 +163,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - [x] **Zero Trust** set up.
 - [x] **Account API token** created; stored in `~/.config/sunset/` on the dev machine, never in the repo. Wrangler's own sign-in covers Hyperdrive, R2 and tunnel creation.
 - [x] **Droplet work approved.**
-- [ ] **Create a Cloudflare Origin CA certificate** for `db.sunsetsoul.app` (SSL/TLS → Origin Server → Create Certificate, RSA, 15 years). Save the certificate and key to `~/.config/sunset/db-tls/server.crt` and `server.key`.
+- [x] **Create a Cloudflare Origin CA certificate** for `db.sunsetsoul.app` (SSL/TLS → Origin Server → Create Certificate, RSA, 15 years). Save the certificate and key to `~/.config/sunset/db-tls/server.crt` and `server.key`.
 - [ ] **Decide the sign-in methods** for Phase 1. Apple sign-in needs an Apple Developer account ($99/yr).
 
 ### Engineering tasks
@@ -173,9 +175,9 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - [x] R2 buckets `sunset-photos` and `sunset-backups`
 - [x] Cloudflare Tunnel `sunset-db` and the `cloudflared` container (4 connections registered)
 - [x] Initial migration applied on the Droplet database (PostGIS 3.5.2)
-- [ ] Install the Origin CA certificate in Postgres
-- [ ] Workers VPC service (`verify_ca`) and Hyperdrive configuration
-- [ ] Placeholder Worker on a test address under `sunsetsoul.app` that reads from the database
+- [x] Install the Origin CA certificate in Postgres
+- [x] Workers VPC service `sunset-db` (`verify_ca`) and Hyperdrive configuration `sunset-db`
+- [x] Staging Worker at `staging.sunsetsoul.app` that reads from the database
 
 ### Already done
 - [x] 2 GB swap added to `aardvarkz` (swappiness 10)

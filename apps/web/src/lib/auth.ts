@@ -23,7 +23,7 @@ export function enabledSocialProviders(env: ProviderEnv) {
   };
 }
 
-function createAuth(env: CloudflareEnv, pool: Pool) {
+function createAuth(env: CloudflareEnv, pool: Pool, runInBackground: (task: Promise<unknown>) => void) {
   const providers = enabledSocialProviders(env);
   return betterAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -32,7 +32,11 @@ function createAuth(env: CloudflareEnv, pool: Pool) {
     telemetry: { enabled: false },
     // Apple posts its sign-in response back from its own origin.
     trustedOrigins: providers.apple ? ["https://appleid.apple.com"] : [],
-    advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
+    advanced: {
+      ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] },
+      // Work Better Auth finishes after responding, such as sending the verification email.
+      backgroundTasks: { handler: runInBackground },
+    },
     rateLimit: { storage: "database" },
     emailAndPassword: {
       enabled: true,
@@ -65,14 +69,22 @@ function createAuth(env: CloudflareEnv, pool: Pool) {
 export type Auth = ReturnType<typeof createAuth>;
 
 // Like withDb: Hyperdrive pools connections on Cloudflare's side, so each request gets its own
-// small pool, closed once the request is done.
+// small pool. It closes once the request and any background tasks are done.
 export async function withAuth<T>(fn: (auth: Auth) => Promise<T>): Promise<T> {
   const { env, ctx } = await getCloudflareContext({ async: true });
   const pool = new Pool({ connectionString: env.HYPERDRIVE.connectionString, max: 5 });
+  const backgroundTasks: Promise<unknown>[] = [];
   try {
-    return await fn(createAuth(env, pool));
+    return await fn(createAuth(env, pool, (task) => backgroundTasks.push(task)));
   } finally {
-    ctx.waitUntil(pool.end());
+    ctx.waitUntil(
+      Promise.allSettled(backgroundTasks).then((results) => {
+        for (const result of results) {
+          if (result.status === "rejected") console.error("Auth background task failed:", result.reason);
+        }
+        return pool.end();
+      }),
+    );
   }
 }
 

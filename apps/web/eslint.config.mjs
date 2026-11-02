@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     ".open-next/**",
     ".wrangler/**",
     "cloudflare-env.d.ts",
+    "worker-configuration.d.ts",
   ]),
 ]);
 
