@@ -1,0 +1,21 @@
+{
+  "name": "@sunset/scorer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "npm run cf-typegen && tsc --noEmit",
+    "cf-typegen": "wrangler types src/worker-env.d.ts --env-interface Env --env-file .dev.vars.example",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "@jsquash/jpeg": "^1.6.0",
+    "@sunset/db": "*",
+    "@sunset/scoring": "*",
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  }
+}

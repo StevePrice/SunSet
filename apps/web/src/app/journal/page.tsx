@@ -31,7 +31,12 @@ export default async function JournalPage() {
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {entries.map((entry) => (
             <li key={entry.id}>
-              <Link href={`/journal/${entry.id}`} className="group flex flex-col gap-1">
+              <Link href={`/journal/${entry.id}`} className="group relative flex flex-col gap-1">
+                {entry.displayScore != null && (
+                  <span className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-sm font-semibold text-white">
+                    {entry.displayScore}
+                  </span>
+                )}
                 <img
                   src={`/api/photos/${entry.id}/thumb`}
                   alt={entry.story ?? "A sunset from your Journal"}

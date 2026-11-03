@@ -29,6 +29,8 @@
   },
   // Journal photos. Private: served only to their owner through /api/photos.
   "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
+  // Scoring: each saved entry is queued for the sunset-scorer Worker.
+  "queues": { "producers": [{ "binding": "SCORING", "queue": "sunset-scoring-staging" }] },
   // Cloudflare Email Service (magic links, verification, password reset).
   "send_email": [{ "name": "EMAIL" }],
   // Staging, deployed from the Steve branch. Production gets its own config when main is merged.

@@ -2,6 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { createEntry, photoKey } from "@/lib/entries";
+import { requestScore } from "@/lib/scores";
 import { isJpeg, MAX_PHOTO_BYTES, MAX_THUMB_BYTES, parseEntryForm } from "@/lib/entry-input";
 
 function badRequest(error: string) {
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   const input = parseEntryForm(form);
   if (!input.ok) return badRequest(input.error);
 
-  const { env } = await getCloudflareContext({ async: true });
+  const { env, ctx } = await getCloudflareContext({ async: true });
   const id = crypto.randomUUID();
   const keys = [photoKey(user.id, id, "display"), photoKey(user.id, id, "thumb")];
   const httpMetadata = { contentType: "image/jpeg" };
@@ -31,6 +32,13 @@ export async function POST(request: Request) {
   await env.PHOTOS.put(keys[1], await thumb.arrayBuffer(), { httpMetadata });
   try {
     const entry = await withDrizzle((db) => createEntry(db, user.id, id, input.value));
+    // Scoring is best-effort: a queue hiccup must not lose the user's entry. The entry page
+    // offers "Score it" when no score was requested.
+    ctx.waitUntil(
+      withDrizzle((db) => requestScore(db, env.SCORING, user.id, entry.id)).catch((error) =>
+        console.error(`Couldn't queue scoring for ${entry.id}:`, error),
+      ),
+    );
     return Response.json({ id: entry.id }, { status: 201 });
   } catch (error) {
     await env.PHOTOS.delete(keys);

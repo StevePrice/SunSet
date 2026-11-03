@@ -7,5 +7,6 @@ export default defineConfig({
   },
   test: {
     include: ["src/**/*.test.ts"],
+    globalSetup: ["./vitest.global-setup.ts"],
   },
 });

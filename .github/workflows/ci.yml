@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   web:
-    name: Web app (lint, typecheck, test, Worker build)
+    name: Web app, scoring and shared packages
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -45,6 +45,8 @@ jobs:
         env:
           TEST_DATABASE_URL: postgres://sunset:sunset@localhost:5432/sunset_test
       - run: npm run build:worker --workspace=@sunset/web
+      - run: npm test --workspace=@sunset/scoring --workspace=@sunset/db
+      - run: npm run typecheck --workspace=@sunset/scoring --workspace=@sunset/db --workspace=@sunset/scorer
 
   scorer:
     name: Scorer (tests)

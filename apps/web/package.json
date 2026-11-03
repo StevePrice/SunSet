@@ -27,7 +27,9 @@
     "next": "16.4.3",
     "pg": "^8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "@sunset/db": "*",
+    "@sunset/scoring": "*"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

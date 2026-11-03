@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { getScore } from "@/lib/scores";
+import { ScoreCard } from "@/components/score-card";
 import { LocalDate } from "@/components/local-date";
 import { formatLocation } from "@/lib/format";
 import { DeleteEntryButton, EditStoryForm } from "./entry-controls";
@@ -14,8 +16,12 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const { id } = await props.params;
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const entry = await withDrizzle((db) => getEntry(db, user.id, id));
-  if (!entry) notFound();
+  const found = await withDrizzle(async (db) => {
+    const entry = await getEntry(db, user.id, id);
+    return entry && { entry, score: await getScore(db, user.id, id) };
+  });
+  if (!found) notFound();
+  const { entry, score } = found;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
@@ -35,9 +41,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
         </h1>
         {entry.location && <p className="text-sm text-zinc-600 dark:text-zinc-400">{formatLocation(entry.location)}</p>}
       </div>
-      <section className="rounded-xl bg-zinc-100 p-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
-        Your sunset score is coming soon.
-      </section>
+      <ScoreCard entryId={entry.id} initial={score ?? { status: "none" }} />
       <EditStoryForm id={entry.id} story={entry.story} hasLocation={entry.location !== null} />
       <DeleteEntryButton id={entry.id} />
     </main>

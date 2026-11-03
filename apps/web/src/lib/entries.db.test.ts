@@ -1,6 +1,5 @@
 // Runs against a real PostGIS database when TEST_DATABASE_URL is set (CI sets it).
 import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import * as schema from "@/db/schema";
@@ -16,7 +15,6 @@ describe.skipIf(!url)("entries data access", () => {
   const photo = { photoWidth: 2560, photoHeight: 1920 };
 
   beforeAll(async () => {
-    await migrate(db, { migrationsFolder: "../../db/migrations" });
     for (const id of [alice, bob]) {
       await db.insert(schema.users).values({ id, name: id, email: `${id}@example.com` });
     }

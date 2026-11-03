@@ -1,7 +1,8 @@
 // The only module that reads or writes Journal entries. Every function takes the signed-in
 // user's ID and scopes its query to it, so one user can never see or change another's entries.
+import { SCORER_VERSION } from "@sunset/scoring";
 import { and, desc, eq } from "drizzle-orm";
-import { entries } from "@/db/schema";
+import { entries, entryScores } from "@/db/schema";
 import type { Db } from "@/lib/db";
 import type { EntryInput, Location } from "@/lib/entry-input";
 
@@ -38,9 +39,7 @@ function toEntry(row: {
   return { ...rest, location: location && { latitude: location.y, longitude: location.x } };
 }
 
-export function photoKey(userId: string, entryId: string, variant: "display" | "thumb"): string {
-  return `entries/${userId}/${entryId}/${variant}.jpg`;
-}
+export { photoKey } from "@sunset/db/photos";
 
 export async function createEntry(db: Db, userId: string, id: string, input: EntryInput): Promise<Entry> {
   const [row] = await db
@@ -58,13 +57,17 @@ export async function createEntry(db: Db, userId: string, id: string, input: Ent
   return toEntry(row);
 }
 
-export async function listEntries(db: Db, userId: string): Promise<Entry[]> {
+export async function listEntries(db: Db, userId: string): Promise<(Entry & { displayScore: number | null })[]> {
   const rows = await db
-    .select(columns)
+    .select({ ...columns, displayScore: entryScores.displayScore })
     .from(entries)
+    .leftJoin(
+      entryScores,
+      and(eq(entryScores.entryId, entries.id), eq(entryScores.scorerVersion, SCORER_VERSION)),
+    )
     .where(eq(entries.userId, userId))
     .orderBy(desc(entries.takenAt), desc(entries.createdAt));
-  return rows.map(toEntry);
+  return rows.map(({ displayScore, ...row }) => ({ ...toEntry(row), displayScore }));
 }
 
 export async function getEntry(db: Db, userId: string, id: string): Promise<Entry | null> {

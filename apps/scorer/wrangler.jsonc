@@ -1,0 +1,35 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Scores Journal entries: consumes the scoring queue the web app fills on save.
+  "name": "sunset-scorer-staging",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "queues": {
+    "consumers": [
+      {
+        "queue": "sunset-scoring-staging",
+        "max_batch_size": 5,
+        "max_batch_timeout": 2,
+        "max_retries": 3,
+        "max_concurrency": 5,
+        "dead_letter_queue": "sunset-scoring-staging-dlq"
+      }
+    ]
+  },
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "60f126f5bbb9486c94faafde3a0f7f3d",
+      "localConnectionString": "postgres://sunset:sunset@localhost:5432/sunset"
+    }
+  ],
+  // Workers AI, for the Gemma comparison provider.
+  "ai": { "binding": "AI" },
+  "vars": {
+    // "anthropic" (Claude Haiku 5.5), "gemma" (Workers AI Gemma 4) or "gemma-fast" (no reasoning).
+    "VISION_PROVIDER": "anthropic"
+  },
+  "observability": { "enabled": true }
+}

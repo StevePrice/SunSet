@@ -31,7 +31,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 | Auth | Better Auth (runs inside the app; sessions stored in Postgres). Passwords are hashed with PBKDF2-SHA256 via WebCrypto (100,000 iterations, the Workers maximum), because Better Auth's default scrypt costs seconds of CPU per sign-in on Workers |
 | Database | Postgres 17 + PostGIS in a container on the Droplet. Hyperdrive query caching is **off**: cached reads broke sign-in and rate limiting. Reached by Hyperdrive through Workers VPC and a Cloudflare Tunnel. Postgres uses a Cloudflare Origin CA certificate, verified by Workers VPC (`verify_ca`) |
 | Photo storage | Cloudflare R2: private originals, plus generated sizes for the Journal, map and share cards |
-| Scoring | Python service (Pillow/OpenCV) on Cloudflare Containers, fed by Cloudflare Queues. The Worker sends it photo bytes and stores the results, so the scorer needs no storage or database credentials. A vision AI model scores Setting and Wow Factor |
+| Scoring | `sunset-scorer` Worker (TypeScript) fed by a Cloudflare Queue: Palette and Reach from pixels (WASM JPEG decode, 960 px analysis), Setting and Wow Factor from a vision model (Claude Haiku 5.5 or Workers AI Gemma 4, switchable). The Python service is kept for v2 |
 | Map | MapLibre GL with a hosted tile provider |
 | Schema ownership | TypeScript migrations (Drizzle). The Python worker uses plain SQL against the same tables |
 
@@ -106,6 +106,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - The same step flags photos that aren't sunsets or are unsafe, which the Phase 5 moderation needs
 
 **Done when:** a saved entry shows its score within a few seconds, and the scores look right on a test set of about 30 sunsets.
+
+**Status:** built and deployed to staging; see [phase-3-scoring-design.md](phase-3-scoring-design.md). On staging a saved sunset showed its score 7.3 s after saving. Waiting on: review of the calibration labels and the choice of vision provider.
 
 ### Phase 4: Share-out
 **Goal:** send a sunset to friends who don't have the app.
