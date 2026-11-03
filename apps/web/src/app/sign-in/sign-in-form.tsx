@@ -34,7 +34,7 @@ export function SignInForm({ providers }: { providers: Providers }) {
     setBusy(true);
     setNotice(null);
     setError(null);
-    const callbackURL = "/account";
+    const callbackURL = "/journal";
     const result =
       mode === "magic-link"
         ? await authClient.signIn.magicLink({ email, callbackURL })
@@ -67,7 +67,7 @@ export function SignInForm({ providers }: { providers: Providers }) {
 
   async function signInWith(provider: "google" | "apple") {
     setError(null);
-    const result = await authClient.signIn.social({ provider, callbackURL: "/account" });
+    const result = await authClient.signIn.social({ provider, callbackURL: "/journal" });
     if (result.error) setError(result.error.message ?? "Sign-in failed. Please try again.");
   }
 

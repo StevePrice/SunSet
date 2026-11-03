@@ -27,6 +27,8 @@
     "BETTER_AUTH_URL": "https://staging.sunsetsoul.app",
     "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
   },
+  // Journal photos. Private: served only to their owner through /api/photos.
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
   // Cloudflare Email Service (magic links, verification, password reset).
   "send_email": [{ "name": "EMAIL" }],
   // Staging, deployed from the Steve branch. Production gets its own config when main is merged.

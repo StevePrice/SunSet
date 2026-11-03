@@ -1,5 +1,9 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Client } from "pg";
+import * as schema from "@/db/schema";
+
+export type Db = NodePgDatabase<typeof schema>;
 
 // Hyperdrive pools connections on Cloudflare's side, so each request opens its own client.
 export async function withDb<T>(fn: (client: Client) => Promise<T>): Promise<T> {
@@ -11,4 +15,8 @@ export async function withDb<T>(fn: (client: Client) => Promise<T>): Promise<T> 
   } finally {
     ctx.waitUntil(client.end());
   }
+}
+
+export function withDrizzle<T>(fn: (db: Db) => Promise<T>): Promise<T> {
+  return withDb((client) => fn(drizzle(client, { schema })));
 }

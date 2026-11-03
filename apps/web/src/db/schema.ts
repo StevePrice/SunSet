@@ -1,6 +1,7 @@
-// Drizzle table definitions. Better Auth owns users, sessions, accounts, verifications and
+// Drizzle table definitions. `entries` is the Journal; Better Auth owns users, sessions, accounts, verifications and
 // rate_limits (field names follow its core schema; table names are plural via `usePlural`).
 import { bigint, boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { point4326 } from "./point";
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -76,3 +77,23 @@ export const rateLimits = pgTable("rate_limits", {
   count: integer("count").notNull(),
   lastRequest: bigint("last_request", { mode: "number" }).notNull(),
 });
+
+// A saved sunset. Private to its owner; photos live in R2 under entries/{userId}/{id}/.
+export const entries = pgTable(
+  "entries",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    story: text("story"),
+    // When the photo was taken (from the photo's metadata), or when it was saved.
+    takenAt: timestamp("taken_at", { withTimezone: true }).notNull().defaultNow(),
+    // Exact point, never shown publicly; the Live Map (Phase 5) uses a rounded copy.
+    location: point4326("location"),
+    photoWidth: integer("photo_width").notNull(),
+    photoHeight: integer("photo_height").notNull(),
+    ...timestamps,
+  },
+  (table) => [index("entries_user_taken_at_idx").on(table.userId, table.takenAt.desc())],
+);

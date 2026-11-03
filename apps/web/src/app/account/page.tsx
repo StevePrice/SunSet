@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
@@ -26,6 +27,9 @@ async function AccountDetails() {
         <br />
         <span className="text-zinc-600 dark:text-zinc-400">{user.email}</span>
       </p>
+      <Link href="/journal" className="w-full rounded-lg bg-orange-600 px-4 py-2 text-center font-medium text-white hover:bg-orange-700">
+        Open your Journal
+      </Link>
       <SignOutButton />
     </div>
   );

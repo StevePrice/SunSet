@@ -41,6 +41,9 @@ docker compose up -d scorer             # http://localhost:8080/health
 npm run lint --workspace=@sunset/web
 npm run typecheck --workspace=@sunset/web
 npm test --workspace=@sunset/web
+# Include the database tests (needs the Compose db and a sunset_test database):
+#   docker compose exec db createdb -U sunset sunset_test
+#   TEST_DATABASE_URL=postgres://sunset:sunset@localhost:5432/sunset_test npm test --workspace=@sunset/web
 npm run build:worker --workspace=@sunset/web   # Cloudflare Worker build
 ```
 

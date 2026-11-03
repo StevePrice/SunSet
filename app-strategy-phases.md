@@ -28,8 +28,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 | Concern | Choice |
 |---|---|
 | App and API | Next.js (TypeScript) on Cloudflare Workers, using the OpenNext adapter. Cache Components and partial prerendering are off, because pages using them hang on Workers |
-| Auth | Better Auth (runs inside the app; sessions stored in Postgres) |
-| Database | Postgres 17 + PostGIS in a container on the Droplet, reached by Hyperdrive through Workers VPC and a Cloudflare Tunnel. Postgres uses a Cloudflare Origin CA certificate, verified by Workers VPC (`verify_ca`) |
+| Auth | Better Auth (runs inside the app; sessions stored in Postgres). Passwords are hashed with PBKDF2-SHA256 via WebCrypto (100,000 iterations, the Workers maximum), because Better Auth's default scrypt costs seconds of CPU per sign-in on Workers |
+| Database | Postgres 17 + PostGIS in a container on the Droplet. Hyperdrive query caching is **off**: cached reads broke sign-in and rate limiting. Reached by Hyperdrive through Workers VPC and a Cloudflare Tunnel. Postgres uses a Cloudflare Origin CA certificate, verified by Workers VPC (`verify_ca`) |
 | Photo storage | Cloudflare R2: private originals, plus generated sizes for the Journal, map and share cards |
 | Scoring | Python service (Pillow/OpenCV) on Cloudflare Containers, fed by Cloudflare Queues. The Worker sends it photo bytes and stores the results, so the scorer needs no storage or database credentials. A vision AI model scores Setting and Wow Factor |
 | Map | MapLibre GL with a hosted tile provider |
@@ -85,13 +85,15 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 ### Phase 2: Capture and Journal (core hypothesis)
 **Goal:** save a sunset and look back at it.
-- **Upload:** camera or photo picker, sent straight from the browser to R2 through a signed upload link
-- **Photo processing** in the worker: HEIC → JPEG, GPS metadata removed, and thumbnail, display and share sizes generated
+- **Upload:** camera or photo picker. The browser resizes the photo (2560 px display, 480 px thumbnail) and re-encodes it as JPEG, so the original file and its GPS metadata never leave the phone. The app stores both in R2 and serves them only to the owner
+- **Photo metadata:** the date taken and location are read on the phone and shown for the user to keep, change ("use where I am now") or remove. iPhone HEIC photos are converted by Safari; desktop browsers that can't open HEIC show a clear message
 - **New Entry screen:** optional story with a guided prompt, and an editable location detected automatically
 - **Journal screens:** the grid and entry detail
 - Entries are private by default, enforced in a single data-access layer and covered by tests
 
 **Done when:** entries saved on a phone appear in the Journal on another device.
+
+**Status:** deployed to staging and tested there and locally: data-access tests against PostGIS (including that another user can't read, edit or delete an entry), and a browser test in Chrome (pick, preview, save, view, edit, delete). Entries also support editing the story, removing the location, and deleting (photos included).
 
 ### Phase 3: Scoring v1
 **Goal:** every entry gets an automatic score.

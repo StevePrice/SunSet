@@ -17,6 +17,21 @@ jobs:
     name: Web app (lint, typecheck, test, Worker build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      # For the data-access tests (entries are private to their owner).
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: sunset_test
+          POSTGRES_USER: sunset
+          POSTGRES_PASSWORD: sunset
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sunset -d sunset_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -27,6 +42,8 @@ jobs:
       - run: npm run lint --workspace=@sunset/web
       - run: npm run typecheck --workspace=@sunset/web
       - run: npm test --workspace=@sunset/web
+        env:
+          TEST_DATABASE_URL: postgres://sunset:sunset@localhost:5432/sunset_test
       - run: npm run build:worker --workspace=@sunset/web
 
   scorer:
