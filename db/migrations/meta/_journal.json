@@ -29,6 +29,13 @@
       "when": 1793671564823,
       "tag": "0003_entry_scores",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793716332979,
+      "tag": "0004_shares",
+      "breakpoints": true
     }
   ]
 }

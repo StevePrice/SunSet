@@ -90,8 +90,13 @@ export function ScoreCard({ entryId, initial }: { entryId: string; initial: Scor
     return <section className={box}>This doesn&apos;t look like a sunset, so it wasn&apos;t scored.</section>;
   }
 
+  return <ScoreBreakdown score={score} />;
+}
+
+/** A finished score: the overall number, the four parts, and what the AI saw. */
+export function ScoreBreakdown({ score, whose = "your" }: { score: EntryScore; whose?: string }) {
   return (
-    <section className={`${box} flex flex-col gap-4`} aria-label="Sunset score">
+    <section className="flex flex-col gap-4 rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-900" aria-label="Sunset score">
       <div className="flex items-baseline gap-2">
         <span className="text-5xl font-semibold text-orange-600">{score.displayScore}</span>
         <span className="text-zinc-500">/ 100</span>
@@ -118,7 +123,7 @@ export function ScoreCard({ entryId, initial }: { entryId: string; initial: Scor
         </p>
       )}
       <p className="text-xs text-zinc-500">
-        Palette and Reach are measured from your photo&apos;s colours; Setting and Wow Factor are judged by AI.
+        Palette and Reach are measured from {whose} photo&apos;s colours; Setting and Wow Factor are judged by AI.
       </p>
     </section>
   );

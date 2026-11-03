@@ -1,7 +1,7 @@
 import type { Location } from "@/lib/entry-input";
 
-export function formatTakenAt(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date);
+export function formatTakenAt(date: Date, timeZone?: string): string {
+  return new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone }).format(date);
 }
 
 // Coordinates to about 100 m, which is plenty to recognise a place.

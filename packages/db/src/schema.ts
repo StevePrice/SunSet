@@ -135,3 +135,25 @@ export const entryScores = pgTable(
   },
   (table) => [primaryKey({ columns: [table.entryId, table.scorerVersion] })],
 );
+
+// A public share link for an entry, at /s/{id}. At most one per entry; "Stop sharing" deletes
+// the row, so the old link stops working for good. The id is random and unguessable.
+export const shares = pgTable(
+  "shares",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .unique()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Optional place name the owner typed for this share; the entry's exact location is never shared.
+    place: text("place"),
+    // The owner's time zone when they shared, so the date shown is the day they saw the sunset.
+    timeZone: text("time_zone").notNull(),
+    ...timestamps,
+  },
+  (table) => [index("shares_user_idx").on(table.userId)],
+);

@@ -31,23 +31,45 @@ type Details = {
   };
 };
 
+const scoreColumns = {
+  status: entryScores.status,
+  palette: entryScores.palette,
+  reach: entryScores.reach,
+  setting: entryScores.setting,
+  wow: entryScores.wow,
+  displayScore: entryScores.displayScore,
+  details: entryScores.details,
+};
+
 export async function getScore(db: Db, userId: string, entryId: string): Promise<EntryScore | null> {
   const [row] = await db
-    .select({
-      status: entryScores.status,
-      palette: entryScores.palette,
-      reach: entryScores.reach,
-      setting: entryScores.setting,
-      wow: entryScores.wow,
-      displayScore: entryScores.displayScore,
-      details: entryScores.details,
-    })
+    .select(scoreColumns)
     .from(entryScores)
     .innerJoin(entries, eq(entries.id, entryScores.entryId))
     .where(
       and(eq(entryScores.entryId, entryId), eq(entryScores.scorerVersion, SCORER_VERSION), eq(entries.userId, userId)),
     );
-  if (!row) return null;
+  return row ? toEntryScore(row) : null;
+}
+
+/** An entry's current score with no owner check. Only for entries the owner has chosen to share. */
+export async function getSharedScore(db: Db, entryId: string): Promise<EntryScore | null> {
+  const [row] = await db
+    .select(scoreColumns)
+    .from(entryScores)
+    .where(and(eq(entryScores.entryId, entryId), eq(entryScores.scorerVersion, SCORER_VERSION)));
+  return row ? toEntryScore(row) : null;
+}
+
+function toEntryScore(row: {
+  status: string;
+  palette: number | null;
+  reach: number | null;
+  setting: number | null;
+  wow: number | null;
+  displayScore: number | null;
+  details: Record<string, unknown> | null;
+}): EntryScore {
   const scene = (row.details as Details | null)?.scene;
   return {
     status: row.status as ScoreStatus,
