@@ -1,6 +1,6 @@
 # Sunset Soul — App Strategy & Implementation Phases
 **Status:** Draft. Planning the MVP build.
-**Companion docs:** [sunset-soul-concept.md](sunset-soul-concept.md), [sunset-soul-prd.md](sunset-soul-prd.md)
+**Companion docs:** [sunset-soul-concept.md](sunset-soul-concept.md), [sunset-soul-prd.md](sunset-soul-prd.md), [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md), [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md)
 **Domain:** `sunsetsoul.app` (registered with Cloudflare)
 
 ---
@@ -103,7 +103,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - **Setting and Wow Factor:** a vision AI model returns structured scores and the reasons behind them
 - **Score Result screen:** the overall score (a simple average) and all four parts
 - Every score is stored with the model version, so photos can be re-scored when the algorithm improves
-- The same step flags photos that aren't sunsets or are unsafe, which the Phase 5 moderation needs
+- The same step flags photos that aren't sunsets or are unsafe, which the Phase 6 moderation needs
 
 **Done when:** a saved entry shows its score within a few seconds, and the scores look right on a test set of about 30 sunsets.
 
@@ -117,7 +117,24 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** a link texted to an iPhone shows a rich preview and opens without an account.
 
-### Phase 5: Live Global Map
+### Phase 5: AI Story Capture
+**Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
+- **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
+- **Interview:** one follow-up question at a time, up to 3, with "Keep going" (primary), "Ask me something else" and "That's my story". Questions reuse the user's own words for key facts
+- **Voice first:** a large mic button, with "Type instead" always available. Audio is recorded in the browser, stored privately in R2 next to the photo, and transcribed by a speech-to-text model
+- **Written story:** "My story" (light polish, the default, in three lengths) and "Crafted story" (generated only when viewed). Both can be edited by hand, and each is saved once generated. The app also suggests a title and a one-line caption
+- **Original words:** "What you said" (a cleaned-up transcript, with playback) or "What you wrote" on Entry Detail. Private, never shared
+- **Photo details:** the Crafted story may use what's clearly visible in the photo, including the phenomena Phase 3 already detects
+- **Accuracy rules** from the Interviewer Guide go in the prompts, checked against a small set of test sessions
+- **Settings:** turn AI story help off, delete all recordings. A first-use notice says the photo, recording and words are processed by an AI service
+- **Failure handling:** if transcription or the AI fails, the recording and entry are still saved, and the user can type instead or retry later
+- **Limits:** a daily cap on sessions per user, like scoring
+
+**Done when:** on a phone, a user can speak a story, answer follow-ups, pick a style, save, and later play the recording back and read "What you said", with no entry ever lost to an AI error.
+
+**Decisions before building:** which speech-to-text model (Workers AI Whisper is the likely first choice), which Claude model writes the stories, free vs. premium for Crafted story, and the open questions in the PRD's Section 14.
+
+### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
 - A "Post to map" action, separate from share-out
 - Public pins rounded to roughly city level; the exact location is never public
@@ -127,7 +144,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** test posts from several cities appear and disappear on schedule.
 
-### Phase 6: Hardening and beta
+### Phase 7: Hardening and beta
 **Goal:** safe to put in front of real people.
 - **Backups:** nightly `pg_dump` to R2, with a tested restore
 - **Monitoring:** Sentry for errors, an uptime check, and memory alerts for the Droplet
@@ -139,7 +156,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** the beta runs for a week with no data loss or crashes, and the metrics are being collected.
 
-### Phase 7: Daily Ritual (nice to have)
+### Phase 8: Daily Ritual (nice to have)
 - A notification shortly before local sunset, timed by a sunset-time calculation on the device. On iOS this only works once the PWA is installed
 - Notification settings in the Settings screen
 
@@ -153,8 +170,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 ### Order and dependencies
 - **0 → 1 → 2 → 3** is the critical path. Phase 2 alone tests the core hypothesis.
-- **4 and 5** can be built in parallel after Phase 3.
-- **6** follows Phase 5, and **7** comes last.
+- **4, 5 and 6** can be built in parallel after Phase 3. Phase 5 is best done after 4, so share cards can show the new stories.
+- **7** follows Phase 6, and **8** comes last.
 
 ---
 

@@ -101,7 +101,7 @@ export const entries = pgTable(
     story: text("story"),
     // When the photo was taken (from the photo's metadata), or when it was saved.
     takenAt: timestamp("taken_at", { withTimezone: true }).notNull().defaultNow(),
-    // Exact point, never shown publicly; the Live Map (Phase 5) uses a rounded copy.
+    // Exact point, never shown publicly; the Live Map (Phase 6) uses a rounded copy.
     location: point4326("location"),
     photoWidth: integer("photo_width").notNull(),
     photoHeight: integer("photo_height").notNull(),

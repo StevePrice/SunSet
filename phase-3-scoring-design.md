@@ -10,7 +10,7 @@ Every saved sunset gets an automatic score: four parameters from 1 to 10 (Palett
 
 **Done when:** a newly saved entry shows its score within about 10 seconds, and on a labelled test set of about 30 sunsets the scores are close to human judgement (see §8).
 
-**Out of scope (later phases):** community or audience scores, weighting the composite, a trained model, and using the score for map retention (Phase 5 consumes it).
+**Out of scope (later phases):** community or audience scores, weighting the composite, a trained model, and using the score for map retention (Phase 6 consumes it).
 
 ## 2. Design summary
 
@@ -108,7 +108,7 @@ Each item comes with a confidence (`clear` or `possible`). Our code applies the 
 
 ### 4.6 Not a sunset / unsafe
 - **Not a sunset:** the entry stays in the Journal, since it's still the user's memory, but it isn't scored. The page says "This doesn't look like a sunset, so it wasn't scored." Sunrises count as sunsets.
-- **Unsafe:** `content_flag` is stored. Nothing changes in the private Journal; Phase 5 blocks such photos from the public map.
+- **Unsafe:** `content_flag` is stored. Nothing changes in the private Journal; Phase 6 blocks such photos from the public map.
 
 ## 5. Data model
 
@@ -153,7 +153,7 @@ Share cards (Phase 4) reuse the same score component.
   - structured output (a JSON schema) at `effort: "low"`
   - a refusal is treated as a failed scoring, with no retry
 
-**Privacy:** only the re-encoded photo is sent. It has no location metadata, and the story and user details aren't included. The Phase 6 privacy policy will name the AI provider.
+**Privacy:** only the re-encoded photo is sent. It has no location metadata, and the story and user details aren't included. The Phase 7 privacy policy will name the AI provider.
 
 **Cost guard:** at most 50 scorings per user per day, and a cap on queue concurrency.
 
