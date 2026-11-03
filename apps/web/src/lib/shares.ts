@@ -16,6 +16,8 @@ export type PublicShare = {
   ownerId: string;
   ownerName: string | null;
   story: string | null;
+  title: string | null;
+  caption: string | null;
   takenAt: Date;
   photoWidth: number;
   photoHeight: number;
@@ -98,6 +100,8 @@ export async function getPublicShare(db: Db, id: string): Promise<PublicShare | 
       ownerId: entries.userId,
       ownerName: users.name,
       story: entries.story,
+      title: entries.title,
+      caption: entries.caption,
       takenAt: entries.takenAt,
       photoWidth: entries.photoWidth,
       photoHeight: entries.photoHeight,

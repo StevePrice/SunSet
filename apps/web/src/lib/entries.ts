@@ -9,6 +9,8 @@ import type { EntryInput, Location } from "@/lib/entry-input";
 export type Entry = {
   id: string;
   story: string | null;
+  title: string | null;
+  caption: string | null;
   takenAt: Date;
   location: Location | null;
   photoWidth: number;
@@ -19,6 +21,8 @@ export type Entry = {
 const columns = {
   id: entries.id,
   story: entries.story,
+  title: entries.title,
+  caption: entries.caption,
   takenAt: entries.takenAt,
   location: entries.location,
   photoWidth: entries.photoWidth,
@@ -29,6 +33,8 @@ const columns = {
 function toEntry(row: {
   id: string;
   story: string | null;
+  title: string | null;
+  caption: string | null;
   takenAt: Date;
   location: { x: number; y: number } | null;
   photoWidth: number;

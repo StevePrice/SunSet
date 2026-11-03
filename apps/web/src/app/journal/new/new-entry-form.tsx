@@ -19,6 +19,7 @@ export function NewEntryForm() {
   const [prepared, setPrepared] = useState<PreparedPhoto | null>(null);
   const [processing, setProcessing] = useState(false);
   const [story, setStory] = useState("");
+  const [writeMyself, setWriteMyself] = useState(false);
   const [choice, setChoice] = useState<LocationChoice>("none");
   const [deviceLocation, setDeviceLocation] = useState<Location | null>(null);
   const [saving, setSaving] = useState(false);
@@ -64,8 +65,10 @@ export function NewEntryForm() {
 
   const location = choice === "photo" ? prepared?.location : choice === "device" ? deviceLocation : null;
 
-  async function onSave(event: FormEvent) {
+  // "Save and tell its story" saves first, so the photo is safe whatever happens in the interview.
+  async function onSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const tellStory = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "story";
     if (!prepared) return;
     setSaving(true);
     setError(null);
@@ -74,7 +77,7 @@ export function NewEntryForm() {
     body.set("thumb", prepared.thumb, "thumb.jpg");
     body.set("photoWidth", String(prepared.width));
     body.set("photoHeight", String(prepared.height));
-    body.set("story", story);
+    body.set("story", writeMyself ? story : "");
     if (prepared.takenAt) body.set("takenAt", prepared.takenAt.toISOString());
     if (location) {
       body.set("latitude", String(location.latitude));
@@ -91,7 +94,7 @@ export function NewEntryForm() {
       return;
     }
     const { id } = (await response.json()) as { id: string };
-    router.push(`/journal/${id}`);
+    router.push(tellStory ? `/journal/${id}/story` : `/journal/${id}`);
     router.refresh();
   }
 
@@ -124,16 +127,25 @@ export function NewEntryForm() {
         {prepared.takenAt ? `Taken ${formatTakenAt(prepared.takenAt)}` : "Date taken unknown; we'll use today."}
       </p>
 
-      <label className="flex flex-col gap-2">
-        <span className="font-medium">The story (optional)</span>
-        <textarea
-          className="min-h-28 rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-          placeholder="What was happening when you took this?"
-          maxLength={MAX_STORY_LENGTH}
-          value={story}
-          onChange={(e) => setStory(e.target.value)}
-        />
-      </label>
+      {writeMyself ? (
+        <label className="flex flex-col gap-2">
+          <span className="font-medium">The story (optional)</span>
+          <textarea
+            className="min-h-28 rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            placeholder="What was happening when you took this?"
+            maxLength={MAX_STORY_LENGTH}
+            value={story}
+            onChange={(e) => setStory(e.target.value)}
+          />
+        </label>
+      ) : (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          After you save, I&apos;ll ask a few questions to help you tell the story behind it.{" "}
+          <button type="button" className="underline" onClick={() => setWriteMyself(true)}>
+            Write it myself instead
+          </button>
+        </p>
+      )}
 
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 font-medium">Location</legend>
@@ -164,11 +176,24 @@ export function NewEntryForm() {
       <div className="flex gap-3">
         <button
           type="submit"
+          name="next"
+          value={writeMyself ? "entry" : "story"}
           disabled={saving}
           className="flex-1 rounded-lg bg-orange-600 px-4 py-3 font-medium text-white hover:bg-orange-700 disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save to my Journal"}
+          {saving ? "Saving…" : writeMyself ? "Save to my Journal" : "Save and tell its story"}
         </button>
+        {!writeMyself && (
+          <button
+            type="submit"
+            name="next"
+            value="entry"
+            disabled={saving}
+            className="rounded-lg border border-zinc-300 px-4 py-3 dark:border-zinc-700"
+          >
+            Save without a story
+          </button>
+        )}
         <button
           type="button"
           disabled={saving}

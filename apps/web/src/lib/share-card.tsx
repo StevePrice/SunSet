@@ -23,7 +23,8 @@ export function shareByline(share: Pick<PublicShare, "ownerName" | "takenAt" | "
 }
 
 export function cardContent(share: PublicShare): CardContent {
-  const story = share.story?.replace(/\s+/g, " ").trim() || null;
+  // The caption is written for strangers, so it's preferred over the private story.
+  const story = (share.caption ?? share.story)?.replace(/\s+/g, " ").trim() || null;
   return {
     story: story && story.length > MAX_CARD_STORY ? `${story.slice(0, MAX_CARD_STORY - 1).trimEnd()}…` : story,
     score: share.score?.status === "done" ? share.score.displayScore : null,

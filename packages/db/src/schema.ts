@@ -99,6 +99,9 @@ export const entries = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     story: text("story"),
+    // Suggested by AI Story Capture and editable; the caption is what share cards show.
+    title: text("title"),
+    caption: text("caption"),
     // When the photo was taken (from the photo's metadata), or when it was saved.
     takenAt: timestamp("taken_at", { withTimezone: true }).notNull().defaultNow(),
     // Exact point, never shown publicly; the Live Map (Phase 6) uses a rounded copy.
@@ -156,4 +159,48 @@ export const shares = pgTable(
     ...timestamps,
   },
   (table) => [index("shares_user_idx").on(table.userId)],
+);
+
+// One AI Story Capture interview per entry (Phase 5). `turns` holds each question and answer in
+// order; `drafts` holds each written version, keyed by style, with the number of turns it was
+// written from so stale drafts can be spotted.
+export type StoryTurn = { question: string | null; answer: string; via: "typed" | "spoken" };
+export type StoryDraft = { text: string; turns: number; edited: boolean };
+
+export const storySessions = pgTable("story_sessions", {
+  entryId: text("entry_id")
+    .primaryKey()
+    .references(() => entries.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  openers: jsonb("openers").$type<string[]>().notNull().default([]),
+  // Every question shown so far, so "Ask me something else" never repeats one.
+  asked: jsonb("asked").$type<string[]>().notNull().default([]),
+  turns: jsonb("turns").$type<StoryTurn[]>().notNull().default([]),
+  nextQuestion: text("next_question"),
+  // The interviewer's read of the last answer: wrap up, go gently, or show support resources.
+  wrapUp: boolean("wrap_up").notNull().default(false),
+  sensitive: boolean("sensitive").notNull().default(false),
+  safetyConcern: boolean("safety_concern").notNull().default(false),
+  drafts: jsonb("drafts").$type<Record<string, StoryDraft>>().notNull().default({}),
+  title: text("title"),
+  caption: text("caption"),
+  ...timestamps,
+});
+
+// One row per AI call, for the per-user daily limit.
+export const aiCalls = pgTable(
+  "ai_calls",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    inputTokens: integer("input_tokens"),
+    outputTokens: integer("output_tokens"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("ai_calls_user_created_idx").on(table.userId, table.createdAt)],
 );

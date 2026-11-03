@@ -36,6 +36,13 @@
       "when": 1793716332979,
       "tag": "0004_shares",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793737697994,
+      "tag": "0005_story_capture",
+      "breakpoints": true
     }
   ]
 }

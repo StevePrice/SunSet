@@ -8,3 +8,6 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 APPLE_CLIENT_ID=
 APPLE_CLIENT_SECRET=
+# AI Story Capture (Phase 5). STORY_MODEL is optional; the default is claude-sonnet-5-5.
+ANTHROPIC_API_KEY=
+STORY_MODEL=

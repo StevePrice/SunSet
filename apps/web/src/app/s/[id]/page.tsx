@@ -20,7 +20,7 @@ export async function generateMetadata(props: PageProps<"/s/[id]">): Promise<Met
   const { env } = await getCloudflareContext({ async: true });
   const content = cardContent(share);
   const card = `${env.BETTER_AUTH_URL}/s/${id}/card?v=${await cardVersion(content)}`;
-  const title = share.ownerName ? `A sunset from ${share.ownerName}` : "A sunset on Sunset Soul";
+  const title = share.title ?? (share.ownerName ? `A sunset from ${share.ownerName}` : "A sunset on Sunset Soul");
   const description = content.story ?? shareByline(share);
   const image = { url: card, width: CARD_WIDTH, height: CARD_HEIGHT, alt: content.story ?? "A sunset" };
   return {
@@ -46,6 +46,7 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
         height={share.photoHeight}
         className="h-auto w-full rounded-2xl"
       />
+      {share.title && <h1 className="text-3xl font-semibold tracking-tight">{share.title}</h1>}
       <p className="text-sm text-zinc-600 dark:text-zinc-400">{shareByline(share)}</p>
       {share.story && <p className="whitespace-pre-wrap text-lg leading-8">{share.story}</p>}
       {share.score?.status === "done" && <ScoreBreakdown score={share.score} whose="the" />}

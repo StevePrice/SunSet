@@ -34,6 +34,8 @@ describe("share card content", () => {
     ownerId: "u",
     ownerName: "Steve",
     story: "A long story. ".repeat(20),
+    title: null,
+    caption: null,
     takenAt: new Date("2026-11-03T02:30:00Z"),
     photoWidth: 2560,
     photoHeight: 1440,
@@ -48,6 +50,10 @@ describe("share card content", () => {
     expect(content.story!.length).toBeLessThanOrEqual(140);
     expect(content.story!.endsWith("…")).toBe(true);
     expect(content.score).toBeNull();
+  });
+
+  it("uses the caption, written for strangers, over the story", () => {
+    expect(cardContent({ ...share, caption: "One last quiet sunset." }).story).toBe("One last quiet sunset.");
   });
 
   it("adds the place only when one is set", () => {
