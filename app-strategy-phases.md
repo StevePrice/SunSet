@@ -93,7 +93,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** entries saved on a phone appear in the Journal on another device.
 
-**Status:** deployed to staging and tested there and locally: data-access tests against PostGIS (including that another user can't read, edit or delete an entry), and a browser test in Chrome (pick, preview, save, view, edit, delete). Entries also support editing the story, removing the location, and deleting (photos included).
+**Status: done (2026-11-02).** Old and new photos saved from an iPhone appear in the Journal on a Mac. Deployed to staging and tested there and locally: data-access tests against PostGIS (including that another user can't read, edit or delete an entry), and a browser test in Chrome (pick, preview, save, view, edit, delete). Entries also support editing the story, removing the location, and deleting (photos included).
 
 ### Phase 3: Scoring v1
 **Goal:** every entry gets an automatic score.
