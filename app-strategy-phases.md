@@ -134,7 +134,9 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** on a phone, a user can speak a story, answer follow-ups, pick a style, save, and later play the recording back and read "What you said", with no entry ever lost to an AI error.
 
-**Decisions before building:** which speech-to-text model (Workers AI Whisper is the likely first choice), which Claude model writes the stories, free vs. premium for Crafted story, and the open questions in the PRD's Section 14.
+**Decisions (2026-11-03):** Whisper on Workers AI for speech-to-text; Claude Haiku 5.5 for questions and Claude Sonnet 5.5 for writing (on the guide's worked examples Haiku added details the user never said, Sonnet didn't); everything free during the beta, with a cap of 150 AI calls per user per day; the PRD's placeholders for its open questions (3 follow-ups, ~2-minute recordings, English only, one gentle extra question after a very short first answer, one length for Crafted story).
+
+**Status:** steps 1–2 of 4 built and on staging (2026-11-03): "Save and tell its story" on New Entry, the typed interview, My story (three lengths) and Crafted story (with or without photo details), suggested title and caption (the caption is what share cards show), "What you wrote", and "Add more to my story". A full session costs about 2 cents. Next: step 3 (voice: recording, Whisper, playback, "What you said") and step 4 (Settings: AI help off, delete recordings). Known issues: two server requests hung during testing (once locally for 227 s, once on staging) and couldn't be reproduced; "Ask me something else" sometimes asks a generic "How did you feel…" question. The crisis-line message shown for safety concerns needs review before launch.
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
