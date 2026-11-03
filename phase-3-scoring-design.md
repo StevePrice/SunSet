@@ -201,3 +201,5 @@ Run on 31 Wikimedia Commons photos (27 sunsets, 4 non-sunsets), against draft la
 | Gemma 4, reasoning | 97%: same daytime miss | 1.00 | 1.22 | 0.78 | 1.26 | 6.4 | 25.6 s | $0.42 |
 
 Errors are mean absolute error on the 1–10 scale. Every parameter is within the 1.5 pass bar for all three; no provider caught every non-sunset.
+
+**Decision (2026-11-02): Claude Haiku 5.5** is the vision provider. It's faster, better on Wow Factor, and its misses were judgement calls rather than a daytime photo scored as a sunset. Gemma 4 without reasoning stays available by setting `VISION_PROVIDER` to `gemma-fast` in `apps/scorer/wrangler.jsonc`.
