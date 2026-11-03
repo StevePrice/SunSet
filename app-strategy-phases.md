@@ -107,7 +107,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** a saved entry shows its score within a few seconds, and the scores look right on a test set of about 30 sunsets.
 
-**Status:** built and deployed to staging; see [phase-3-scoring-design.md](phase-3-scoring-design.md). On staging a saved sunset showed its score 7.3 s after saving. Vision provider: Claude Haiku 5.5. Waiting on: review of the calibration labels, then threshold tuning.
+**Status:** ✅ done (2026-11-03), apart from tuning; see [phase-3-scoring-design.md](phase-3-scoring-design.md). Scoring tested from Steve's phone without problems. On staging a saved sunset showed its score 7.3 s after saving. Vision provider: Claude Haiku 5.5. **Tuning deferred (2026-11-03):** after reviewing the calibration labels, Steve found Wow and Reach a little off but had no specific guidance yet; revisit later, ideally by comparing real entries side by side.
 
 ### Phase 4: Share-out
 **Goal:** send a sunset to friends who don't have the app.
