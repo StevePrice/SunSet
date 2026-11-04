@@ -122,10 +122,13 @@ Research into the current App Store / market landscape for sunset-focused produc
 - In-app friend circle / social graph (sharing stays share-out-only for MVP)
 - Community/audience voting layer (influences map retention)
 - Weighted/refined scoring algorithm — start simple, refine with real data
+- Rare Sightings badges and collection (see "Rare Sightings — Future Feature" below)
 - Physical products, brand partnerships
 
 ### Build Note: Scoring Algorithm at MVP Stage
 Building full image-analysis for all four parameters (Palette, Reach, Setting, Wow Factor) is a real computer-vision effort. For MVP, recommend a **simplified version** — basic image analysis (average colors, brightness, color spread across frame) producing a plausible score — to test whether users care about receiving a score at all, before investing in a more sophisticated/trained model.
+
+**Exception — Wow Factor:** it requires judgment that simple pixel analysis can't provide. It uses an AI model that can see images, which is now practical and affordable even at MVP stage (engineering to confirm cost per photo). It may also turn out to be simpler to score all four parameters this way.
 
 ## Business Model — Open Questions (not yet decided)
 
@@ -136,7 +139,7 @@ Building full image-analysis for all four parameters (Palette, Reach, Setting, W
 
 ## Sunset Scoring Algorithm
 
-A four-parameter system for rating the quality of a sunset. All four are designed to be **fully discernible from a single photo** — no follow-up questions, time-lapse, or self-reported data required. Each captures a genuinely different dimension of the experience — color, breadth within the frame, place, and rarity.
+A four-parameter system for rating the quality of a sunset. All four are designed to be **fully discernible from a single photo** — no follow-up questions, time-lapse, or self-reported data required. Each captures a genuinely different dimension of the experience — color, breadth within the frame, place, and overall impact.
 
 **1. The Palette**
 How rich and vivid the colors were — the range of hues present, how bold/saturated they were, and how smoothly they blended together.
@@ -148,11 +151,11 @@ How much of the visible frame is filled with color — a small glowing strip nea
 What the sky was paired with — mountains, ocean, skyline, trees, or an open horizon. This ties the sunset to a specific place and is often what makes it feel personal rather than generic.
 
 **4. The Wow Factor**
-The rare, once-in-a-while magic visible in the shot — sunbeams/crepuscular rays breaking through clouds, a mirror-like reflection on water, a green flash, sun halos, iridescent clouds, or anything that makes someone say "I've never seen anything like that."
+The gut reaction the photo creates — what someone says when they first see an incredible photo. Wow is a *reaction*, and many things can trigger it: light that looks like fire, dramatic contrast, a rare phenomenon, something unexpected, a phenomenal place or an icon seen in a new light, or a sense of vast scale. (Redefined from an earlier version that scored only a checklist of rare phenomena such as sun rays and reflections. Because those phenomena are rare by definition, nearly every sunset scored 1–3, including many that genuinely make people say "wow." Rare phenomena are now one of several paths to a high Wow score. A badge system celebrating them is planned as a future feature.)
 
 ### Scoring Scale
 
-Each parameter is scored **1–10**, with defined anchor points at 1, 5, and 10 so scoring stays consistent across algorithmic, human, and (eventually) user-submitted ratings.
+Each parameter is scored **1–10**, with defined anchor points so scoring stays consistent across algorithmic, human, and (eventually) user-submitted ratings.
 
 **1. The Palette — 1 to 10**
 - *1:* Single muted color, low saturation
@@ -173,10 +176,66 @@ Each parameter is scored **1–10**, with defined anchor points at 1, 5, and 10 
 - *Measured via:* image classification to detect foreground subject matter, then a complexity/composition sub-score
 
 **4. The Wow Factor — 1 to 10**
-- *1:* Nothing unusual, textbook ordinary sunset
-- *5:* One notable phenomenon present (e.g., visible sun rays)
-- *10:* Multiple rare phenomena clearly visible (rays, reflection, halo, etc.)
-- *Measured via:* checklist-style detection — each identified phenomenon adds points, building toward the top-line score
+Anchored to the reaction a typical person would have on first seeing the photo:
+- *1 — "Nice.":* A pleasant, ordinary sunset you'd scroll past
+- *3 — "Pretty.":* Worth a second look
+- *5 — "Oh, that's beautiful.":* You'd show it to the person next to you
+- *8 — "Wow.":* You'd send it to friends; it stands out from most sunsets
+- *10 — "Is that real?":* Stops you in your tracks; people ask if it's been edited
+- *Measured via:* an AI model that can see images judges the overall impact of the photo against these anchors, guided by the Wow drivers below, and gives a one-line reason that is shown to the user.
+
+### What Creates Wow (the Wow Drivers)
+
+Any **one** of these, done strongly, can produce a high Wow score. They are **not** added together like a checklist.
+
+1. **Intense light** — the sky looks like it's on fire or glowing from within.
+2. **Drama and contrast** — bright light against dark shapes, storm clouds, deep shadows.
+3. **Something rare** — sun rays, a mirror reflection, a halo, the green flash, unusual clouds.
+4. **Something unexpected or unique** — an element that makes this sunset unlike any other: living trees among burned ones, a lone figure, a bird crossing the sun.
+5. **A phenomenal place or an icon seen in a new light** — a world-famous landmark or extraordinary location (e.g., the Golden Gate Bridge, Half Dome, the Grand Canyon, Santorini) transformed by sunset light. Counts only when the place is clearly recognizable, and the sunset should show it in a way that feels fresh, not just a standard postcard view.
+6. **A sense of scale** — vast landscapes, layered ridges, endless ocean.
+
+**Rules for Wow:**
+- Wow judges the **whole picture's impact**, not individual parts.
+- **Avoid double counting.** The Palette already rewards color and the Setting already rewards the foreground. A colorful but ordinary sunset shouldn't score high on Wow for color alone; a muted sunset over an extraordinary scene can.
+- **Never judge photography skill or image quality.** Sunset Soul is for everyday people.
+
+**Example — Sequoia National Park:** living sequoias silhouetted among bare, burned trees against an orange band fading into deep blue, with one bright point of light in the sky. Under the old checklist (no rays, reflection, or halo) this scored about **1**. Under the new definition it scores about **7–8**, driven by *something unique* (the living and burned trees side by side) and *drama and contrast* (dark silhouettes against the last light). Example reason line: *"Living trees standing among burned ones, glowing against the last light."*
+
+### Rare Sightings — Future Feature (not in MVP)
+
+*Deferred to keep the MVP simple. Captured here for a later phase.*
+
+Rare phenomena would be celebrated with badges that appear alongside the score, giving users the delight of spotting something rare without penalizing ordinary sunsets for lacking it. (Example: the Sequoia photo would earn **Evening star**.)
+
+| Badge | What it is |
+|---|---|
+| **Sun rays** | Beams of light fanning out through clouds |
+| **Mirror reflection** | The sky reflected in still water |
+| **Green flash** | A green spark as the sun disappears (very rare) |
+| **Halo / sun dogs** | A ring around the sun, or bright spots on either side of it |
+| **Sun pillar** | A vertical column of light rising above the sun |
+| **Iridescent clouds** | A rainbow-like shimmer in thin clouds |
+| **Mammatus clouds** | Pouch-like clouds glowing from underneath |
+| **Alpenglow** | Mountains glowing pink or red |
+| **Evening star** | A bright planet or star visible in the twilight sky |
+| **Moonrise** | The moon visible in the sunset sky |
+| **Sunset rainbow** | A rainbow during sunset |
+| **Icon in a new light** | A world-famous landmark or phenomenal place at sunset |
+
+- Badges would be awarded only when the sighting is **clearly visible**. When in doubt, no badge. Very rare badges (e.g., green flash) would require extra confidence.
+- A photo could earn several badges.
+- Badges wouldn't add points directly; rare phenomena already inform the Wow judgment (Wow drivers 3 and 5).
+- A Rare Sightings collection in the Journal ("You've spotted 4 of 12 rare sightings") could give users a fun reason to keep watching sunsets.
+
+### Keeping Scores Consistent (Calibration)
+
+Wow is a judgment, so it needs calibrating:
+- Before launch, the founders rate a **reference set of 30–50 sunset photos** using the anchor points, from ordinary to extraordinary.
+- The AI scores the same photos, and its instructions are adjusted until its scores closely match the founders'.
+- The reference test is re-run after any change to the AI instructions or AI model.
+- Each entry's score is calculated once when it's saved and stored, so it doesn't change every time the entry is viewed.
+- Later, community reactions (Phase 2) can refine what Wow means to real users.
 
 ### Composite Score
 
@@ -191,3 +250,4 @@ Recommended approach: **simple average** of the four parameter scores (sum ÷ 4,
 - [ ] Define MVP — smallest version worth testing first
 - [ ] Rough visual concept / mockup of map + journal + feed
 - [ ] Define monetization path more concretely
+- [ ] Build the Wow Factor reference photo set (30–50 photos) and rate it

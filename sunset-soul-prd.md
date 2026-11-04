@@ -34,6 +34,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - As a user, I want to save a photo of a sunset I just saw, so that I can keep it as a memory.
 - As a user, I want to add a short story or caption to a sunset, so that the memory means more than just the photo.
 - As a user, I want to see a score for my sunset, so that I understand how it compares to an "ordinary" one.
+- As a user, I want to know why my sunset got its Wow score, so the score feels meaningful rather than random.
 - As a user, I want to look back through my past sunsets in one place, so that I can revisit memories over time.
 - As a user, I want to share a sunset (photo + score + story) with a few friends outside the app, so that I can show them a moment that mattered to me.
 - As a user, I want to optionally post my sunset to a public map, so that others around the world can see it.
@@ -56,19 +57,58 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - On save, the entry is scored automatically (see 6.4) and added to the user's Journal
 
 ### 6.4 Scoring Algorithm (MVP version)
-- Every saved entry is automatically scored using a simplified image-analysis model across four parameters:
+- Every saved entry is automatically scored across four parameters:
   - **The Palette** — color diversity/saturation analysis
   - **The Reach** — proportion of frame showing sunset color vs. neutral
   - **The Setting** — basic foreground/silhouette detection
-  - **The Wow Factor** — detection of visible notable elements (e.g., sunbeams, reflection) where feasible in MVP; may start as a simpler heuristic if full detection isn't feasible for v1
+  - **The Wow Factor** — the overall gut reaction to the photo, judged by an AI model that can see images (see 6.4a)
 - Each parameter scored 1–10; composite score is a simple average, displayed to the user alongside the entry
+- The score is calculated once when the entry is saved and stored with the entry; it does not change each time the entry is viewed
 - Scoring model is explicitly a simplified v1 — not the final trained/weighted version
+- Full definitions and anchor points are in the Concept doc (Sunset Scoring Algorithm)
+
+### 6.4a The Wow Factor
+**Definition:** Wow is what someone says when they see an incredible photo. The Wow Factor scores the reaction a typical person would have on first seeing the photo, not a checklist of features.
+
+**Anchor points:**
+
+| Score | Reaction | Meaning |
+|---|---|---|
+| 1 | "Nice." | A pleasant, ordinary sunset you'd scroll past |
+| 3 | "Pretty." | Worth a second look |
+| 5 | "Oh, that's beautiful." | You'd show it to the person next to you |
+| 8 | "Wow." | You'd send it to friends; it stands out from most sunsets |
+| 10 | "Is that real?" | Stops you in your tracks; people ask if it's been edited |
+
+**Wow drivers** (any one, done strongly, can produce a high score; they are not added together):
+1. Intense light — the sky looks on fire or glowing from within
+2. Drama and contrast — bright light against dark shapes, storm clouds, deep shadows
+3. Something rare — sun rays, reflection, halo, green flash, unusual clouds
+4. Something unexpected or unique — an element that makes this sunset unlike any other
+5. A phenomenal place or an icon seen in a new light — a world-famous landmark or extraordinary location transformed by sunset light (only when clearly recognizable, and shown in a fresh way, not a standard postcard view)
+6. A sense of scale — vast landscapes, layered ridges, endless ocean
+
+**Rules:**
+- Judge the whole picture's impact, not individual parts.
+- Avoid double counting with Palette (color) and Setting (foreground): color alone shouldn't drive a high Wow score.
+- Never judge photography skill or image quality.
+
+**Output:**
+- A Wow score (1–10) and a **one-line reason** (about 15 words or fewer) explaining what makes the photo striking, shown on the Score Result screen and in Entry Detail. Example: *"Living trees standing among burned ones, glowing against the last light."*
+- The reason describes only what's visible. It never identifies people. It names a landmark only when it's clearly recognizable or the user has tagged the location.
+
+**Failure handling:** if the AI is unavailable when an entry is saved, the entry is saved with the other three scores and the Wow Factor (and composite) is completed as soon as the AI is available. No entry is lost or blocked.
+
+### 6.4b Scoring Calibration (pre-launch requirement)
+- Before launch, the founders rate a reference set of 30–50 sunset photos (ordinary to extraordinary) using the Wow anchor points.
+- The AI's Wow scores on the same photos must closely match the founders' ratings before launch; the AI's instructions are adjusted until they do.
+- The reference test is re-run after any change to the AI instructions or AI model.
 
 ### 6.5 Journal (Personal Archive)
 - Chronological list/grid view of all saved entries
 - Each entry displays photo, score, date, and story (if present)
 - Entries are private by default
-- User can open an entry to view full detail (photo, full story, score breakdown by parameter)
+- User can open an entry to view full detail (photo, full story, score breakdown by parameter, Wow reason line)
 
 ### 6.6 Sharing (Share-Out, MVP)
 - From an entry, user can trigger a "Share" action
@@ -94,9 +134,9 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 1. **Onboarding / Login** — account creation, brief intro to the concept
 2. **Home / Capture** — camera or photo picker entry point
 3. **New Entry** — add story/caption, confirm/edit location, save
-4. **Score Result** — shows composite score + four-parameter breakdown after save
+4. **Score Result** — shows composite score, four-parameter breakdown, and Wow reason line after save
 5. **Journal** — chronological grid/list of all saved entries
-6. **Entry Detail** — full photo, story, score breakdown, share action, "post to map" action
+6. **Entry Detail** — full photo, story, score breakdown, Wow reason line, share action, "post to map" action
 7. **Live Map** — global map view of public posted entries, tap a pin to view detail
 8. **Settings** — account, notification preferences
 
@@ -106,6 +146,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - In-app friend circle / social graph (sharing is share-out only)
 - Community/audience voting on entries or on map retention
 - Weighted or fully trained scoring algorithm
+- Rare Sightings badges and collection (future feature; described in the Concept doc)
 - Physical products, brand partnerships, or any monetization features
 - Real-time "sunset happening now" map behavior
 
@@ -113,6 +154,8 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 
 - [ ] Exact retention window and score threshold logic for the Live Map (currently placeholder values)
 - [ ] Login method (email vs. phone vs. social)
-- [ ] Feasibility of "Wow Factor" phenomenon detection at MVP quality/budget — may need to simplify further
+- [ ] AI vision provider and cost per photo for the Wow Factor
+- [ ] Should Palette, Reach, and Setting also use the AI vision model (possibly simpler to build and more accurate) instead of pixel analysis?
+- [ ] Does the Wow reason line appear on the share card and Live Map?
 - [ ] Location precision/privacy approach for map pins (general area vs. exact point)
 - [ ] Platform priority — iOS first, Android first, or simultaneous
