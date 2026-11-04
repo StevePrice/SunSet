@@ -119,7 +119,8 @@ The user's original words are **not a story style.** They live alongside the rec
 - The Crafted story may include details **clearly visible in the photo**: colors, clouds, water, reflections, sun rays, silhouettes of mountains, trees, buildings, or people.
 - It must never guess from the photo: who people are, how anyone felt, or the exact location.
 - An **"Add details from my photo"** toggle appears with the Crafted story. Default: on.
-- Where available, visual elements detected by the Scoring Algorithm (e.g., sun rays or reflection for the Wow Factor) should be passed to the story generator, so the story and score feel connected.
+- Where available, the Wow reason line from the Scoring Algorithm should be passed to the story generator, so the story and score feel connected.
+- If the scoring recognizes an iconic landmark (Wow driver: "an icon seen in a new light"), the Crafted story names it only if the user mentioned it or tagged the location.
 - My story and the original words never include photo details; they use only what the user said.
 
 ### 6.7 Title and Caption
