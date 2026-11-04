@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sunset Soul sizes. Generated from design-tokens.json. Text sizes use sp so they follow the phone's font size setting. -->
+<resources>
+    <dimen name="space_1">4dp</dimen>
+    <dimen name="space_2">8dp</dimen>
+    <dimen name="space_3">12dp</dimen>
+    <dimen name="space_4">16dp</dimen>
+    <dimen name="space_5">20dp</dimen>
+    <dimen name="space_6">24dp</dimen>
+    <dimen name="space_8">32dp</dimen>
+    <dimen name="space_10">40dp</dimen>
+    <dimen name="radius_sm">10dp</dimen>
+    <dimen name="radius_md">14dp</dimen>
+    <dimen name="radius_lg">20dp</dimen>
+    <dimen name="radius_pill">9999dp</dimen>
+    <dimen name="tap_min">48dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="chip_height">48dp</dimen>
+    <dimen name="capture_button">60dp</dimen>
+    <dimen name="icon">24dp</dimen>
+    <dimen name="tab_bar_height">76dp</dimen>
+    <dimen name="text_display">40sp</dimen>
+    <dimen name="line_height_display">44sp</dimen>
+    <dimen name="text_title_1">32sp</dimen>
+    <dimen name="line_height_title_1">38sp</dimen>
+    <dimen name="text_title_2">26sp</dimen>
+    <dimen name="line_height_title_2">32sp</dimen>
+    <dimen name="text_title_3">21sp</dimen>
+    <dimen name="line_height_title_3">26sp</dimen>
+    <dimen name="text_story">18sp</dimen>
+    <dimen name="line_height_story">28sp</dimen>
+    <dimen name="text_body">18sp</dimen>
+    <dimen name="line_height_body">26sp</dimen>
+    <dimen name="text_body_strong">18sp</dimen>
+    <dimen name="line_height_body_strong">26sp</dimen>
+    <dimen name="text_label">17sp</dimen>
+    <dimen name="line_height_label">22sp</dimen>
+    <dimen name="text_caption">15sp</dimen>
+    <dimen name="line_height_caption">20sp</dimen>
+    <dimen name="text_overline">14sp</dimen>
+    <dimen name="line_height_overline">18sp</dimen>
+</resources>
