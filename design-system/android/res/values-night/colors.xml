@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sunset Soul colors, dark theme. Generated from design-tokens.json. -->
+<resources>
+    <!-- The brand color. App icon tile, dark-mode page, text color in light mode. -->
+    <color name="brand_twilight_navy">#FF1D2B5C</color>
+    <!-- Second brand blue. The earth in the app icon and raised surfaces in dark mode. -->
+    <color name="brand_blue_hour">#FF273A72</color>
+    <!-- Warm cream. Light-mode page and text on navy. -->
+    <color name="brand_cream">#FFFFF9F2</color>
+    <!-- The sun in the logo and every score. The one warm accent. -->
+    <color name="brand_apricot">#FFFF9B5C</color>
+    <!-- The beams in the logo on dark grounds and the selected reaction. -->
+    <color name="brand_peach_blush">#FFFBD2BC</color>
+    <!-- The action blue in its light-mode strength. -->
+    <color name="brand_ocean_blue">#FF2C4A8C</color>
+    <!-- Screen background behind every photo and story. -->
+    <color name="surface_page">#FF1D2B5C</color>
+    <!-- Unselected reaction chips, text fields, sheets and cards on surface-page. -->
+    <color name="surface_raised">#FF273A72</color>
+    <!-- Areas set back from the page: the area behind sheets, empty states, the Share Page margins. -->
+    <color name="surface_sunken">#FF16224A</color>
+    <!-- Borders of reaction chips, text fields and secondary buttons. 3:1 or better on surface-page and surface-raised, so controls are easy to find. Cards use no border. -->
+    <color name="border_subtle">#FF7286C4</color>
+    <!-- Hairlines between sections and above the tab bar. -->
+    <color name="divider">#FF33467E</color>
+    <!-- Titles, labels and primary text on surface-page and surface-raised. 11:1 or better in both themes. -->
+    <color name="ink">#FFFFF6EC</color>
+    <!-- Story text, set in the story style, on surface-page. -->
+    <color name="ink_story">#FFE3E9F8</color>
+    <!-- Dates, counts, the Wow reason line and other quiet text on surface-page and surface-raised. 5.6:1 or better. -->
+    <color name="ink_muted">#FFC3CDEB</color>
+    <!-- Warm accent text, such as Soul in the wordmark. Large text only (24px and up) in light mode. -->
+    <color name="ink_accent">#FFFF9B5C</color>
+    <!-- The one primary button per screen (Save, Send, Share) and the capture button. Lifted in dark mode so it shows on navy. The button is identified by its label; the fill is 2.4:1 against navy in dark mode. -->
+    <color name="action">#FF3A64B8</color>
+    <!-- Text and icons on action. -->
+    <color name="on_action">#FFFFFFFF</color>
+    <!-- Keyboard and accessibility focus outline, 3px, on every surface. -->
+    <color name="focus_ring">#FFFBD2BC</color>
+    <!-- Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). -->
+    <color name="reaction_selected">#FFFBD2BC</color>
+    <!-- 1px border on reaction-selected so the chip reads as pressed. -->
+    <color name="reaction_selected_border">#FFF2B08E</color>
+    <!-- Text on reaction-selected. -->
+    <color name="on_reaction">#FF1D2B5C</color>
+    <!-- Score badge fill, on photos and beside titles. -->
+    <color name="score">#FFFF9B5C</color>
+    <!-- Numbers on score. 6.5:1. -->
+    <color name="on_score">#FF1D2B5C</color>
+    <!-- Behind white text laid over a photo (home-screen previews, share cards only). -->
+    <color name="photo_scrim">#8C16224A</color>
+</resources>

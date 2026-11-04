@@ -1,0 +1,125 @@
+/* Sunset Soul design tokens for the web (Share Page, website).
+   Generated from design-tokens.json. Follows the device setting; force a theme with data-theme="dark" or "light" on <html>. */
+
+@font-face { font-family: "Fraunces"; src: url("../fonts/Fraunces-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("../fonts/Fraunces-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("../fonts/Fraunces-MediumItalic.ttf") format("truetype"); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../fonts/AtkinsonHyperlegible-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../fonts/AtkinsonHyperlegible-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("../fonts/AtkinsonHyperlegible-BoldItalic.ttf") format("truetype"); font-weight: 700; font-style: italic; font-display: swap; }
+
+:root {
+  color-scheme: dark light;
+  --ss-brand-twilight-navy: #1D2B5C;
+  --ss-brand-blue-hour: #273A72;
+  --ss-brand-cream: #FFF9F2;
+  --ss-brand-apricot: #FF9B5C;
+  --ss-brand-peach-blush: #FBD2BC;
+  --ss-brand-ocean-blue: #2C4A8C;
+  --ss-surface-page: #1D2B5C;
+  --ss-surface-raised: #273A72;
+  --ss-surface-sunken: #16224A;
+  --ss-border-subtle: #7286C4;
+  --ss-divider: #33467E;
+  --ss-ink: #FFF6EC;
+  --ss-ink-story: #E3E9F8;
+  --ss-ink-muted: #C3CDEB;
+  --ss-ink-accent: #FF9B5C;
+  --ss-action: #3A64B8;
+  --ss-on-action: #FFFFFF;
+  --ss-focus-ring: #FBD2BC;
+  --ss-reaction-selected: #FBD2BC;
+  --ss-reaction-selected-border: #F2B08E;
+  --ss-on-reaction: #1D2B5C;
+  --ss-score: #FF9B5C;
+  --ss-on-score: #1D2B5C;
+  --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+  --ss-space-1: 4px;
+  --ss-space-2: 8px;
+  --ss-space-3: 12px;
+  --ss-space-4: 16px;
+  --ss-space-5: 20px;
+  --ss-space-6: 24px;
+  --ss-space-8: 32px;
+  --ss-space-10: 40px;
+  --ss-radius-sm: 10px;
+  --ss-radius-md: 14px;
+  --ss-radius-lg: 20px;
+  --ss-radius-pill: 9999px;
+  --ss-tap-min: 48px;
+  --ss-button-height: 52px;
+  --ss-chip-height: 48px;
+  --ss-capture-button: 60px;
+  --ss-icon: 24px;
+  --ss-tab-bar-height: 76px;
+  --ss-font-serif: Fraunces, Georgia, serif;
+  --ss-font-sans: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ss-brand-twilight-navy: #1D2B5C;
+    --ss-brand-blue-hour: #273A72;
+    --ss-brand-cream: #FFF9F2;
+    --ss-brand-apricot: #FF9B5C;
+    --ss-brand-peach-blush: #FBD2BC;
+    --ss-brand-ocean-blue: #2C4A8C;
+    --ss-surface-page: #FFF9F2;
+    --ss-surface-raised: #E6ECF8;
+    --ss-surface-sunken: #F4EFE7;
+    --ss-border-subtle: #76839F;
+    --ss-divider: #E4DED3;
+    --ss-ink: #1D2B5C;
+    --ss-ink-story: #24305A;
+    --ss-ink-muted: #4E5B85;
+    --ss-ink-accent: #C4621F;
+    --ss-action: #2C4A8C;
+    --ss-on-action: #FFFFFF;
+    --ss-focus-ring: #2C4A8C;
+    --ss-reaction-selected: #FBD2BC;
+    --ss-reaction-selected-border: #F2B08E;
+    --ss-on-reaction: #1D2B5C;
+    --ss-score: #FF9B5C;
+    --ss-on-score: #1D2B5C;
+    --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+  }
+}
+
+:root[data-theme="light"] {
+  --ss-brand-twilight-navy: #1D2B5C;
+  --ss-brand-blue-hour: #273A72;
+  --ss-brand-cream: #FFF9F2;
+  --ss-brand-apricot: #FF9B5C;
+  --ss-brand-peach-blush: #FBD2BC;
+  --ss-brand-ocean-blue: #2C4A8C;
+  --ss-surface-page: #FFF9F2;
+  --ss-surface-raised: #E6ECF8;
+  --ss-surface-sunken: #F4EFE7;
+  --ss-border-subtle: #76839F;
+  --ss-divider: #E4DED3;
+  --ss-ink: #1D2B5C;
+  --ss-ink-story: #24305A;
+  --ss-ink-muted: #4E5B85;
+  --ss-ink-accent: #C4621F;
+  --ss-action: #2C4A8C;
+  --ss-on-action: #FFFFFF;
+  --ss-focus-ring: #2C4A8C;
+  --ss-reaction-selected: #FBD2BC;
+  --ss-reaction-selected-border: #F2B08E;
+  --ss-on-reaction: #1D2B5C;
+  --ss-score: #FF9B5C;
+  --ss-on-score: #1D2B5C;
+  --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+}
+
+.ss-display { font-family: var(--ss-font-serif); font-size: 2.5rem; line-height: 1.100; font-weight: 600; letter-spacing: -0.01em; }
+.ss-title-1 { font-family: var(--ss-font-serif); font-size: 2rem; line-height: 1.188; font-weight: 600; }
+.ss-title-2 { font-family: var(--ss-font-serif); font-size: 1.625rem; line-height: 1.231; font-weight: 600; }
+.ss-title-3 { font-family: var(--ss-font-serif); font-size: 1.3125rem; line-height: 1.238; font-weight: 600; }
+.ss-story { font-family: var(--ss-font-serif); font-size: 1.125rem; line-height: 1.556; font-weight: 400; }
+.ss-body { font-family: var(--ss-font-sans); font-size: 1.125rem; line-height: 1.444; font-weight: 400; }
+.ss-body-strong { font-family: var(--ss-font-sans); font-size: 1.125rem; line-height: 1.444; font-weight: 700; }
+.ss-label { font-family: var(--ss-font-sans); font-size: 1.0625rem; line-height: 1.294; font-weight: 700; }
+.ss-caption { font-family: var(--ss-font-sans); font-size: 0.9375rem; line-height: 1.333; font-weight: 400; }
+.ss-overline { font-family: var(--ss-font-sans); font-size: 0.875rem; line-height: 1.286; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
