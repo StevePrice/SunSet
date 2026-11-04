@@ -6,14 +6,6 @@ import type { EntryScore, ScoreStatus } from "@/lib/scores";
 type ScoreState = EntryScore | { status: "none" };
 
 const LABELS = { palette: "Palette", reach: "Reach", setting: "Setting", wow: "Wow Factor" } as const;
-const PHENOMENA: Record<string, string> = {
-  sun_rays: "Sun rays",
-  reflection: "Reflection",
-  halo: "Halo",
-  green_flash: "Green flash",
-  iridescent_clouds: "Iridescent clouds",
-  other_rare: "Something rare",
-};
 const SETTINGS: Record<string, string> = {
   mountains: "Mountains",
   ocean: "Ocean",
@@ -117,9 +109,9 @@ export function ScoreBreakdown({ score, whose = "your" }: { score: EntryScore; w
           <strong>{SETTINGS[score.settingType] ?? score.settingType}.</strong> {score.settingReason}
         </p>
       )}
-      {score.phenomena.length > 0 && (
+      {score.wowReason && (
         <p className="text-sm">
-          <strong>{score.phenomena.map((p) => PHENOMENA[p.kind] ?? p.kind).join(" · ")}.</strong> {score.wowReason}
+          <strong>Wow:</strong> {score.wowReason}
         </p>
       )}
       <p className="text-xs text-zinc-500">

@@ -162,7 +162,8 @@ export async function draftAction(entryId: string, style: StoryStyle, rewrite = 
       style === "crafted-photo" ? photo(user.id, entryId, "display") : null,
       style === "crafted-photo" ? getScore(db, user.id, entryId) : null,
     ]);
-    const detected = score?.status === "done" ? score.phenomena.map((p) => `${p.kind.replace(/_/g, " ")} (${p.description})`) : [];
+    // The scorer's Wow reason, so the story and the score feel connected (Story Capture PRD 6.6).
+    const detected = score?.status === "done" && score.wowReason ? [score.wowReason] : [];
     const turns = session.turns;
     const result = await withAi(db, user.id, `story_${style}`, () => writeStory(env, style, turns, image, detected));
     if (!result || result === "limited") {

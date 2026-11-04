@@ -88,7 +88,7 @@ export async function writeStory(
   detected: string[],
 ) {
   const withPhoto = style === "crafted-photo" && photo;
-  const detectedText = withPhoto && detected.length ? `\n\nDetected in the photo: ${detected.join(", ")}.` : "";
+  const detectedText = withPhoto && detected.length ? `\n\nStriking in the photo: ${detected.join(" ")}` : "";
   const text = `${interviewText(turns)}${detectedText}\n\nWrite the story.`;
   const { output, usage } = await ask(env, {
     model: env.STORY_MODEL || DEFAULT_STORY_MODEL,

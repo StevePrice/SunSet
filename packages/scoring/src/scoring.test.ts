@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { downscale, measurePixels, rgbToHsv, type Rgba } from "./pixels";
 import { parseScene, type SceneReport } from "./scene";
-import { combineScores, paletteScore, reachScore, wowScore } from "./scores";
+import { combineScores, paletteScore, reachScore, scoreEntry } from "./scores";
 
 // Builds an image whose rows are filled by colour(y) — enough to model skies.
 function image(width: number, height: number, colour: (x: number, y: number) => [number, number, number]): Rgba {
@@ -75,21 +75,19 @@ describe("anchor mappings", () => {
   });
 });
 
-describe("Wow Factor checklist", () => {
-  const p = (confidence: "clear" | "possible", striking = false) => ({
-    kind: "sun_rays" as const,
-    confidence,
-    striking,
-    description: "",
-  });
-
-  it("follows the concept doc: nothing → 1, one → 5, multiple → up to 10", () => {
-    expect(wowScore([])).toBe(1);
-    expect(wowScore([p("possible")])).toBe(2);
-    expect(wowScore([p("clear")])).toBe(5);
-    expect(wowScore([p("clear", true)])).toBe(6);
-    expect(wowScore([p("clear"), p("clear")])).toBe(8);
-    expect(wowScore([p("clear"), p("clear"), p("clear")])).toBe(10);
+describe("Wow Factor", () => {
+  it("takes the vision model's reaction score, clamped to 1–10", () => {
+    const metrics = { colouredFraction: 0.5, sunsetFraction: 0.5, hueBinsUsed: 3, vividness: 0.5 };
+    const scene = (score: number): SceneReport => ({
+      is_sunset: true,
+      content_flag: "none",
+      setting: { type: "trees", score: 6, reason: "" },
+      phenomena: [],
+      wow: { drivers: ["unique", "drama_contrast"], score, reason: "Living trees among burned ones." },
+    });
+    expect(scoreEntry(metrics, scene(8)).wow).toBe(8);
+    expect(scoreEntry(metrics, scene(14)).wow).toBe(10);
+    expect(scoreEntry(metrics, scene(0)).wow).toBe(1);
   });
 });
 
@@ -106,12 +104,13 @@ describe("scene validation", () => {
     content_flag: "none",
     setting: { type: "ocean", score: 7, reason: "The sea horizon frames it." },
     phenomena: [{ kind: "reflection", confidence: "clear", striking: false, description: "on wet sand" }],
-    wow_reason: "The reflection doubles the colour.",
+    wow: { drivers: ["rare"], score: 6, reason: "The reflection doubles the colour." },
   };
 
   it("accepts a well-formed report and rejects a malformed one", () => {
     expect(parseScene(valid)).toEqual(valid);
     expect(parseScene({ ...valid, setting: { ...valid.setting, type: "desert" } })).toBeNull();
+    expect(parseScene({ ...valid, wow: { ...valid.wow, drivers: ["colour"] } })).toBeNull();
     expect(parseScene("not json")).toBeNull();
   });
 });

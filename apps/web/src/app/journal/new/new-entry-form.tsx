@@ -169,7 +169,7 @@ export function NewEntryForm() {
           <input type="radio" name="location" checked={choice === "none"} onChange={() => setChoice("none")} />
           No location
         </label>
-        <p className="text-sm text-zinc-500">Only you can see your Journal, including its locations.</p>
+        <p className="text-sm text-zinc-500">Your Journal is private, including its locations. The Sunset Soul team can see it only to run and support the app.</p>
       </fieldset>
 
       {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}

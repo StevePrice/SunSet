@@ -34,7 +34,7 @@ export function StoryFlow({ entryId, initial }: { entryId: string; initial: Stor
         <img src={`/api/photos/${entryId}/thumb`} alt="Your sunset" className="h-20 w-20 rounded-xl object-cover" />
         <p className="text-xs text-zinc-500">
           Your photo and words are sent to Claude, Anthropic&apos;s AI, to write questions and your story. Anthropic doesn&apos;t
-          train its models on them. Only you see your story unless you share it.
+          train its models on them. Your story stays private unless you share it.
         </p>
       </div>
       {view.safetyConcern && <SupportNotice />}

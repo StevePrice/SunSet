@@ -84,8 +84,8 @@ const CRAFTED = (photo: boolean) => `Write "Crafted story": a well-written short
 - More vivid language and better structure than the user's telling, but never exaggerate.${
   photo
     ? `
-- Photo details you may use when clearly visible: colours and how they shift, clouds, water and reflections, sun rays, the sun's position, silhouettes (mountains, trees, palms, buildings, piers, boats, people), and the kind of place (beach, city, field, road). Notable things the app detected are listed under "Detected in the photo".
-- Never from the photo: who people are or what they look like, how anyone felt, the specific place name (unless the user said it), or sounds, smells, temperature or anything else a photo can't show. When in doubt, leave it out.`
+- Photo details you may use when clearly visible: colours and how they shift, clouds, water and reflections, sun rays, the sun's position, silhouettes (mountains, trees, palms, buildings, piers, boats, people), and the kind of place (beach, city, field, road). What the app's scoring found striking is given under "Striking in the photo"; you may use it if it's clearly visible.
+- Never from the photo: who people are or what they look like, how anyone felt, the specific place or landmark name (unless the user said it, even if it looks recognisable), or sounds, smells, temperature or anything else a photo can't show. When in doubt, leave it out.`
     : ""
 }`;
 

@@ -22,16 +22,6 @@ export function reachScore(m: PixelMetrics): number {
   return 10;
 }
 
-// The concept doc's checklist: each clearly visible phenomenon builds toward the top score.
-export function wowScore(phenomena: SceneReport["phenomena"]): number {
-  const clear = phenomena.filter((p) => p.confidence === "clear");
-  const possible = phenomena.length - clear.length;
-  if (clear.length === 0) return possible >= 2 ? 3 : possible === 1 ? 2 : 1;
-  if (clear.length === 1) return clear[0].striking ? 6 : 5;
-  if (clear.length === 2) return 8;
-  return 10;
-}
-
 export type Scores = {
   palette: number;
   reach: number;
@@ -51,6 +41,7 @@ export function scoreEntry(metrics: PixelMetrics, scene: SceneReport): Scores {
     palette: paletteScore(metrics),
     reach: reachScore(metrics),
     setting: clampScore(scene.setting.score),
-    wow: wowScore(scene.phenomena),
+    // Wow is the vision model's judgement of the reaction the photo creates (concept doc, v2).
+    wow: clampScore(scene.wow.score),
   });
 }

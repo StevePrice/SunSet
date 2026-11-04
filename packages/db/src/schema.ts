@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  // "admin" can see every Journal (logged in admin_views) and use the calibration tools.
+  role: text("role").notNull().default("user"),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   ...timestamps,
@@ -203,4 +205,63 @@ export const aiCalls = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("ai_calls_user_created_idx").on(table.userId, table.createdAt)],
+);
+
+// Every time an admin opens someone else's Journal or entry.
+export const adminViews = pgTable(
+  "admin_views",
+  {
+    id: text("id").primaryKey(),
+    adminId: text("admin_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    viewedUserId: text("viewed_user_id").notNull(),
+    entryId: text("entry_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("admin_views_viewed_idx").on(table.viewedUserId, table.createdAt)],
+);
+
+// The reference photo set the founders rate to calibrate the scorer (concept doc, "Keeping Scores
+// Consistent"). Photos live in R2 at calibration/{id}.jpg; `model` holds the current scorer's result.
+export type CalibrationModelScore = {
+  scorerVersion: string;
+  isSunset: boolean;
+  palette?: number;
+  reach?: number;
+  setting?: number;
+  wow?: number;
+  wowReason?: string;
+};
+
+export const calibrationPhotos = pgTable("calibration_photos", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  credit: text("credit"),
+  sourceUrl: text("source_url"),
+  isSunset: boolean("is_sunset").notNull().default(true),
+  model: jsonb("model").$type<CalibrationModelScore>(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// One side-by-side judgement: which of two photos has more of a parameter.
+export const calibrationVotes = pgTable(
+  "calibration_votes",
+  {
+    id: text("id").primaryKey(),
+    raterId: text("rater_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    param: text("param").notNull(),
+    leftId: text("left_id")
+      .notNull()
+      .references(() => calibrationPhotos.id, { onDelete: "cascade" }),
+    rightId: text("right_id")
+      .notNull()
+      .references(() => calibrationPhotos.id, { onDelete: "cascade" }),
+    // left | right | same
+    choice: text("choice").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("calibration_votes_param_idx").on(table.param, table.raterId)],
 );

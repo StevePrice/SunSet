@@ -43,6 +43,13 @@
       "when": 1793737697994,
       "tag": "0005_story_capture",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793761060345,
+      "tag": "0006_admin_and_calibration",
+      "breakpoints": true
     }
   ]
 }

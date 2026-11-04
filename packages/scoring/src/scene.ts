@@ -4,6 +4,8 @@ import { z } from "zod";
 
 export const SETTING_TYPES = ["mountains", "ocean", "lake_or_river", "skyline", "trees", "open_horizon", "other"] as const;
 export const PHENOMENA = ["sun_rays", "reflection", "halo", "green_flash", "iridescent_clouds", "other_rare"] as const;
+// The concept doc's Wow drivers. Any one, done strongly, can make a high score; they don't add up.
+export const WOW_DRIVERS = ["intense_light", "drama_contrast", "rare", "unique", "iconic_place", "scale"] as const;
 
 export const sceneSchema = z.object({
   is_sunset: z.boolean().describe("True for a sunset or sunrise sky as the main subject."),
@@ -25,7 +27,11 @@ export const sceneSchema = z.object({
       }),
     )
     .describe("Each rare phenomenon actually visible. Empty for an ordinary sunset."),
-  wow_reason: z.string().describe("One short sentence for the photographer."),
+  wow: z.object({
+    drivers: z.array(z.enum(WOW_DRIVERS)).describe("The Wow drivers present strongly enough to matter. Often empty."),
+    score: z.number().int().describe("1 to 10, the reaction a typical person would have, using the Wow anchors."),
+    reason: z.string().describe("About 15 words or fewer: what makes the photo striking, or what it is."),
+  }),
 });
 
 export type SceneReport = z.infer<typeof sceneSchema>;
@@ -52,7 +58,26 @@ phenomena — only rare things actually visible in this photo. Do not list ordin
 - other_rare: anything else that would make someone say "I've never seen anything like that" — describe it.
 Use confidence "clear" only when it's unmistakable at a glance; otherwise "possible". Mark striking only if it dominates the scene.
 
-Keep both reasons to one friendly sentence addressed to the photographer.`;
+wow — the gut reaction a typical person would have on first seeing this photo. Wow is a reaction, not a checklist.
+- score 1, "Nice.": a pleasant, ordinary sunset you'd scroll past.
+- score 3, "Pretty.": worth a second look.
+- score 5, "Oh, that's beautiful.": you'd show it to the person next to you.
+- score 8, "Wow.": you'd send it to friends; it stands out from most sunsets.
+- score 10, "Is that real?": stops you in your tracks; people ask if it's been edited.
+- 2, 4, 6, 7 and 9 sit between the anchors.
+- drivers — any one of these, done strongly, can produce a high score; they are not added together:
+  - intense_light: the sky looks like it's on fire or glowing from within.
+  - drama_contrast: bright light against dark shapes, storm clouds, deep shadows.
+  - rare: sun rays, a mirror reflection, a halo, the green flash, unusual clouds.
+  - unique: something unexpected that makes this sunset unlike any other (living trees among burned ones, a lone figure, a bird crossing the sun).
+  - iconic_place: a world-famous landmark or extraordinary place (the Golden Gate Bridge, Half Dome, the Grand Canyon, Santorini) transformed by sunset light. Only when clearly recognisable, and only when the light shows it in a fresh way, not a standard postcard view.
+  - scale: vast landscapes, layered ridges, endless ocean.
+- Judge the whole picture's impact, not its parts.
+- Don't double count: Palette already rewards colour and Setting already rewards the foreground. A colourful but ordinary sunset shouldn't score high on Wow for colour alone; a muted sunset over an extraordinary scene can.
+- Never judge photography skill or image quality. These are everyday people's phone photos.
+- reason: about 15 words or fewer, describing only what's visible, e.g. "Living trees standing among burned ones, glowing against the last light." Never identify people. Name a landmark only when it's clearly recognisable.
+
+Keep the setting reason to one friendly sentence addressed to the photographer.`;
 
 /** Validates a provider's raw JSON. Returns null if it doesn't match. */
 export function parseScene(raw: unknown): SceneReport | null {

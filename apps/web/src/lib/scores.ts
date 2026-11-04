@@ -27,6 +27,8 @@ type Details = {
   scene?: {
     setting?: { type?: string; reason?: string };
     phenomena?: { kind: string; confidence: string; description: string }[];
+    wow?: { reason?: string };
+    // Scorer v1 put the reason here.
     wow_reason?: string;
   };
 };
@@ -81,7 +83,7 @@ function toEntryScore(row: {
     settingType: scene?.setting?.type ?? null,
     settingReason: scene?.setting?.reason ?? null,
     phenomena: (scene?.phenomena ?? []).filter((p) => p.confidence === "clear"),
-    wowReason: scene?.wow_reason ?? null,
+    wowReason: scene?.wow?.reason ?? scene?.wow_reason ?? null,
   };
 }
 
