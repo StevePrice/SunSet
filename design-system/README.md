@@ -72,6 +72,8 @@ Link `web/tokens.css` and keep `fonts/` beside the `web/` folder. Use `var(--ss-
 - The photo leads. Never put text or filters on a person's photo; only the score badge sits on it.
 - Use one `action` button per screen. Use `score` (apricot) only for scores and `reaction-selected` (peach blush) only for tapped reactions.
 - No red anywhere, no drop shadows, no emoji in the interface.
+- `score` and `reactionSelected` are fill colors only. In light mode never use them for text or icons: show scores as an apricot badge with `onScore` numbers, and keep links and labels in `ink`.
+- Draw the Live Map with the `map*` colors (water, land, coastline, pin ring and outline), never the surface colors.
 - Respect the phone's text size setting and let layouts grow with it.
 
 The full brand book, with live component previews, is in the Sunset Soul Design System on Claude.

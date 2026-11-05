@@ -45,18 +45,28 @@ public enum SunsetSoul {
         public static let onAction = Color(light: (0xFF, 0xFF, 0xFF, 1.0), dark: (0xFF, 0xFF, 0xFF, 1.0))
         /// Keyboard and accessibility focus outline, 3px, on every surface.
         public static let focusRing = Color(light: (0x2C, 0x4A, 0x8C, 1.0), dark: (0xFB, 0xD2, 0xBC, 1.0))
-        /// Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!).
+        /// Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream.
         public static let reactionSelected = Color(light: (0xFB, 0xD2, 0xBC, 1.0), dark: (0xFB, 0xD2, 0xBC, 1.0))
         /// 1px border on reaction-selected so the chip reads as pressed.
         public static let reactionSelectedBorder = Color(light: (0xF2, 0xB0, 0x8E, 1.0), dark: (0xF2, 0xB0, 0x8E, 1.0))
         /// Text on reaction-selected.
         public static let onReaction = Color(light: (0x1D, 0x2B, 0x5C, 1.0), dark: (0x1D, 0x2B, 0x5C, 1.0))
-        /// Score badge fill, on photos and beside titles.
+        /// Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text.
         public static let score = Color(light: (0xFF, 0x9B, 0x5C, 1.0), dark: (0xFF, 0x9B, 0x5C, 1.0))
         /// Numbers on score. 6.5:1.
         public static let onScore = Color(light: (0x1D, 0x2B, 0x5C, 1.0), dark: (0x1D, 0x2B, 0x5C, 1.0))
         /// Behind white text laid over a photo (home-screen previews, share cards only).
         public static let photoScrim = Color(light: (0x16, 0x22, 0x4A, 0.55), dark: (0x16, 0x22, 0x4A, 0.55))
+        /// Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode.
+        public static let mapWater = Color(light: (0xC9, 0xD8, 0xEE, 1.0), dark: (0x16, 0x22, 0x4A, 1.0))
+        /// Live Map land, on map-water.
+        public static let mapLand = Color(light: (0xFB, 0xF6, 0xEE, 1.0), dark: (0x27, 0x3A, 0x72, 1.0))
+        /// 1.5px line where map-land meets map-water.
+        public static let mapCoastline = Color(light: (0xC7, 0xBB, 0xA6, 1.0), dark: (0x3D, 0x52, 0x90, 1.0))
+        /// 3px ring around each photo pin on the Live Map.
+        public static let mapPinRing = Color(light: (0xFF, 0xFF, 0xFF, 1.0), dark: (0xFF, 0xF6, 0xEC, 1.0))
+        /// 1.5px outline outside map-pin-ring, so pins stand out on land and water alike.
+        public static let mapPinOutline = Color(light: (0x1D, 0x2B, 0x5C, 1.0), dark: (0x16, 0x22, 0x4A, 1.0))
     }
 
     // MARK: Type (scales with Dynamic Type)
