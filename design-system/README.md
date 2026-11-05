@@ -70,7 +70,7 @@ Link `web/tokens.css` and keep `fonts/` beside the `web/` folder. Use `var(--ss-
 ## Rules that matter most
 
 - The photo leads. Never put text, filters or the logo on a person's photo inside the app; only the score badge sits on it.
-- On images shared outside the app (share card, Stories cards), put the logo mark (`logo/sunset-soul-mark-for-dark-backgrounds.svg`, 34pt wide) in the photo's top-left corner on a 48pt square of `photoScrim` with 10pt corners.
+- On images shared outside the app (share card, Stories cards), put the logo mark (`logo/sunset-soul-mark-for-dark-backgrounds.svg`, 34pt wide) in the photo's top-left corner on a 48pt square of `photoScrim` with 10pt corners. On those images the score badge sits in the bottom-right corner, opposite the mark.
 - Use one `action` button per screen. Use `score` (apricot) only for scores and `reaction-selected` (peach blush) only for tapped reactions.
 - No red anywhere, no drop shadows, no emoji in the interface.
 - `score` and `reactionSelected` are fill colors only. In light mode never use them for text or icons: show scores as an apricot badge with `onScore` numbers, and keep links and labels in `ink`.
