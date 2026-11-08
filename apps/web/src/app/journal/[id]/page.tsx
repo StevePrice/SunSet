@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { reactionTotals } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
 import { originalWords } from "@/lib/story/prompts";
@@ -24,15 +25,22 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [score, share, session] = await Promise.all([
+    const [score, share, session, totals] = await Promise.all([
       getScore(db, user.id, id),
       getShareForEntry(db, user.id, id),
       getSession(db, user.id, id),
+      reactionTotals(db, user.id),
     ]);
-    return { entry, score, share, words: session?.turns.length ? originalWords(session.turns) : null };
+    return {
+      entry,
+      score,
+      share,
+      reactionCount: totals.get(id) ?? 0,
+      words: session?.turns.length ? originalWords(session.turns) : null,
+    };
   });
   if (!found) notFound();
-  const { entry, score, share, words } = found;
+  const { entry, score, share, reactionCount, words } = found;
   const { env } = await getCloudflareContext({ async: true });
 
   return (
@@ -72,6 +80,17 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
         </details>
       )}
       <ScoreCard entryId={entry.id} initial={score ?? { status: "none" }} />
+      {(share || reactionCount > 0) && (
+        <Link
+          href={`/journal/${entry.id}/afterglow`}
+          className="flex min-h-12 items-center justify-between rounded-2xl border border-zinc-200 px-5 py-3 dark:border-zinc-800"
+        >
+          <span className="text-lg font-medium">Afterglow</span>
+          <span className="text-base text-zinc-600 dark:text-zinc-400">
+            {reactionCount === 0 ? "No reactions yet" : `${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"} from friends`} →
+          </span>
+        </Link>
+      )}
       <SharePanel entryId={entry.id} initial={share && { url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
       <DeleteEntryButton id={entry.id} />
     </main>

@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { deleteEntry, photoKey, updateEntry } from "@/lib/entries";
 import { parseStory } from "@/lib/entry-input";
+import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
 import {
   createShare,
   deleteShare,
@@ -79,6 +80,27 @@ export async function stopSharingAction(entryId: string): Promise<void> {
     await deleteShareCards(env.PHOTOS, shareId);
   }
   revalidatePath(`/journal/${entryId}`);
+}
+
+// Afterglow: the owner can delete any reaction or note a friend left.
+export async function deleteReactionAction(entryId: string, reactionId: string): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  await withDrizzle((db) => deleteReaction(db, user.id, reactionId));
+  revalidateAfterglow(entryId);
+}
+
+export async function deleteReactionNoteAction(entryId: string, noteId: string): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  await withDrizzle((db) => deleteReactionNote(db, user.id, noteId));
+  revalidateAfterglow(entryId);
+}
+
+function revalidateAfterglow(entryId: string) {
+  revalidatePath("/journal");
+  revalidatePath(`/journal/${entryId}`);
+  revalidatePath(`/journal/${entryId}/afterglow`);
 }
 
 async function shareUrl(shareId: string): Promise<string> {

@@ -16,7 +16,6 @@ export const MAX_NOTE_LENGTH = 100;
 export const MAX_VISITOR_NAME_LENGTH = 40;
 
 // Control characters (newlines included) become spaces, so names and notes stay one line.
-// eslint-disable-next-line no-control-regex
 const oneLine = (s: string) => s.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
 
 export const visitorNameSchema = z

@@ -13,9 +13,9 @@ const buttonClass =
 const secondaryButtonClass =
   "w-full rounded-lg border border-zinc-300 px-4 py-2 font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900";
 
-export function SignInForm({ providers }: { providers: Providers }) {
+export function SignInForm({ providers, initialMode = "magic-link" }: { providers: Providers; initialMode?: Mode }) {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("magic-link");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

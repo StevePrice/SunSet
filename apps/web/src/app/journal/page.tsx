@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries } from "@/lib/entries";
+import { reactionTotals } from "@/lib/reactions";
 import { LocalDate } from "@/components/local-date";
 
 export const metadata = { title: "Your Journal · Sunset Soul" };
@@ -11,7 +12,7 @@ export const metadata = { title: "Your Journal · Sunset Soul" };
 export default async function JournalPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const entries = await withDrizzle((db) => listEntries(db, user.id));
+  const [entries, reactions] = await withDrizzle((db) => Promise.all([listEntries(db, user.id), reactionTotals(db, user.id)]));
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
@@ -46,6 +47,11 @@ export default async function JournalPage() {
                 <span className="text-sm font-medium">
                   <LocalDate iso={entry.takenAt.toISOString()} />
                 </span>
+                {reactions.has(entry.id) && (
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                    {reactions.get(entry.id)} {reactions.get(entry.id) === 1 ? "reaction" : "reactions"} from friends
+                  </span>
+                )}
                 {entry.story && <span className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">{entry.story}</span>}
               </Link>
             </li>

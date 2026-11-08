@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardContent, cardVersion } from "./share-card";
+import { cardContent, cardVersion, storiesCardContent } from "./share-card";
 import { newShareId, parsePlace, parseTimeZone, type PublicShare } from "./shares";
 
 describe("newShareId", () => {
@@ -65,5 +65,28 @@ describe("share card content", () => {
     const a = await cardVersion(cardContent(share));
     expect(await cardVersion(cardContent(share))).toBe(a);
     expect(await cardVersion(cardContent({ ...share, place: "Ocean Beach" }))).not.toBe(a);
+  });
+
+  it("gives the Stories card the title, a longer story and the score", () => {
+    const done = {
+      status: "done",
+      displayScore: 87,
+    } as unknown as NonNullable<PublicShare["score"]>;
+    const content = storiesCardContent({ ...share, story: "A long story. ".repeat(30), title: "  Last light at Ocean Beach ", score: done });
+    expect(content.title).toBe("Last light at Ocean Beach");
+    expect(content.score).toBe(87);
+    expect(content.byline).toBe("Steve · November 2, 2026");
+    expect(content.story!.length).toBeLessThanOrEqual(280);
+    expect(content.story!.length).toBeGreaterThan(140);
+    expect(content.story!.endsWith("…")).toBe(true);
+    expect(storiesCardContent(share).title).toBeNull();
+    expect(storiesCardContent({ ...share, story: "Short." }).story).toBe("Short.");
+  });
+
+  it("versions the two cards separately", async () => {
+    const card = await cardVersion(cardContent(share), "card");
+    expect(await cardVersion(cardContent(share), "stories")).not.toBe(card);
+    const stories = await cardVersion(storiesCardContent(share), "stories");
+    expect(await cardVersion(storiesCardContent({ ...share, title: "New title" }), "stories")).not.toBe(stories);
   });
 });

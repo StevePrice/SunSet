@@ -201,10 +201,8 @@ export async function getAfterglow(db: Db, userId: string, entryId: string): Pro
   for (const n of noteRows) person(n.visitorId, n.name, n.at).note = { id: n.id, body: n.body };
   for (const p of people.values()) p.reactions.sort((a, b) => REACTION_KINDS.indexOf(a.kind) - REACTION_KINDS.indexOf(b.kind));
 
-  return {
-    counts,
-    people: [...people.values()].sort((a, b) => a.at.getTime() - b.at.getTime()).map(({ at: _at, ...p }) => p),
-  };
+  const ordered = [...people.values()].sort((a, b) => a.at.getTime() - b.at.getTime());
+  return { counts, people: ordered.map((p) => ({ visitorId: p.visitorId, name: p.name, reactions: p.reactions, note: p.note })) };
 }
 
 export async function deleteReaction(db: Db, userId: string, reactionId: string): Promise<boolean> {
