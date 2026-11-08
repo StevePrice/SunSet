@@ -54,6 +54,11 @@ async function shareEntry(db: Db, shareId: string): Promise<string | null> {
   return row?.entryId ?? null;
 }
 
+/** Whether the share link still works (it hasn't been stopped). */
+export async function isShareLive(db: Db, shareId: string): Promise<boolean> {
+  return (await shareEntry(db, shareId)) !== null;
+}
+
 /** Counts for a live share, plus this visitor's own reactions and note. Null if the link is stopped. */
 export async function getPublicReactions(db: Db, shareId: string, visitorId: string | null): Promise<PublicReactions | null> {
   if (!(await shareEntry(db, shareId))) return null;

@@ -10,6 +10,7 @@ import {
   deleteReactionNote,
   getAfterglow,
   getPublicReactions,
+  isShareLive,
   MAX_VISITOR_CHANGES_PER_ENTRY,
   reactionTotals,
   setReactionNote,
@@ -144,7 +145,9 @@ describe.skipIf(!url)("reactions data access", () => {
     await toggleReaction(db, shareId, steve, "wow");
     await setReactionNote(db, shareId, steve, "Lovely");
 
+    expect(await isShareLive(db, shareId)).toBe(true);
     await deleteShare(db, alice, entryId);
+    expect(await isShareLive(db, shareId)).toBe(false);
     expect(await getPublicReactions(db, shareId, steve)).toBeNull();
     expect(await toggleReaction(db, shareId, steve, "love")).toEqual({ status: "not_found" });
     expect(await setReactionNote(db, shareId, steve, "Again")).toEqual({ status: "not_found" });
