@@ -1,6 +1,8 @@
 # Sunset Soul Design System
 
-The brand's colors, type, spacing, logo and fonts, ready to use in the Sunset Soul app.
+The brand's colors, type, spacing and fonts, ready to use in the Sunset Soul app.
+
+The logo is a separate kit in `brand/logo/`, with its own usage guide (`brand/logo/LOGO-USAGE.md`).
 
 - **Dark mode is the brand default.** Light mode follows the phone's setting.
 - **Built for readers aged 50 to 65:** body text is 18pt, nothing is smaller than 15pt, and every tap target is at least 48pt.
@@ -15,9 +17,9 @@ The brand's colors, type, spacing, logo and fonts, ready to use in the Sunset So
 | `android/res/` | Colors (light in `values`, dark in `values-night`), sizes and fonts for a native Android app. | Android developers |
 | `web/tokens.css` | CSS variables for the Share Page and the website. | Web developers |
 | `fonts/` | Fraunces and Atkinson Hyperlegible font files, with their open licenses (SIL OFL, free for apps). | Everyone |
-| `logo/` | The Last Light · Beams logo as SVG and PNG, plus app store icons, favicons and a social profile image in `logo/app-icons/`. | Everyone |
+| `../brand/logo/` | The logo lives outside this folder, in the separate logo kit: logo files, app store icons, favicons and `LOGO-USAGE.md`. | Everyone |
 
-Each developer only needs the one platform folder that matches the app, plus `fonts/` and `logo/`.
+Each developer only needs the one platform folder that matches the app, plus `fonts/` and the logo kit in `brand/logo/`.
 
 ## How to add this to GitHub (no coding needed)
 
@@ -69,9 +71,14 @@ Link `web/tokens.css` and keep `fonts/` beside the `web/` folder. Use `var(--ss-
 
 ## Rules that matter most
 
-- The photo leads. Never put text or filters on a person's photo; only the score badge sits on it.
+- The photo leads. Never put text, filters or the logo on a person's photo inside the app; only the score badge sits on it.
+- On images shared outside the app (share card, Stories cards), put the logo mark (`brand/logo/sunset-soul-mark-for-dark-backgrounds.svg`, 34pt wide) in the photo's top-left corner on a 48pt square of `photoScrim` with 10pt corners. On those images the score badge sits in the bottom-right corner, opposite the mark.
+- Photos run full bleed (edge to edge) only at the top of Entry Detail, on the score reveal and on Stories cards. Everywhere else they are inset 16pt from the screen edges with 14pt corners (`radius.md`). No borders or frames around photos.
+- The Journal has two views, switched by a two-part toggle under the title: **Stories** (inset photo cards: photo, date, title, first three lines of the story, 32pt apart) and **All photos** (a two-column grid of square photos, 8pt apart, 10pt corners, grouped under month headings, photos only). Never three columns.
 - Use one `action` button per screen. Use `score` (apricot) only for scores and `reaction-selected` (peach blush) only for tapped reactions.
 - No red anywhere, no drop shadows, no emoji in the interface.
+- `score` and `reactionSelected` are fill colors only. In light mode never use them for text or icons: show scores as an apricot badge with `onScore` numbers, and keep links and labels in `ink`.
+- Draw the Live Map with the `map*` colors (water, land, coastline, pin ring and outline), never the surface colors.
 - Respect the phone's text size setting and let layouts grow with it.
 
 The full brand book, with live component previews, is in the Sunset Soul Design System on Claude.

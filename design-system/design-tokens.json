@@ -95,7 +95,7 @@
       "reaction-selected": {
         "$type": "color",
         "$value": "#FBD2BC",
-        "$description": "Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!)."
+        "$description": "Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream."
       },
       "reaction-selected-border": {
         "$type": "color",
@@ -110,7 +110,7 @@
       "score": {
         "$type": "color",
         "$value": "#FF9B5C",
-        "$description": "Score badge fill, on photos and beside titles."
+        "$description": "Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text."
       },
       "on-score": {
         "$type": "color",
@@ -121,6 +121,31 @@
         "$type": "color",
         "$value": "rgba(22, 34, 74, 0.55)",
         "$description": "Behind white text laid over a photo (home-screen previews, share cards only)."
+      },
+      "map-water": {
+        "$type": "color",
+        "$value": "#16224A",
+        "$description": "Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode."
+      },
+      "map-land": {
+        "$type": "color",
+        "$value": "#273A72",
+        "$description": "Live Map land, on map-water."
+      },
+      "map-coastline": {
+        "$type": "color",
+        "$value": "#3D5290",
+        "$description": "1.5px line where map-land meets map-water."
+      },
+      "map-pin-ring": {
+        "$type": "color",
+        "$value": "#FFF6EC",
+        "$description": "3px ring around each photo pin on the Live Map."
+      },
+      "map-pin-outline": {
+        "$type": "color",
+        "$value": "#16224A",
+        "$description": "1.5px outline outside map-pin-ring, so pins stand out on land and water alike."
       }
     },
     "light": {
@@ -217,7 +242,7 @@
       "reaction-selected": {
         "$type": "color",
         "$value": "#FBD2BC",
-        "$description": "Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!)."
+        "$description": "Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream."
       },
       "reaction-selected-border": {
         "$type": "color",
@@ -232,7 +257,7 @@
       "score": {
         "$type": "color",
         "$value": "#FF9B5C",
-        "$description": "Score badge fill, on photos and beside titles."
+        "$description": "Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text."
       },
       "on-score": {
         "$type": "color",
@@ -243,6 +268,31 @@
         "$type": "color",
         "$value": "rgba(22, 34, 74, 0.55)",
         "$description": "Behind white text laid over a photo (home-screen previews, share cards only)."
+      },
+      "map-water": {
+        "$type": "color",
+        "$value": "#C9D8EE",
+        "$description": "Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode."
+      },
+      "map-land": {
+        "$type": "color",
+        "$value": "#FBF6EE",
+        "$description": "Live Map land, on map-water."
+      },
+      "map-coastline": {
+        "$type": "color",
+        "$value": "#C7BBA6",
+        "$description": "1.5px line where map-land meets map-water."
+      },
+      "map-pin-ring": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "3px ring around each photo pin on the Live Map."
+      },
+      "map-pin-outline": {
+        "$type": "color",
+        "$value": "#1D2B5C",
+        "$description": "1.5px outline outside map-pin-ring, so pins stand out on land and water alike."
       }
     }
   },

@@ -42,18 +42,28 @@ const darkColors = {
   onAction: "#FFFFFF",
   /** Keyboard and accessibility focus outline, 3px, on every surface. */
   focusRing: "#FBD2BC",
-  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). */
+  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
   reactionSelected: "#FBD2BC",
   /** 1px border on reaction-selected so the chip reads as pressed. */
   reactionSelectedBorder: "#F2B08E",
   /** Text on reaction-selected. */
   onReaction: "#1D2B5C",
-  /** Score badge fill, on photos and beside titles. */
+  /** Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
   score: "#FF9B5C",
   /** Numbers on score. 6.5:1. */
   onScore: "#1D2B5C",
   /** Behind white text laid over a photo (home-screen previews, share cards only). */
   photoScrim: "rgba(22, 34, 74, 0.55)",
+  /** Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode. */
+  mapWater: "#16224A",
+  /** Live Map land, on map-water. */
+  mapLand: "#273A72",
+  /** 1.5px line where map-land meets map-water. */
+  mapCoastline: "#3D5290",
+  /** 3px ring around each photo pin on the Live Map. */
+  mapPinRing: "#FFF6EC",
+  /** 1.5px outline outside map-pin-ring, so pins stand out on land and water alike. */
+  mapPinOutline: "#16224A",
 } as const;
 
 const lightColors = {
@@ -93,18 +103,28 @@ const lightColors = {
   onAction: "#FFFFFF",
   /** Keyboard and accessibility focus outline, 3px, on every surface. */
   focusRing: "#2C4A8C",
-  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). */
+  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
   reactionSelected: "#FBD2BC",
   /** 1px border on reaction-selected so the chip reads as pressed. */
   reactionSelectedBorder: "#F2B08E",
   /** Text on reaction-selected. */
   onReaction: "#1D2B5C",
-  /** Score badge fill, on photos and beside titles. */
+  /** Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
   score: "#FF9B5C",
   /** Numbers on score. 6.5:1. */
   onScore: "#1D2B5C",
   /** Behind white text laid over a photo (home-screen previews, share cards only). */
   photoScrim: "rgba(22, 34, 74, 0.55)",
+  /** Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode. */
+  mapWater: "#C9D8EE",
+  /** Live Map land, on map-water. */
+  mapLand: "#FBF6EE",
+  /** 1.5px line where map-land meets map-water. */
+  mapCoastline: "#C7BBA6",
+  /** 3px ring around each photo pin on the Live Map. */
+  mapPinRing: "#FFFFFF",
+  /** 1.5px outline outside map-pin-ring, so pins stand out on land and water alike. */
+  mapPinOutline: "#1D2B5C",
 } as const;
 
 export const colors = { dark: darkColors, light: lightColors } as const;
