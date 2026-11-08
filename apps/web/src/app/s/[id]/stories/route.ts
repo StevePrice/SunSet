@@ -8,5 +8,5 @@ export async function GET(_request: Request, ctx: RouteContext<"/s/[id]/stories"
   const { id } = await ctx.params;
   const share = await withDrizzle((db) => getPublicShare(db, id));
   if (!share) return new Response("Not found", { status: 404 });
-  return jpegResponse(await cachedCardJpeg(share, "stories"), "sunset-soul-story.jpg");
+  return jpegResponse(await cachedCardJpeg(share, "stories"), "sunset-soul-story");
 }

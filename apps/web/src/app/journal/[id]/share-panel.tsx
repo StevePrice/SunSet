@@ -55,7 +55,9 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
     const blob = await fetch(`${new URL(url).pathname}/stories`)
       .then((r) => (r.ok ? r.blob() : null))
       .catch(() => null);
-    const file = blob && new File([blob], "sunset-soul-story.jpg", { type: "image/jpeg" });
+    // A JPEG, or a PNG if the server couldn't encode one.
+    const type = blob?.type === "image/png" ? "image/png" : "image/jpeg";
+    const file = blob && new File([blob], `sunset-soul-story.${type === "image/png" ? "png" : "jpg"}`, { type });
     setStories(file && navigator.canShare({ files: [file] }) ? { status: "ready", url, file } : { status: "failed", url });
   }
 
