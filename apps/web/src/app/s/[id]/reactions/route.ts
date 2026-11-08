@@ -7,7 +7,7 @@ import {
   VISITOR_COOKIE,
   VISITOR_COOKIE_MAX_AGE,
 } from "@/lib/reaction-input";
-import { createVisitor, getVisitorName, setReactionNote, toggleReaction } from "@/lib/reactions";
+import { createVisitor, getVisitorName, isShareLive, setReactionNote, toggleReaction } from "@/lib/reactions";
 
 // A friend reacting to a shared sunset: no account, just an anonymous id in a cookie and the
 // first name they gave on their first tap. Positive reactions only; counts are public, names
@@ -36,6 +36,8 @@ export async function POST(request: Request, ctx: RouteContext<"/s/[id]/reaction
     let visitorId = cookieId && (await getVisitorName(db, cookieId)) !== null ? cookieId : null;
     let isNew = false;
     if (!visitorId) {
+      // Don't create a visitor (or set a cookie) for a link that's been stopped.
+      if (!(await isShareLive(db, id))) return { status: "not_found" as const };
       if (!input.name) return { status: "need_name" as const };
       visitorId = await createVisitor(db, input.name);
       isNew = true;

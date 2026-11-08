@@ -1,15 +1,17 @@
 "use client";
 
-import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
+import { useActionState, useState, useSyncExternalStore } from "react";
 import { createShareAction, stopSharingAction, updateSharePlaceAction, type ShareLink } from "../actions";
 import { MAX_PLACE_LENGTH } from "@/lib/shares";
 
 // Creating the link is a separate tap from opening the share sheet: iOS only opens the sheet
-// straight from a tap, not after waiting on the server. For the same reason the Stories image is
-// fetched ahead of time, so "More" can attach it without waiting.
+// straight from a tap, not after waiting on the server. For the same reason the Stories image
+// can't be fetched inside the tap that shares it. It's a large PNG, so it isn't downloaded on
+// every visit either: the first tap on More fetches it ("Preparing image…"), and the next tap
+// opens the share sheet with it attached.
 //
-// Messages opens the phone's text app with the link. More opens the phone's share sheet with the
-// Stories image attached when the browser can share files, or just the link when it can't.
+// Messages (phones only) opens the text app with the link. More opens the share sheet with the
+// Stories image when the browser can share files, or just the link when it can't.
 // Direct Instagram, Snapchat, TikTok and Facebook buttons need a native app (roadmap, Phase 4b).
 const SHARE_TITLE = "A sunset on Sunset Soul";
 const SHARE_TEXT = "A sunset I wanted to share with you";
@@ -27,14 +29,14 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
     null,
   );
 
-  const storiesFile = useStoriesFile(share?.url ?? null);
+  const [stories, setStories] = useState<StoriesImage>({ status: "idle" });
 
-  // The share sheet only exists in the browser; the server renders without it.
-  const canShare = useSyncExternalStore(
-    () => () => {},
-    () => typeof navigator.share === "function",
-    () => false,
+  // The share sheet and the pointer type only exist in the browser; the server renders without them.
+  const canShare = useBrowserCheck(() => typeof navigator.share === "function");
+  const canShareFiles = useBrowserCheck(
+    () => typeof navigator.canShare === "function" && navigator.canShare({ files: [new File([""], "x.png", { type: "image/png" })] }),
   );
+  const isPhone = useBrowserCheck(() => window.matchMedia("(pointer: coarse)").matches);
 
   async function create() {
     setPending(true);
@@ -45,13 +47,28 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
     setPending(false);
   }
 
+  async function loadStories(url: string) {
+    setStories({ status: "loading", url });
+    // Same-origin path, so it also works where BETTER_AUTH_URL differs from the page's origin.
+    const blob = await fetch(`${new URL(url).pathname}/stories`)
+      .then((r) => (r.ok ? r.blob() : null))
+      .catch(() => null);
+    const file = blob && new File([blob], "sunset-soul-story.png", { type: "image/png" });
+    setStories(file && navigator.canShare({ files: [file] }) ? { status: "ready", url, file } : { status: "failed", url });
+  }
+
   async function shareMore(url: string) {
-    const withFile = storiesFile && navigator.canShare?.({ files: [storiesFile] });
-    const data: ShareData = withFile
-      ? { files: [storiesFile], title: SHARE_TITLE, text: `${SHARE_TEXT}: ${url}` }
-      : { title: SHARE_TITLE, text: SHARE_TEXT, url };
+    const current = stories.status !== "idle" && stories.url === url ? stories : null;
+    if (canShareFiles && !current) return loadStories(url);
+    if (current?.status === "loading") return;
+    const data: ShareData =
+      current?.status === "ready"
+        ? { files: [current.file], title: SHARE_TITLE, text: `${SHARE_TEXT}: ${url}` }
+        : { title: SHARE_TITLE, text: SHARE_TEXT, url };
     await navigator.share(data).catch(() => {});
   }
+
+  const storiesStatus = stories.status !== "idle" && stories.url === share?.url ? stories.status : "idle";
 
   async function stop() {
     if (!confirm("Stop sharing? The link will stop working, for good, and friends can no longer react. You keep their reactions in Afterglow.")) return;
@@ -84,19 +101,23 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
       <p className="text-sm">Anyone with this link can see the photo, story, score and date, and react to it. The exact location is never shared.</p>
       <input readOnly value={share.url} aria-label="Share link" onFocus={(e) => e.target.select()} className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
       <div className="flex flex-wrap gap-3">
-        <a
-          href={`sms:?&body=${encodeURIComponent(`${SHARE_TEXT}: ${share.url}`)}`}
-          className="flex min-h-12 items-center rounded-lg bg-orange-600 px-4 py-2 font-medium text-white"
-        >
-          Messages
-        </a>
+        {isPhone && (
+          <a
+            href={`sms:?&body=${encodeURIComponent(`${SHARE_TEXT}: ${share.url}`)}`}
+            className="flex min-h-12 items-center rounded-lg bg-orange-600 px-4 py-2 font-medium text-white"
+          >
+            Messages
+          </a>
+        )}
         {canShare && (
           <button
             type="button"
+            disabled={storiesStatus === "loading"}
+            aria-live="polite"
             onClick={() => shareMore(share.url)}
-            className="min-h-12 rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-700"
+            className="min-h-12 rounded-lg border border-zinc-300 px-4 py-2 disabled:opacity-60 dark:border-zinc-700"
           >
-            More…
+            {storiesStatus === "loading" ? "Preparing image…" : storiesStatus === "ready" ? "Share image…" : "More…"}
           </button>
         )}
         <button
@@ -137,22 +158,14 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
   );
 }
 
-/** The share's Stories card as a File, fetched ahead of the tap that shares it. */
-function useStoriesFile(url: string | null): File | null {
-  const [file, setFile] = useState<{ url: string; file: File } | null>(null);
-  useEffect(() => {
-    if (!url) return;
-    let cancelled = false;
-    // Same-origin path, so it also works where BETTER_AUTH_URL differs from the page's origin.
-    fetch(`${new URL(url).pathname}/stories`)
-      .then((r) => (r.ok ? r.blob() : null))
-      .then((blob) => {
-        if (blob && !cancelled) setFile({ url, file: new File([blob], "sunset-soul-story.png", { type: "image/png" }) });
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [url]);
-  return file && file.url === url ? file.file : null;
+type StoriesImage =
+  | { status: "idle" }
+  | { status: "loading" | "failed"; url: string }
+  | { status: "ready"; url: string; file: File };
+
+const noSubscribe = () => () => {};
+
+/** A yes/no fact about the browser; false while rendering on the server. */
+function useBrowserCheck(check: () => boolean): boolean {
+  return useSyncExternalStore(noSubscribe, check, () => false);
 }
