@@ -50,6 +50,13 @@
       "when": 1793761060345,
       "tag": "0006_admin_and_calibration",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794160807926,
+      "tag": "0007_share_reactions",
+      "breakpoints": true
     }
   ]
 }

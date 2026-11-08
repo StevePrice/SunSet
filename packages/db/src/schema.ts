@@ -12,6 +12,7 @@ import {
   smallint,
   text,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 import { point4326 } from "./point";
 
@@ -161,6 +162,59 @@ export const shares = pgTable(
     ...timestamps,
   },
   (table) => [index("shares_user_idx").on(table.userId)],
+);
+
+// A friend who reacted to a shared sunset (Phase 4b). No account: the id lives in a long-lived
+// cookie on their device, and the first name they typed on their first tap is kept with it.
+export const reactionVisitors = pgTable("reaction_visitors", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  ...timestamps,
+});
+
+// One reaction (wow | wish | love) from one visitor on one share link. Owner-only reads go through
+// the entry (Afterglow); public reads go through the share. "Stop sharing" deletes the share and
+// sets share_id to null here, so the reactions can no longer be reached from any public link but
+// the owner keeps them in Afterglow.
+export const reactions = pgTable(
+  "reactions",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    shareId: text("share_id").references(() => shares.id, { onDelete: "set null" }),
+    visitorId: text("visitor_id")
+      .notNull()
+      .references(() => reactionVisitors.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("reactions_share_visitor_kind_unique").on(table.shareId, table.visitorId, table.kind),
+    index("reactions_entry_idx").on(table.entryId),
+  ],
+);
+
+// The optional short note a visitor leaves with their reactions: one per visitor per share.
+export const reactionNotes = pgTable(
+  "reaction_notes",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    shareId: text("share_id").references(() => shares.id, { onDelete: "set null" }),
+    visitorId: text("visitor_id")
+      .notNull()
+      .references(() => reactionVisitors.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    unique("reaction_notes_share_visitor_unique").on(table.shareId, table.visitorId),
+    index("reaction_notes_entry_idx").on(table.entryId),
+  ],
 );
 
 // One AI Story Capture interview per entry (Phase 5). `turns` holds each question and answer in
