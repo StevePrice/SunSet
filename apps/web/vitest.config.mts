@@ -8,5 +8,9 @@ export default defineConfig({
   test: {
     include: ["src/**/*.test.ts"],
     globalSetup: ["./vitest.global-setup.ts"],
+    // The database tests share one database, and some (admin's "rescore all") look at every
+    // entry, so files running in parallel could delete rows under each other. Run files one at a
+    // time; the whole suite still takes a few seconds.
+    fileParallelism: false,
   },
 });
