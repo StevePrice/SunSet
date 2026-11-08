@@ -36,7 +36,7 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
   // The share sheet and the pointer type only exist in the browser; the server renders without them.
   const canShare = useBrowserCheck(() => typeof navigator.share === "function");
   const canShareFiles = useBrowserCheck(
-    () => typeof navigator.canShare === "function" && navigator.canShare({ files: [new File([""], "x.png", { type: "image/png" })] }),
+    () => typeof navigator.canShare === "function" && navigator.canShare({ files: [new File([""], "x.jpg", { type: "image/jpeg" })] }),
   );
   const isPhone = useBrowserCheck(() => window.matchMedia("(pointer: coarse)").matches);
 
@@ -55,7 +55,9 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
     const blob = await fetch(`${new URL(url).pathname}/stories`)
       .then((r) => (r.ok ? r.blob() : null))
       .catch(() => null);
-    const file = blob && new File([blob], "sunset-soul-story.png", { type: "image/png" });
+    // A JPEG, or a PNG if the server couldn't encode one.
+    const type = blob?.type === "image/png" ? "image/png" : "image/jpeg";
+    const file = blob && new File([blob], `sunset-soul-story.${type === "image/png" ? "png" : "jpg"}`, { type });
     setStories(file && navigator.canShare({ files: [file] }) ? { status: "ready", url, file } : { status: "failed", url });
   }
 

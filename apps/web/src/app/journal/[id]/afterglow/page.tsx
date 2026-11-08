@@ -10,6 +10,7 @@ import { getShareForEntry } from "@/lib/shares";
 import { LocalDate } from "@/components/local-date";
 import { AppHeader } from "@/components/logo";
 import { PhotoCard } from "@/components/photo-card";
+import { ReactionIcon } from "@/components/reaction-icons";
 import { SharePanel } from "../share-panel";
 import { RemoveButton } from "./remove-button";
 
@@ -42,14 +43,17 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
       </header>
 
       <div className="flex items-center gap-4">
-        <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square className="w-20 shrink-0 rounded-ss-sm" />
+        <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square corners="sm" className="w-20 shrink-0" />
         <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} />}</p>
       </div>
 
       <dl className="grid grid-cols-3 gap-2">
         {REACTION_KINDS.map((kind) => (
           <div key={kind} className="flex flex-col-reverse items-center gap-1 rounded-ss-lg bg-surface-raised p-3 text-center">
-            <dt className="text-label">{REACTION_LABELS[kind]}</dt>
+            <dt className="flex flex-col items-center gap-1 text-label">
+              <ReactionIcon kind={kind} />
+              {REACTION_LABELS[kind]}
+            </dt>
             <dd className="font-serif text-title-1 tabular-nums">{afterglow.counts[kind]}</dd>
           </div>
         ))}

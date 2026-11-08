@@ -3,7 +3,8 @@
 // or a hex / rgb() / hsl() colour literal. Use the role names in globals.css (bg-surface,
 // text-ink, bg-action ...) or, where CSS can't reach (next/og cards, emails), the generated
 // design-tokens.generated.ts. Also fails on Tailwind's default text sizes (text-sm, text-lg ...):
-// use the design-system type scale (text-caption, text-label, text-body, text-title-3 ...).
+// use the design-system type scale (text-caption, text-label, text-body, text-title-3 ...). And fails
+// when score or reaction-selected, which are fill colours only, is used for text, icons or lines.
 // Runs as part of `npm run lint` in apps/web.
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
@@ -20,6 +21,12 @@ const rules = [
   { name: "arbitrary colour class", re: /(?<![\w-])[a-z-]+-\[(?:#|rgba?\(|hsla?\(|oklch\()[^\]]*\]/g },
   { name: "hex colour", re: /(?<![\w&])#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\w-])/g },
   { name: "rgb()/hsl() colour", re: /\b(?:rgba?|hsla?|oklch)\(\s*[\d.]/g },
+  // Design system: score (apricot) and reaction-selected (peach blush) are fills only, never text,
+  // icon or line colours (unreadable on the light theme). Their on-* partners are for text.
+  {
+    name: "fill-only colour used for text, icon or line",
+    re: /(?<![\w-])(?:text|fill|stroke|border(?:-[xytrblse])?|ring|outline|decoration|divide|caret|accent|placeholder)-(?:score|reaction-selected)(?![\w-])/g,
+  },
   { name: "Tailwind default text size", re: /(?<![\w-])text-(?:xs|sm|base|lg|xl|[2-9]xl)(?![\w-])/g },
 ];
 

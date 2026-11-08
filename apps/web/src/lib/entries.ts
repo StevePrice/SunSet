@@ -45,7 +45,7 @@ function toEntry(row: {
   return { ...rest, location: location && { latitude: location.y, longitude: location.x } };
 }
 
-export { photoKey } from "@sunset/db/photos";
+export { entryPhotoKeys, photoKey } from "@sunset/db/photos";
 
 export async function createEntry(db: Db, userId: string, id: string, input: EntryInput): Promise<Entry> {
   const [row] = await db

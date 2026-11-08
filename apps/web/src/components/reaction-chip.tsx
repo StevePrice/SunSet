@@ -1,12 +1,18 @@
-// A reaction button (Wow, Wish I was there, Love this!). A tapped chip fills with
-// reaction-selected (peach blush), a fill only, with on-reaction text. 48px tall, pill-shaped.
+import { ReactionIcon } from "@/components/reaction-icons";
+import type { ReactionKind } from "@/lib/reaction-input";
+
+// A reaction button (Wow, Wish I was there, Love this!) with its line icon beside the word. A
+// tapped chip fills with reaction-selected (peach blush), a fill only, with on-reaction text and
+// icon. 48px tall, pill-shaped.
 export function ReactionChip({
+  kind,
   label,
   count,
   selected,
   disabled,
   onClick,
 }: {
+  kind: ReactionKind;
   label: string;
   count: number;
   selected: boolean;
@@ -25,6 +31,7 @@ export function ReactionChip({
           : "border-border-subtle bg-surface-raised text-ink"
       }`}
     >
+      <ReactionIcon kind={kind} />
       <span>{label}</span>
       <span className="font-normal tabular-nums" aria-label={`, ${count} so far`}>
         {count}
