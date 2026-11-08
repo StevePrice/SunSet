@@ -9,6 +9,13 @@ describe("email", () => {
     expect(message.text).toContain("https://sunsetsoul.app/x?token=a&b=<c>");
   });
 
+  it("has an HTML version with the logo from the app's own domain, and a plain-text version", () => {
+    expect(message.html).toContain('<img src="https://sunsetsoul.app/brand/sunset-soul-logo-horizontal-transparent-for-light-backgrounds.png"');
+    expect(message.html).toContain(">Sign in</a>");
+    expect(message.text).not.toContain("<a ");
+    expect(message.text.startsWith("Use this link to sign in to Sunset Soul.")).toBe(true);
+  });
+
   it("logs instead of sending in development", async () => {
     const send = vi.fn();
     const log = vi.spyOn(console, "log").mockImplementation(() => {});
