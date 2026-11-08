@@ -63,9 +63,11 @@ export async function resizeJpeg(
   await init();
   const image = await decodeJpeg(jpeg);
   const size = fitWithin(image.width, image.height, maxEdge);
+  // Lanczos in sRGB: resizing in linear light (Squoosh's default) cost ~4× the CPU (about 1s for a
+  // 2560px photo) for no visible difference at this gentle a downscale.
   const scaled =
     size.width === image.width && size.height === image.height
       ? image
-      : await resize(image, { ...size, method: "lanczos3", fitMethod: "stretch", premultiply: false, linearRGB: true });
+      : await resize(image, { ...size, method: "lanczos3", fitMethod: "stretch", premultiply: false, linearRGB: false });
   return { jpeg: await encodeJpeg(scaled, { quality }), ...size };
 }
