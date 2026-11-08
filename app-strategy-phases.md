@@ -158,6 +158,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Share Page photo at 1600–2000 px on the long side (it serves the 2560 px display photo today): a new photo size, filled in for existing entries
 - Email (PRD 6.9c), decided 2026-11-08 with Louise: email shares go through the phone's share sheet with the small JPEG; no app-sent share email
 
+**Status:** merged into Steve 2026-11-08, not yet deployed to staging; reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill. Card and photo byte sizes not measured yet (check on staging).
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
