@@ -1,0 +1,41 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "sunset-staging",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "sunset-staging"
+    }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      // sunset-db: Workers VPC → Cloudflare Tunnel → Postgres on the Droplet.
+      "id": "60f126f5bbb9486c94faafde3a0f7f3d",
+      // Matches the db service in the root compose.yaml.
+      "localConnectionString": "postgres://sunset:sunset@localhost:5432/sunset"
+    }
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://staging.sunsetsoul.app",
+    "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
+  },
+  // Journal photos. Private: served only to their owner through /api/photos.
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
+  // Scoring: each saved entry is queued for the sunset-scorer Worker.
+  "queues": { "producers": [{ "binding": "SCORING", "queue": "sunset-scoring-staging" }] },
+  // Cloudflare Email Service (magic links, verification, password reset).
+  "send_email": [{ "name": "EMAIL" }],
+  // Staging, deployed from the Steve branch. Production gets its own config when main is merged.
+  "routes": [{ "pattern": "staging.sunsetsoul.app", "custom_domain": true }],
+  "observability": {
+    "enabled": true
+  }
+}

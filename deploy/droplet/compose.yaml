@@ -1,0 +1,88 @@
+# SunSet stack on the shared Droplet (aardvarkz), deployed to /opt/sunset.
+# It publishes no ports: Hyperdrive reaches Postgres through the Cloudflare Tunnel,
+# which cloudflared opens outbound. PMTCS (/opt/pmtcs) is a separate project.
+name: sunset
+
+services:
+  # Creates a self-signed certificate once; Hyperdrive requires TLS to Postgres.
+  certs:
+    image: alpine:3.22
+    command:
+      - sh
+      - -ec
+      - |
+        [ -f /certs/server.key ] && exit 0
+        apk add --no-cache openssl >/dev/null
+        openssl req -new -x509 -days 3650 -nodes -subj "/CN=sunset-db" \
+          -keyout /certs/server.key -out /certs/server.crt
+        chown 999:999 /certs/server.key /certs/server.crt
+        chmod 600 /certs/server.key
+    volumes:
+      - db_certs:/certs
+    network_mode: bridge
+
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sunset
+      POSTGRES_USER: sunset
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    # Sized for a 2 GB Droplet shared with PMTCS. Hyperdrive pools connections,
+    # so 20 is plenty.
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/certs/server.crt
+      - -c
+      - ssl_key_file=/certs/server.key
+      - -c
+      - shared_buffers=96MB
+      - -c
+      - effective_cache_size=256MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - max_connections=20
+    mem_limit: 384m
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - db_certs:/certs:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sunset -d sunset"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - internal
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?Set TUNNEL_TOKEN in .env}
+    mem_limit: 128m
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+      - egress
+
+networks:
+  internal:
+    internal: true
+  egress: {}
+
+volumes:
+  db_data:
+  db_certs:

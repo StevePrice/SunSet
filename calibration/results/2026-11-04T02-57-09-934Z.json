@@ -1,0 +1,2193 @@
+{
+  "summaries": [
+    {
+      "provider": "anthropic",
+      "model": "claude-haiku-5-5",
+      "sunsetAccuracy": 0.9032258064516129,
+      "sunsetMissed": 3,
+      "falseSunset": 0,
+      "failures": 0,
+      "mae": {
+        "palette": 1.0833333333333333,
+        "reach": 1.2083333333333333,
+        "setting": 0.9166666666666666,
+        "wow": 3
+      },
+      "compositeMae100": 8.854166666666666,
+      "latencyMs": {
+        "mean": 3748.3870967741937,
+        "p90": 5768
+      },
+      "tokens": {
+        "input": 7468.5161290322585,
+        "output": 333.61290322580646
+      },
+      "costPerPhoto": 0.0009136580645161291
+    }
+  ],
+  "runs": {
+    "anthropic": [
+      {
+        "photo": {
+          "id": "field-wheat",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset-over-the-wheat-field-featured.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Sunset-over-the-wheat-field-featured.jpg/3840px-Sunset-over-the-wheat-field-featured.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY 4.0",
+          "author": "Dreamy Pixel",
+          "note": "Golden wheat field, hills, sun in frame.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 7,
+            "setting": 6,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 4,
+            "reach": 10,
+            "setting": 4,
+            "wow": 4,
+            "composite": 5.5,
+            "displayScore": 55
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.9915844995759118,
+              "sunsetFraction": 0.9500649385072095,
+              "hueBinsUsed": 2,
+              "vividness": 0.4465573461467308
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 786
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "open_horizon",
+                "score": 4,
+                "reason": "Soft blurred hills sit behind the wheat, a pleasant backdrop that stays quietly in the background."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 4,
+                "reason": "Golden wheat glowing in soft low sun, with a gentle hazy sky behind it."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7434,
+              "outputTokens": 143
+            },
+            "timingMs": {
+              "decode": 48,
+              "pixels": 10,
+              "vision": 4105
+            }
+          },
+          "ms": 4227
+        }
+      },
+      {
+        "photo": {
+          "id": "greenflash-morro",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_Green_Flash_-_sunset-green-flash-morro-strand_mg_1914.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Sunset_Green_Flash_-_sunset-green-flash-morro-strand_mg_1914.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY 2.0",
+          "author": "Mike Baird",
+          "note": "Green flash over the ocean; striking.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 5,
+            "setting": 4,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 4,
+            "reach": 4,
+            "setting": 6,
+            "wow": 5,
+            "composite": 4.75,
+            "displayScore": 48
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.387423262800418,
+              "sunsetFraction": 0.373876698014629,
+              "hueBinsUsed": 1,
+              "vividness": 0.6012087358233565
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 638
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 6,
+                "reason": "Your calm, open sea makes a clean horizon, and the flock of birds skimming the water adds nice life."
+              },
+              "phenomena": [
+                {
+                  "kind": "other_rare",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "sun appears flattened and stretched along the horizon, with thin cloud bands glowing across it"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "intense_light"
+                ],
+                "score": 5,
+                "reason": "A glowing sun half-hidden by thin cloud bands over a dark, calm sea."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 493
+            },
+            "timingMs": {
+              "decode": 36,
+              "pixels": 7,
+              "vision": 5801
+            }
+          },
+          "ms": 5869
+        }
+      },
+      {
+        "photo": {
+          "id": "iridescent-tuntorp-2",
+          "source": "https://commons.wikimedia.org/wiki/File:Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg/3840px-Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "W.carter",
+          "note": "Iridescent clouds near the sun; no horizon.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 6,
+            "reach": 3,
+            "setting": 1,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.44989908854166666,
+              "sunsetFraction": 0.176240234375,
+              "hueBinsUsed": 4,
+              "vividness": 0.34088380159754655
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "other",
+                "score": 1,
+                "reason": "There's no horizon or foreground here, just sky, so the clouds carry the photo."
+              },
+              "phenomena": [
+                {
+                  "kind": "iridescent_clouds",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "pastel rainbow sheen across the cloud edges on the right"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "drama_contrast"
+                ],
+                "score": 6,
+                "reason": "Rainbow-tinted clouds glow beside a blazing sun against a deep navy sky."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 643
+            },
+            "timingMs": {
+              "decode": 45,
+              "pixels": 9,
+              "vision": 6516
+            }
+          },
+          "ms": 6544
+        }
+      },
+      {
+        "photo": {
+          "id": "iridescent-tuntorp-7",
+          "source": "https://commons.wikimedia.org/wiki/File:Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg/3840px-Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "W.carter",
+          "note": "Iridescent clouds; no horizon.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 6,
+            "reach": 3,
+            "setting": 1,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.3477978515625,
+              "sunsetFraction": 0.06861165364583334,
+              "hueBinsUsed": 4,
+              "vividness": 0.37142303892301765
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "other",
+                "score": 1,
+                "reason": "There's no horizon or foreground here, so the sky itself is the whole picture."
+              },
+              "phenomena": [
+                {
+                  "kind": "iridescent_clouds",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "pastel pink and yellow sheen on the cloud edges at upper left"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "drama_contrast"
+                ],
+                "score": 6,
+                "reason": "Bright, glowing cloud edges wrap a dark blue opening with the sun peeking through."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 483
+            },
+            "timingMs": {
+              "decode": 48,
+              "pixels": 4,
+              "vision": 4478
+            }
+          },
+          "ms": 4484
+        }
+      },
+      {
+        "photo": {
+          "id": "lake-contrail",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_Contrail_Lake.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Sunset_Contrail_Lake.jpg/3840px-Sunset_Contrail_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Prosthetic Head",
+          "note": "Treeline silhouette with a mirror reflection.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 3,
+            "setting": 8,
+            "wow": 5
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 4,
+            "reach": 2,
+            "setting": 7,
+            "wow": 6,
+            "composite": 4.75,
+            "displayScore": 48
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.300658275462963,
+              "sunsetFraction": 0.12545862268518518,
+              "hueBinsUsed": 3,
+              "vividness": 0.32102787718664744
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 720
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "lake_or_river",
+                "score": 7,
+                "reason": "Your calm lake mirrors a well-defined conifer treeline, which gives the scene a strong, clean silhouette."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "mirror-still lake reflecting the sky, trees and contrail streaks"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "scale"
+                ],
+                "score": 6,
+                "reason": "A glassy lake doubles the glowing sky and dark treeline into a calm, symmetrical scene."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7462,
+              "outputTokens": 407
+            },
+            "timingMs": {
+              "decode": 59,
+              "pixels": 5,
+              "vision": 4034
+            }
+          },
+          "ms": 4039
+        }
+      },
+      {
+        "photo": {
+          "id": "lake-dechsendorf",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_reflection_at_Lake_Dechsendorf.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Sunset_reflection_at_Lake_Dechsendorf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY 2.0",
+          "author": "Reiner Ehlers",
+          "note": "Fiery sky and water; strong reflection.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 6,
+            "reach": 9,
+            "setting": 7,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 6,
+            "reach": 9,
+            "setting": 6,
+            "wow": 6,
+            "composite": 6.75,
+            "displayScore": 68
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.8357696855870896,
+              "sunsetFraction": 0.8060604479688369,
+              "hueBinsUsed": 2,
+              "vividness": 0.7289863982988313
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 599
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "lake_or_river",
+                "score": 6,
+                "reason": "Your lake with its dark treeline and branch framing the sun makes a lovely, layered foreground."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": false,
+                  "description": "sun and sky mirrored across rippling lake water"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "intense_light"
+                ],
+                "score": 6,
+                "reason": "Sun blazing low over a lake, with golden light glowing across the rippling water."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7420,
+              "outputTokens": 186
+            },
+            "timingMs": {
+              "decode": 50,
+              "pixels": 6,
+              "vision": 2338
+            }
+          },
+          "ms": 2344
+        }
+      },
+      {
+        "photo": {
+          "id": "lake-jokulsarlon",
+          "source": "https://commons.wikimedia.org/wiki/File:Jokulsarlon_lake,_Iceland.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Jokulsarlon_lake%2C_Iceland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY 2.0",
+          "author": "Kenny Muir",
+          "note": "Glacier lagoon, mountains, pink clouds reflected.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 8,
+            "reach": 4,
+            "setting": 9,
+            "wow": 5
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 6,
+            "reach": 2,
+            "setting": 8,
+            "wow": 7,
+            "composite": 5.75,
+            "displayScore": 58
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6487959317585302,
+              "sunsetFraction": 0.2169537401574803,
+              "hueBinsUsed": 4,
+              "vividness": 0.3515451602971019
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 635
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 8,
+                "reason": "Your snowy ridges and floating icebergs make a striking foreground that adds real depth to the scene."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "Mirror-calm water doubles the glowing clouds and mountains"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "scale"
+                ],
+                "score": 7,
+                "reason": "Glowing clouds mirrored perfectly in still water, with icebergs and snowy peaks stretching across the frame."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 465
+            },
+            "timingMs": {
+              "decode": 51,
+              "pixels": 5,
+              "vision": 4165
+            }
+          },
+          "ms": 4172
+        }
+      },
+      {
+        "photo": {
+          "id": "lake-lesina",
+          "source": "https://commons.wikimedia.org/wiki/File:Lake_Lesina_at_sunset.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Lake_Lesina_at_sunset.jpg/3840px-Lake_Lesina_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Albus65",
+          "note": "Whole frame pink; flamingos and a town in mist.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 3,
+            "reach": 10,
+            "setting": 6,
+            "wow": 2
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 3,
+            "reach": 8,
+            "setting": 7,
+            "wow": 7,
+            "composite": 6.25,
+            "displayScore": 63
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.8254117838541667,
+              "sunsetFraction": 0.739853515625,
+              "hueBinsUsed": 2,
+              "vividness": 0.35156387409992557
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "skyline",
+                "score": 7,
+                "reason": "The misty village with its white church tower makes a lovely layered backdrop for your flamingos."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "calm lagoon mirrors the pink sky and the flamingos"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "unique",
+                  "scale"
+                ],
+                "score": 7,
+                "reason": "A flock of flamingos wading through pink mist at dawn, with a church tower beyond."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 616
+            },
+            "timingMs": {
+              "decode": 43,
+              "pixels": 5,
+              "vision": 4777
+            }
+          },
+          "ms": 4781
+        }
+      },
+      {
+        "photo": {
+          "id": "mountains-foggy",
+          "source": "https://commons.wikimedia.org/wiki/File:Foggy_sunset_view_from_Moos_mountain,_Baden-W%C3%BCrttemberg,_Germany.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Foggy_sunset_view_from_Moos_mountain%2C_Baden-W%C3%BCrttemberg%2C_Germany.jpg/3840px-Foggy_sunset_view_from_Moos_mountain%2C_Baden-W%C3%BCrttemberg%2C_Germany.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY 4.0",
+          "author": "Thomas  Heins from Friesenheim, Deutschland",
+          "note": "Hazy gold sky over layered mountains.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 3,
+            "reach": 6,
+            "setting": 8,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 3,
+            "reach": 6,
+            "setting": 8,
+            "wow": 7,
+            "composite": 6,
+            "displayScore": 60
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6285465494791667,
+              "sunsetFraction": 0.5408707682291667,
+              "hueBinsUsed": 1,
+              "vividness": 0.4479065601921323
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 8,
+                "reason": "Your layered forested ridges fading into mist make a lovely, dramatic foreground for this sunrise or sunset."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "scale",
+                  "intense_light"
+                ],
+                "score": 7,
+                "reason": "Layers of misty forested ridges glowing under a bright sun, with the valley filled with haze."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7426,
+              "outputTokens": 152
+            },
+            "timingMs": {
+              "decode": 42,
+              "pixels": 5,
+              "vision": 3407
+            }
+          },
+          "ms": 3415
+        }
+      },
+      {
+        "photo": {
+          "id": "mountains-himalayas",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_in_the_Himalayas.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Sunset_in_the_Himalayas.jpg/3840px-Sunset_in_the_Himalayas.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Sergey Pesterev",
+          "note": "Mountain ridges; faint rays through clouds.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 2,
+            "setting": 9,
+            "wow": 5
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 7,
+            "reach": 2,
+            "setting": 9,
+            "wow": 8,
+            "composite": 6.5,
+            "displayScore": 65
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6069260270410817,
+              "sunsetFraction": 0.10735341913676547,
+              "hueBinsUsed": 4,
+              "vividness": 0.5346643122239269
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 641
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 9,
+                "reason": "Your layered blue ridges fading into mist make a dramatic, well-composed mountain foreground."
+              },
+              "phenomena": [
+                {
+                  "kind": "sun_rays",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "faint light beams breaking through gaps in the clouds near the sun"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "scale",
+                  "drama_contrast"
+                ],
+                "score": 8,
+                "reason": "Layered mountain ridges in mist, with the sun glowing through a broken cloud deck."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7426,
+              "outputTokens": 199
+            },
+            "timingMs": {
+              "decode": 44,
+              "pixels": 4,
+              "vision": 3036
+            }
+          },
+          "ms": 3043
+        }
+      },
+      {
+        "photo": {
+          "id": "ocean-after-sunset",
+          "source": "https://commons.wikimedia.org/wiki/File:Seascape_after_sunset_denoised.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Seascape_after_sunset_denoised.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 3.0",
+          "author": "Rnbc (talk) at en.wikipedia",
+          "note": "Blue hour after sunset; dramatic sea stacks.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 3,
+            "reach": 1,
+            "setting": 9,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 1,
+            "setting": 8,
+            "wow": 6,
+            "composite": 5,
+            "displayScore": 50
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6612060546875,
+              "sunsetFraction": 0.00025065104166666665,
+              "hueBinsUsed": 2,
+              "vividness": 0.639907634256587
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 8,
+                "reason": "You've framed the blue twilight with striking sea stacks rising from silky, misty water."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "drama_contrast",
+                  "scale"
+                ],
+                "score": 6,
+                "reason": "Quiet blue-hour sky over dark rocks and a brightly lit sea stack, with a faint pink horizon."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 562
+            },
+            "timingMs": {
+              "decode": 37,
+              "pixels": 3,
+              "vision": 4470
+            }
+          },
+          "ms": 4475
+        }
+      },
+      {
+        "photo": {
+          "id": "ocean-kuta",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset,_Kuta,_Bali,_Indonesia,_20220825_1755_0879.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Sunset%2C_Kuta%2C_Bali%2C_Indonesia%2C_20220825_1755_0879.jpg/3840px-Sunset%2C_Kuta%2C_Bali%2C_Indonesia%2C_20220825_1755_0879.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Jakub Hałun",
+          "note": "Golden ocean with boats; sun glitter on water.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 3,
+            "reach": 6,
+            "setting": 5,
+            "wow": 2
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 3,
+            "reach": 4,
+            "setting": 5,
+            "wow": 3,
+            "composite": 3.75,
+            "displayScore": 38
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.5537864014560583,
+              "sunsetFraction": 0.434407501300052,
+              "hueBinsUsed": 2,
+              "vividness": 0.3400005488562407
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 641
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 5,
+                "reason": "Your sunset over the calm sea with fishing outriggers and mossy rocks makes a pleasant, peaceful scene."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 3,
+                "reason": "Glowing sun over calm sea with silhouetted outrigger boats; pretty, gentle, and peaceful."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7426,
+              "outputTokens": 154
+            },
+            "timingMs": {
+              "decode": 41,
+              "pixels": 5,
+              "vision": 2941
+            }
+          },
+          "ms": 2945
+        }
+      },
+      {
+        "photo": {
+          "id": "ocean-noronha",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_at_Noronhas%27_beach.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Sunset_at_Noronhas%27_beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 3.0",
+          "author": "NicolasAlbuquerqueWolf",
+          "note": "Orange-pink sky, cliff silhouette, birds.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 8,
+            "setting": 8,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 4,
+            "setting": 7,
+            "wow": 5,
+            "composite": 5.25,
+            "displayScore": 53
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.5638306556948798,
+              "sunsetFraction": 0.4324010579937304,
+              "hueBinsUsed": 3,
+              "vividness": 0.3969330084819699
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 638
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 7,
+                "reason": "Your dark rocky headland and crashing surf frame the sunset nicely, adding real drama to the scene."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 5,
+                "reason": "Seabirds silhouetted against a glowing peach sky above a rocky headland and surf."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 140
+            },
+            "timingMs": {
+              "decode": 36,
+              "pixels": 4,
+              "vision": 2203
+            }
+          },
+          "ms": 2209
+        }
+      },
+      {
+        "photo": {
+          "id": "ocean-rapanui",
+          "source": "https://commons.wikimedia.org/wiki/File:Rapanui_Rock_during_sunset,_Sumner,_Christchurch,_New_Zealand.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Rapanui_Rock_during_sunset%2C_Sumner%2C_Christchurch%2C_New_Zealand.jpg/3840px-Rapanui_Rock_during_sunset%2C_Sumner%2C_Christchurch%2C_New_Zealand.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Michal Klajban",
+          "note": "Thin yellow band; rock formation on a beach.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 2,
+            "setting": 6,
+            "wow": 2
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 3,
+            "reach": 2,
+            "setting": 7,
+            "wow": 6,
+            "composite": 4.5,
+            "displayScore": 45
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.4431997202591284,
+              "sunsetFraction": 0.15546782979976442,
+              "hueBinsUsed": 2,
+              "vividness": 0.32259064331182086
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 566
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 7,
+                "reason": "Your dark rock stack and wind-shaped trees make a striking silhouette against the golden glow over the sea."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "drama_contrast"
+                ],
+                "score": 6,
+                "reason": "Dark rocky stack and bent trees silhouetted against layered clouds and warm golden light."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7492,
+              "outputTokens": 149
+            },
+            "timingMs": {
+              "decode": 38,
+              "pixels": 3,
+              "vision": 2269
+            }
+          },
+          "ms": 2275
+        }
+      },
+      {
+        "photo": {
+          "id": "paddy-orange-pink",
+          "source": "https://commons.wikimedia.org/wiki/File:Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg/3840px-Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Basile Morin",
+          "note": "Vivid clouds reflected in a paddy field.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 8,
+            "reach": 6,
+            "setting": 6,
+            "wow": 5
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 7,
+            "reach": 4,
+            "setting": 5,
+            "wow": 6,
+            "composite": 5.5,
+            "displayScore": 55
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6365243055555555,
+              "sunsetFraction": 0.3562795138888889,
+              "hueBinsUsed": 6,
+              "vividness": 0.3885165384054271
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 600
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "other",
+                "score": 5,
+                "reason": "Your flooded rice field and village silhouettes make a lovely, peaceful foreground for this sky."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": false,
+                  "description": "sky and trees mirrored in the flooded rice paddy"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "intense_light"
+                ],
+                "score": 6,
+                "reason": "Fiery orange clouds glow above a mirror-like flooded field and silhouetted village trees."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7420,
+              "outputTokens": 191
+            },
+            "timingMs": {
+              "decode": 41,
+              "pixels": 4,
+              "vision": 3462
+            }
+          },
+          "ms": 3468
+        }
+      },
+      {
+        "photo": {
+          "id": "paddy-stringy",
+          "source": "https://commons.wikimedia.org/wiki/File:Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg/3840px-Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Basile Morin",
+          "note": "Radiating pink-orange cloud streaks over fields.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 8,
+            "reach": 8,
+            "setting": 5,
+            "wow": 3
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 8,
+            "reach": 8,
+            "setting": 5,
+            "wow": 6,
+            "composite": 6.75,
+            "displayScore": 68
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.9339196372732959,
+              "sunsetFraction": 0.736395794246404,
+              "hueBinsUsed": 7,
+              "vividness": 0.44051704510844536
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 533
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "open_horizon",
+                "score": 5,
+                "reason": "Your rice field and village silhouettes make a pleasant, recognisable foreground that frames the sky nicely."
+              },
+              "phenomena": [
+                {
+                  "kind": "iridescent_clouds",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "fiery orange and pink cloud texture with a bluish sheen"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "intense_light"
+                ],
+                "score": 6,
+                "reason": "Fiery orange and magenta clouds glow over a quiet village and golden rice fields."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7414,
+              "outputTokens": 202
+            },
+            "timingMs": {
+              "decode": 32,
+              "pixels": 4,
+              "vision": 2354
+            }
+          },
+          "ms": 2358
+        }
+      },
+      {
+        "photo": {
+          "id": "rays-pacific",
+          "source": "https://commons.wikimedia.org/wiki/File:Sunset_clouds_and_crepuscular_rays_over_pacific_edit.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/3/35/Sunset_clouds_and_crepuscular_rays_over_pacific_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 3.0",
+          "author": "Brocken Inaglory, retouched by User:Flamurai",
+          "note": "Muted sky with striking rays over the ocean.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 3,
+            "reach": 3,
+            "setting": 4,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 6,
+            "reach": 3,
+            "setting": 7,
+            "wow": 7,
+            "composite": 5.75,
+            "displayScore": 58
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.4537037037037037,
+              "sunsetFraction": 0.26322678376906317,
+              "hueBinsUsed": 4,
+              "vividness": 0.31985955949181505
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 612
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 7,
+                "reason": "Your open ocean horizon is a clean, calm line that gives the sun's glow a lovely base to rest on."
+              },
+              "phenomena": [
+                {
+                  "kind": "sun_rays",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "crepuscular rays fanning out through gaps in the clouds above the sea"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "drama_contrast"
+                ],
+                "score": 7,
+                "reason": "Bright sun bursting through dark clouds, with rays fanning down onto the sea."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7452,
+              "outputTokens": 206
+            },
+            "timingMs": {
+              "decode": 35,
+              "pixels": 5,
+              "vision": 2581
+            }
+          },
+          "ms": 2585
+        }
+      },
+      {
+        "photo": {
+          "id": "rays-telstra",
+          "source": "https://commons.wikimedia.org/wiki/File:Crepuscular_ray_sunset_from_telstra_tower_edit.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Crepuscular_ray_sunset_from_telstra_tower_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "GFDL 1.2",
+          "author": "Fir0002",
+          "note": "Rays over a green valley.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 2,
+            "setting": 7,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 8,
+            "reach": 1,
+            "setting": 7,
+            "wow": 8,
+            "composite": 6,
+            "displayScore": 60
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6111633333333333,
+              "sunsetFraction": 0.10118166666666667,
+              "hueBinsUsed": 6,
+              "vividness": 0.5156130102943297
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 625
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 7,
+                "reason": "Your sunset sits behind layered mountain ridges over a green valley, giving the scene real depth."
+              },
+              "phenomena": [
+                {
+                  "kind": "sun_rays",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "crepuscular rays streaming through gaps in dark storm clouds"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "drama_contrast",
+                  "scale"
+                ],
+                "score": 8,
+                "reason": "Golden rays burst through dark storm clouds over a vast green valley and ridges."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 200
+            },
+            "timingMs": {
+              "decode": 33,
+              "pixels": 3,
+              "vision": 2508
+            }
+          },
+          "ms": 2512
+        }
+      },
+      {
+        "photo": {
+          "id": "rays-waterberg",
+          "source": "https://commons.wikimedia.org/wiki/File:Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg/3840px-Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "FAL",
+          "author": "Alchemist-hp (www.pse-mendelejew.de)",
+          "note": "Blue and orange sky with rays over bushland.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 7,
+            "reach": 3,
+            "setting": 5,
+            "wow": 6
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 4,
+            "setting": 5,
+            "wow": 8,
+            "composite": 5.5,
+            "displayScore": 55
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.7771256510416666,
+              "sunsetFraction": 0.4180322265625,
+              "hueBinsUsed": 3,
+              "vividness": 0.44602494106272184
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "open_horizon",
+                "score": 5,
+                "reason": "A sandy track through savanna scrub gives a pleasant, grounded foreground that leads the eye toward the light."
+              },
+              "phenomena": [
+                {
+                  "kind": "sun_rays",
+                  "confidence": "clear",
+                  "striking": true,
+                  "description": "crepuscular rays burst through gaps in the dark clouds above the horizon"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "rare",
+                  "drama_contrast",
+                  "intense_light"
+                ],
+                "score": 8,
+                "reason": "Sunbeams fanning through dark storm clouds over a glowing orange horizon, with a winding sandy track below."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 223
+            },
+            "timingMs": {
+              "decode": 43,
+              "pixels": 5,
+              "vision": 3467
+            }
+          },
+          "ms": 3473
+        }
+      },
+      {
+        "photo": {
+          "id": "skyline-manhattan",
+          "source": "https://commons.wikimedia.org/wiki/File:Lower_Manhattan_from_Jersey_City_November_2016_002.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Lower_Manhattan_from_Jersey_City_November_2016_002.jpg/3840px-Lower_Manhattan_from_Jersey_City_November_2016_002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "King of Hearts",
+          "note": "Pink-purple sky over the Manhattan skyline.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 7,
+            "setting": 9,
+            "wow": 2
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 7,
+            "reach": 2,
+            "setting": 9,
+            "wow": 7,
+            "composite": 6.25,
+            "displayScore": 63
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.4511709104938272,
+              "sunsetFraction": 0.17849537037037036,
+              "hueBinsUsed": 5,
+              "vividness": 0.2800083917014856
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 540
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "skyline",
+                "score": 9,
+                "reason": "Your skyline shot with One World Trade Center standing tall over the river is a lovely, well-composed view."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "iconic_place",
+                  "scale"
+                ],
+                "score": 7,
+                "reason": "Pink-lilac sky over the Lower Manhattan skyline, with the famous tower catching the last light."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7506,
+              "outputTokens": 153
+            },
+            "timingMs": {
+              "decode": 36,
+              "pixels": 4,
+              "vision": 2963
+            }
+          },
+          "ms": 2969
+        }
+      },
+      {
+        "photo": {
+          "id": "skyline-rio",
+          "source": "https://commons.wikimedia.org/wiki/File:Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset,_Brazil_3.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset%2C_Brazil_3.jpg/3840px-Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset%2C_Brazil_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC0",
+          "author": "Wilfredor",
+          "note": "Sepia haze, Rio skyline and peaks; light beams.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 2,
+            "reach": 2,
+            "setting": 10,
+            "wow": 5
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.14211740488358887,
+              "sunsetFraction": 0.07644449176604202,
+              "hueBinsUsed": 2,
+              "vividness": 0.29402035321833797
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 587
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 9,
+                "reason": "Your shot has a striking mountain backdrop, with Christ the Redeemer standing on the peak above the bay."
+              },
+              "phenomena": [
+                {
+                  "kind": "sun_rays",
+                  "confidence": "clear",
+                  "striking": false,
+                  "description": "light beams slanting through haze over the mountains on the left"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "iconic_place",
+                  "drama_contrast"
+                ],
+                "score": 7,
+                "reason": "Rio's Christ statue and bay glow in low golden light, with shadowed ridges and rays."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7474,
+              "outputTokens": 695
+            },
+            "timingMs": {
+              "decode": 49,
+              "pixels": 5,
+              "vision": 5505
+            }
+          },
+          "ms": 5511
+        }
+      },
+      {
+        "photo": {
+          "id": "sundog-brofjorden",
+          "source": "https://commons.wikimedia.org/wiki/File:Sun_dog_with_reflection_over_Brofjorden.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Sun_dog_with_reflection_over_Brofjorden.jpg/3840px-Sun_dog_with_reflection_over_Brofjorden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "W.carter",
+          "note": "Sun dog plus reflection; lake and sailboat.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 2,
+            "setting": 7,
+            "wow": 8
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 4,
+            "reach": 3,
+            "setting": 6,
+            "wow": 5,
+            "composite": 4.5,
+            "displayScore": 45
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.5872626133786848,
+              "sunsetFraction": 0.24218041383219954,
+              "hueBinsUsed": 2,
+              "vividness": 0.3765596149686774
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 588
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 6,
+                "reason": "Your sailboat and dark wooded hills make a nice silhouette framing the glowing sun over the calm bay."
+              },
+              "phenomena": [
+                {
+                  "kind": "halo",
+                  "confidence": "possible",
+                  "striking": false,
+                  "description": "faint bright sun dog to the left of the sun near the horizon"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "drama_contrast"
+                ],
+                "score": 5,
+                "reason": "Dark sailboat and hill silhouettes against a golden sun glowing over calm, shimmering water."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7474,
+              "outputTokens": 612
+            },
+            "timingMs": {
+              "decode": 49,
+              "pixels": 4,
+              "vision": 4891
+            }
+          },
+          "ms": 4898
+        }
+      },
+      {
+        "photo": {
+          "id": "sundog-right",
+          "source": "https://commons.wikimedia.org/wiki/File:Right_hand_sun_dog_(21542189266).jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Right_hand_sun_dog_%2821542189266%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 2.0",
+          "author": "stanze from Eure, France, Normandie,",
+          "note": "Orange band over a flat dark horizon; sun dog hard to see.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 4,
+            "setting": 2,
+            "wow": 3
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 3,
+            "setting": 4,
+            "wow": 4,
+            "composite": 4,
+            "displayScore": 40
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.4636786265432099,
+              "sunsetFraction": 0.2749749228395062,
+              "hueBinsUsed": 3,
+              "vividness": 0.47443201745640984
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 540
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "open_horizon",
+                "score": 4,
+                "reason": "Your sun sets behind a row of trees over flat dark fields, a lovely, simple horizon."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 4,
+                "reason": "Glowing sun behind a tree line with streaky orange clouds; pretty, though fairly ordinary."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7506,
+              "outputTokens": 144
+            },
+            "timingMs": {
+              "decode": 41,
+              "pixels": 6,
+              "vision": 2317
+            }
+          },
+          "ms": 2323
+        }
+      },
+      {
+        "photo": {
+          "id": "tree-single",
+          "source": "https://commons.wikimedia.org/wiki/File:Silhouette_of_a_tree_at_sunset.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Silhouette_of_a_tree_at_sunset.jpg/3840px-Silhouette_of_a_tree_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Thaismay",
+          "note": "Tree silhouette over a bay and mountains.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 2,
+            "setting": 9,
+            "wow": 2
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 4,
+            "reach": 1,
+            "setting": 8,
+            "wow": 6,
+            "composite": 4.75,
+            "displayScore": 48
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.3643668619791667,
+              "sunsetFraction": 0.09627766927083334,
+              "hueBinsUsed": 2,
+              "vividness": 0.45419679016147585
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "ocean",
+                "score": 8,
+                "reason": "Your silhouetted tree and layered green hills frame a calm bay beautifully, adding real depth to the scene."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": false,
+                  "description": "bright sun glitter path on calm water"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "drama_contrast",
+                  "scale"
+                ],
+                "score": 6,
+                "reason": "Dark silhouetted trees and hills frame a glowing sun over a calm, layered bay."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 194
+            },
+            "timingMs": {
+              "decode": 41,
+              "pixels": 4,
+              "vision": 2647
+            }
+          },
+          "ms": 2654
+        }
+      },
+      {
+        "photo": {
+          "id": "trees-crane",
+          "source": "https://commons.wikimedia.org/wiki/File:Construction_crane,_trees_silhouette_sunset_3531.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Construction_crane%2C_trees_silhouette_sunset_3531.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 4.0",
+          "author": "Paul Harrison",
+          "note": "Orange sky over a treeline and a crane.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 8,
+            "setting": 5,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 9,
+            "setting": 5,
+            "wow": 6,
+            "composite": 6.25,
+            "displayScore": 63
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.7914290364583333,
+              "sunsetFraction": 0.7838199869791667,
+              "hueBinsUsed": 2,
+              "vividness": 0.5969507161949242
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "trees",
+                "score": 5,
+                "reason": "A nice treeline silhouette with a construction crane adds a distinctive touch to your sunset."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "intense_light",
+                  "drama_contrast"
+                ],
+                "score": 6,
+                "reason": "Fiery orange clouds glow above a dark treeline and a crane silhouette."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 144
+            },
+            "timingMs": {
+              "decode": 51,
+              "pixels": 5,
+              "vision": 2417
+            }
+          },
+          "ms": 2424
+        }
+      },
+      {
+        "photo": {
+          "id": "trees-cypress",
+          "source": "https://commons.wikimedia.org/wiki/File:Cypress_tree_alley_at_sunset_in_Asciano,_Tuscany.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Cypress_tree_alley_at_sunset_in_Asciano%2C_Tuscany.jpg/3840px-Cypress_tree_alley_at_sunset_in_Asciano%2C_Tuscany.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 2.0",
+          "author": "Eric Kilby",
+          "note": "Peach sky over a Tuscan cypress alley.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 5,
+            "reach": 3,
+            "setting": 9,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 7,
+            "reach": 3,
+            "setting": 8,
+            "wow": 6,
+            "composite": 6,
+            "displayScore": 60
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.5998893229166666,
+              "sunsetFraction": 0.2443408203125,
+              "hueBinsUsed": 8,
+              "vividness": 0.3322240068941837
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "trees",
+                "score": 8,
+                "reason": "Your row of cypresses curving along the winding road makes a striking, well-composed foreground that adds real depth to the sunset."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "scale"
+                ],
+                "score": 6,
+                "reason": "Soft apricot glow over rolling green hills and cypress lines, a calm, beautiful Tuscan sunrise or sunset."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 571
+            },
+            "timingMs": {
+              "decode": 58,
+              "pixels": 6,
+              "vision": 5759
+            }
+          },
+          "ms": 5768
+        }
+      },
+      {
+        "photo": {
+          "id": "trees-silhouettes",
+          "source": "https://commons.wikimedia.org/wiki/File:Silhouettes_of_trees_at_sunset.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Silhouettes_of_trees_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "CC BY-SA 4.0",
+          "author": "Basile Morin",
+          "note": "Bare tree silhouettes against orange sky.",
+          "labels": {
+            "is_sunset": true,
+            "palette": 4,
+            "reach": 5,
+            "setting": 8,
+            "wow": 1
+          }
+        },
+        "result": {
+          "status": "done",
+          "scores": {
+            "palette": 5,
+            "reach": 6,
+            "setting": 6,
+            "wow": 6,
+            "composite": 5.75,
+            "displayScore": 58
+          },
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6389518229166666,
+              "sunsetFraction": 0.6026839192708333,
+              "hueBinsUsed": 2,
+              "vividness": 0.6414206549454526
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": true,
+              "content_flag": "none",
+              "setting": {
+                "type": "trees",
+                "score": 6,
+                "reason": "Your bare silhouetted trees frame the glowing sky nicely, with a tall poplar adding a nice vertical line."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "intense_light",
+                  "drama_contrast"
+                ],
+                "score": 6,
+                "reason": "Fiery orange sky glowing behind dark, bare winter tree silhouettes against layered clouds."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 160
+            },
+            "timingMs": {
+              "decode": 58,
+              "pixels": 6,
+              "vision": 3289
+            }
+          },
+          "ms": 3296
+        }
+      },
+      {
+        "photo": {
+          "id": "karst-reflection",
+          "source": "https://commons.wikimedia.org/wiki/File:Water_reflection_of_karst_mountains,_wooden_hut,_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields,_Vang_Vieng,_Laos.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Water_reflection_of_karst_mountains%2C_wooden_hut%2C_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields%2C_Vang_Vieng%2C_Laos.jpg/3840px-Water_reflection_of_karst_mountains%2C_wooden_hut%2C_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields%2C_Vang_Vieng%2C_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC BY-SA 4.0",
+          "author": "Basile Morin",
+          "note": "Daytime: karst mountains reflected in a paddy field.",
+          "labels": {
+            "is_sunset": false
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6412630208333333,
+              "sunsetFraction": 0.0080029296875,
+              "hueBinsUsed": 6,
+              "vividness": 0.3495351016460045
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 640
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 9,
+                "reason": "Your towering limestone peaks make a dramatic backdrop, and their mirror image in the still water is lovely."
+              },
+              "phenomena": [
+                {
+                  "kind": "reflection",
+                  "confidence": "clear",
+                  "striking": false,
+                  "description": "mirror-like reflection of the mountains and hut on still water"
+                }
+              ],
+              "wow": {
+                "drivers": [
+                  "scale",
+                  "rare"
+                ],
+                "score": 6,
+                "reason": "Karst peaks and a crisp mirror reflection over green paddies, with a glowing cloud sky."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 628
+            },
+            "timingMs": {
+              "decode": 54,
+              "pixels": 4,
+              "vision": 4966
+            }
+          },
+          "ms": 4976
+        }
+      },
+      {
+        "photo": {
+          "id": "not-diary",
+          "source": "https://commons.wikimedia.org/wiki/File:Thomas_Butler_Gunn_Diaries-_Volume_8,_page_102,_November_2-7,_1856.jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Thomas_Butler_Gunn_Diaries-_Volume_8%2C_page_102%2C_November_2-7%2C_1856.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "Public domain",
+          "author": "Gunn, Thomas Butler, 1826-1903",
+          "note": "Handwritten diary page.",
+          "labels": {
+            "is_sunset": false
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.14290549421661408,
+              "sunsetFraction": 0.09565588853838065,
+              "hueBinsUsed": 2,
+              "vividness": 0.36800294039099146
+            },
+            "analysisSize": {
+              "width": 634,
+              "height": 960
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "other",
+                "score": 1,
+                "reason": "This is a handwritten diary page, not a sky photo, so there is no sunset setting to rate."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 1,
+                "reason": "A handwritten diary page of 1860s election-era entries, not a sunset photo."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 131
+            },
+            "timingMs": {
+              "decode": 52,
+              "pixels": 5,
+              "vision": 2330
+            }
+          },
+          "ms": 2340
+        }
+      },
+      {
+        "photo": {
+          "id": "not-price-building",
+          "source": "https://commons.wikimedia.org/wiki/File:Price_Building_illuminated_at_night_in_Quebec_City.jpg",
+          "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Price_Building_illuminated_at_night_in_Quebec_City.jpg/3840px-Price_Building_illuminated_at_night_in_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license": "CC0",
+          "author": "Wilfredor",
+          "note": "City at night.",
+          "labels": {
+            "is_sunset": false
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.8397753071581197,
+              "sunsetFraction": 0.2709251469017094,
+              "hueBinsUsed": 5,
+              "vividness": 0.4675029874030356
+            },
+            "analysisSize": {
+              "width": 960,
+              "height": 624
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 6,
+                "reason": "Your layered blue mountain ridge makes a lovely backdrop for the glowing city below."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [],
+                "score": 5,
+                "reason": "Blue-hour city lights glow beneath a lit tower and dark mountain ridges."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7482,
+              "outputTokens": 672
+            },
+            "timingMs": {
+              "decode": 55,
+              "pixels": 5,
+              "vision": 6146
+            }
+          },
+          "ms": 6154
+        }
+      },
+      {
+        "photo": {
+          "id": "not-rockies-book",
+          "source": "https://commons.wikimedia.org/wiki/File:The_Rockies_of_Canada;_(1909)_(14740727616).jpg",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/2/2e/The_Rockies_of_Canada%3B_%281909%29_%2814740727616%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license": "No restrictions",
+          "author": "Wilcox, Walter Dwight, 1869- [from old catalog]",
+          "note": "Old book scan.",
+          "labels": {
+            "is_sunset": false
+          }
+        },
+        "result": {
+          "status": "not_sunset",
+          "details": {
+            "metrics": {
+              "colouredFraction": 0.6616157782276203,
+              "sunsetFraction": 0.08288489653621232,
+              "hueBinsUsed": 1,
+              "vividness": 0.22691511383674587
+            },
+            "analysisSize": {
+              "width": 741,
+              "height": 960
+            },
+            "scene": {
+              "is_sunset": false,
+              "content_flag": "none",
+              "setting": {
+                "type": "mountains",
+                "score": 8,
+                "reason": "Your snow-capped peaks rise dramatically over the still lake, adding real grandeur to this morning scene."
+              },
+              "phenomena": [],
+              "wow": {
+                "drivers": [
+                  "scale"
+                ],
+                "score": 4,
+                "reason": "Misty, snowy peaks rise over a calm lake; a quiet, atmospheric early-morning scene."
+              }
+            },
+            "model": "claude-haiku-5-5",
+            "usage": {
+              "inputTokens": 7480,
+              "outputTokens": 424
+            },
+            "timingMs": {
+              "decode": 55,
+              "pixels": 6,
+              "vision": 3665
+            }
+          },
+          "ms": 3669
+        }
+      }
+    ]
+  }
+}

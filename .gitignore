@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Wrangler local state
+.wrangler/

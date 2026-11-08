@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web app, scoring and shared packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      # For the data-access tests (entries are private to their owner).
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: sunset_test
+          POSTGRES_USER: sunset
+          POSTGRES_PASSWORD: sunset
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sunset -d sunset_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Generated design tokens and logo copies are up to date
+        run: |
+          npm run tokens --workspace=@sunset/web
+          git diff --exit-code -- apps/web/src/lib apps/web/public/brand || {
+            echo "::error::Run 'npm run tokens --workspace=@sunset/web' and commit the result (design-system or brand/logo changed)."
+            exit 1
+          }
+      - run: npm run lint --workspace=@sunset/web
+      - run: npm run typecheck --workspace=@sunset/web
+      - run: npm test --workspace=@sunset/web
+        env:
+          TEST_DATABASE_URL: postgres://sunset:sunset@localhost:5432/sunset_test
+      - run: npm run build:worker --workspace=@sunset/web
+      - run: npm test --workspace=@sunset/scoring --workspace=@sunset/db
+      - run: npm run typecheck --workspace=@sunset/scoring --workspace=@sunset/db --workspace=@sunset/scorer
+
+  scorer:
+    name: Scorer (tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/scorer
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install -e '.[dev]'
+      - run: pytest -q
+
+  images:
+    name: Container images and Compose files
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build --platform linux/amd64 -t sunset-scorer:ci services/scorer
+      - run: docker compose config -q
+      - run: docker compose -f deploy/droplet/compose.yaml config -q
+        env:
+          POSTGRES_PASSWORD: ci
+          TUNNEL_TOKEN: ci

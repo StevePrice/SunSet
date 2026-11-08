@@ -1,0 +1,454 @@
+{
+  "about": "Calibration set for the Phase 3 scorer. Photos from Wikimedia Commons under the licences listed; images are downloaded to .cache, not committed. Labels are drafts to be reviewed by a person.",
+  "photos": [
+    {
+      "id": "field-wheat",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset-over-the-wheat-field-featured.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Sunset-over-the-wheat-field-featured.jpg/3840px-Sunset-over-the-wheat-field-featured.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY 4.0",
+      "author": "Dreamy Pixel",
+      "note": "Golden wheat field, hills, sun in frame.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 7,
+        "setting": 6,
+        "wow": 1
+      }
+    },
+    {
+      "id": "greenflash-morro",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_Green_Flash_-_sunset-green-flash-morro-strand_mg_1914.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Sunset_Green_Flash_-_sunset-green-flash-morro-strand_mg_1914.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY 2.0",
+      "author": "Mike Baird",
+      "note": "Green flash over the ocean; striking.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 5,
+        "setting": 4,
+        "wow": 6
+      }
+    },
+    {
+      "id": "iridescent-tuntorp-2",
+      "source": "https://commons.wikimedia.org/wiki/File:Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg/3840px-Iridescent_clouds_at_sunset_in_Tuntorp_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "W.carter",
+      "note": "Iridescent clouds near the sun; no horizon.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 6,
+        "reach": 3,
+        "setting": 1,
+        "wow": 6
+      }
+    },
+    {
+      "id": "iridescent-tuntorp-7",
+      "source": "https://commons.wikimedia.org/wiki/File:Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg/3840px-Iridescent_clouds_at_sunset_in_Tuntorp_7.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "W.carter",
+      "note": "Iridescent clouds; no horizon.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 6,
+        "reach": 3,
+        "setting": 1,
+        "wow": 6
+      }
+    },
+    {
+      "id": "lake-contrail",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_Contrail_Lake.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Sunset_Contrail_Lake.jpg/3840px-Sunset_Contrail_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Prosthetic Head",
+      "note": "Treeline silhouette with a mirror reflection.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 3,
+        "setting": 8,
+        "wow": 5
+      }
+    },
+    {
+      "id": "lake-dechsendorf",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_reflection_at_Lake_Dechsendorf.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Sunset_reflection_at_Lake_Dechsendorf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY 2.0",
+      "author": "Reiner Ehlers",
+      "note": "Fiery sky and water; strong reflection.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 6,
+        "reach": 9,
+        "setting": 7,
+        "wow": 6
+      }
+    },
+    {
+      "id": "lake-jokulsarlon",
+      "source": "https://commons.wikimedia.org/wiki/File:Jokulsarlon_lake,_Iceland.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Jokulsarlon_lake%2C_Iceland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY 2.0",
+      "author": "Kenny Muir",
+      "note": "Glacier lagoon, mountains, pink clouds reflected.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 8,
+        "reach": 4,
+        "setting": 9,
+        "wow": 5
+      }
+    },
+    {
+      "id": "lake-lesina",
+      "source": "https://commons.wikimedia.org/wiki/File:Lake_Lesina_at_sunset.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Lake_Lesina_at_sunset.jpg/3840px-Lake_Lesina_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Albus65",
+      "note": "Whole frame pink; flamingos and a town in mist.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 3,
+        "reach": 10,
+        "setting": 6,
+        "wow": 2
+      }
+    },
+    {
+      "id": "mountains-foggy",
+      "source": "https://commons.wikimedia.org/wiki/File:Foggy_sunset_view_from_Moos_mountain,_Baden-W%C3%BCrttemberg,_Germany.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Foggy_sunset_view_from_Moos_mountain%2C_Baden-W%C3%BCrttemberg%2C_Germany.jpg/3840px-Foggy_sunset_view_from_Moos_mountain%2C_Baden-W%C3%BCrttemberg%2C_Germany.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY 4.0",
+      "author": "Thomas  Heins from Friesenheim, Deutschland",
+      "note": "Hazy gold sky over layered mountains.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 3,
+        "reach": 6,
+        "setting": 8,
+        "wow": 1
+      }
+    },
+    {
+      "id": "mountains-himalayas",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_in_the_Himalayas.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Sunset_in_the_Himalayas.jpg/3840px-Sunset_in_the_Himalayas.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Sergey Pesterev",
+      "note": "Mountain ridges; faint rays through clouds.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 2,
+        "setting": 9,
+        "wow": 5
+      }
+    },
+    {
+      "id": "ocean-after-sunset",
+      "source": "https://commons.wikimedia.org/wiki/File:Seascape_after_sunset_denoised.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Seascape_after_sunset_denoised.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 3.0",
+      "author": "Rnbc (talk) at en.wikipedia",
+      "note": "Blue hour after sunset; dramatic sea stacks.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 3,
+        "reach": 1,
+        "setting": 9,
+        "wow": 1
+      }
+    },
+    {
+      "id": "ocean-kuta",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset,_Kuta,_Bali,_Indonesia,_20220825_1755_0879.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Sunset%2C_Kuta%2C_Bali%2C_Indonesia%2C_20220825_1755_0879.jpg/3840px-Sunset%2C_Kuta%2C_Bali%2C_Indonesia%2C_20220825_1755_0879.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Jakub Hałun",
+      "note": "Golden ocean with boats; sun glitter on water.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 3,
+        "reach": 6,
+        "setting": 5,
+        "wow": 2
+      }
+    },
+    {
+      "id": "ocean-noronha",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_at_Noronhas%27_beach.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Sunset_at_Noronhas%27_beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 3.0",
+      "author": "NicolasAlbuquerqueWolf",
+      "note": "Orange-pink sky, cliff silhouette, birds.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 8,
+        "setting": 8,
+        "wow": 1
+      }
+    },
+    {
+      "id": "ocean-rapanui",
+      "source": "https://commons.wikimedia.org/wiki/File:Rapanui_Rock_during_sunset,_Sumner,_Christchurch,_New_Zealand.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Rapanui_Rock_during_sunset%2C_Sumner%2C_Christchurch%2C_New_Zealand.jpg/3840px-Rapanui_Rock_during_sunset%2C_Sumner%2C_Christchurch%2C_New_Zealand.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Michal Klajban",
+      "note": "Thin yellow band; rock formation on a beach.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 2,
+        "setting": 6,
+        "wow": 2
+      }
+    },
+    {
+      "id": "paddy-orange-pink",
+      "source": "https://commons.wikimedia.org/wiki/File:Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg/3840px-Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Basile Morin",
+      "note": "Vivid clouds reflected in a paddy field.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 8,
+        "reach": 6,
+        "setting": 6,
+        "wow": 5
+      }
+    },
+    {
+      "id": "paddy-stringy",
+      "source": "https://commons.wikimedia.org/wiki/File:Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg/3840px-Stringy_pink_and_orange_clouds_at_sunset_in_the_dry_paddy_fields_of_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Basile Morin",
+      "note": "Radiating pink-orange cloud streaks over fields.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 8,
+        "reach": 8,
+        "setting": 5,
+        "wow": 3
+      }
+    },
+    {
+      "id": "rays-pacific",
+      "source": "https://commons.wikimedia.org/wiki/File:Sunset_clouds_and_crepuscular_rays_over_pacific_edit.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/3/35/Sunset_clouds_and_crepuscular_rays_over_pacific_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 3.0",
+      "author": "Brocken Inaglory, retouched by User:Flamurai",
+      "note": "Muted sky with striking rays over the ocean.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 3,
+        "reach": 3,
+        "setting": 4,
+        "wow": 6
+      }
+    },
+    {
+      "id": "rays-telstra",
+      "source": "https://commons.wikimedia.org/wiki/File:Crepuscular_ray_sunset_from_telstra_tower_edit.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Crepuscular_ray_sunset_from_telstra_tower_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "GFDL 1.2",
+      "author": "Fir0002",
+      "note": "Rays over a green valley.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 2,
+        "setting": 7,
+        "wow": 6
+      }
+    },
+    {
+      "id": "rays-waterberg",
+      "source": "https://commons.wikimedia.org/wiki/File:Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg/3840px-Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "FAL",
+      "author": "Alchemist-hp (www.pse-mendelejew.de)",
+      "note": "Blue and orange sky with rays over bushland.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 7,
+        "reach": 3,
+        "setting": 5,
+        "wow": 6
+      }
+    },
+    {
+      "id": "skyline-manhattan",
+      "source": "https://commons.wikimedia.org/wiki/File:Lower_Manhattan_from_Jersey_City_November_2016_002.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Lower_Manhattan_from_Jersey_City_November_2016_002.jpg/3840px-Lower_Manhattan_from_Jersey_City_November_2016_002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "King of Hearts",
+      "note": "Pink-purple sky over the Manhattan skyline.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 7,
+        "setting": 9,
+        "wow": 2
+      }
+    },
+    {
+      "id": "skyline-rio",
+      "source": "https://commons.wikimedia.org/wiki/File:Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset,_Brazil_3.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset%2C_Brazil_3.jpg/3840px-Rio_de_Janeiro_skyline_and_Sugarloaf_Mountain_at_sunset%2C_Brazil_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC0",
+      "author": "Wilfredor",
+      "note": "Sepia haze, Rio skyline and peaks; light beams.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 2,
+        "reach": 2,
+        "setting": 10,
+        "wow": 5
+      }
+    },
+    {
+      "id": "sundog-brofjorden",
+      "source": "https://commons.wikimedia.org/wiki/File:Sun_dog_with_reflection_over_Brofjorden.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Sun_dog_with_reflection_over_Brofjorden.jpg/3840px-Sun_dog_with_reflection_over_Brofjorden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "W.carter",
+      "note": "Sun dog plus reflection; lake and sailboat.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 2,
+        "setting": 7,
+        "wow": 8
+      }
+    },
+    {
+      "id": "sundog-right",
+      "source": "https://commons.wikimedia.org/wiki/File:Right_hand_sun_dog_(21542189266).jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Right_hand_sun_dog_%2821542189266%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 2.0",
+      "author": "stanze from Eure, France, Normandie,",
+      "note": "Orange band over a flat dark horizon; sun dog hard to see.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 4,
+        "setting": 2,
+        "wow": 3
+      }
+    },
+    {
+      "id": "tree-single",
+      "source": "https://commons.wikimedia.org/wiki/File:Silhouette_of_a_tree_at_sunset.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Silhouette_of_a_tree_at_sunset.jpg/3840px-Silhouette_of_a_tree_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Thaismay",
+      "note": "Tree silhouette over a bay and mountains.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 2,
+        "setting": 9,
+        "wow": 2
+      }
+    },
+    {
+      "id": "trees-crane",
+      "source": "https://commons.wikimedia.org/wiki/File:Construction_crane,_trees_silhouette_sunset_3531.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Construction_crane%2C_trees_silhouette_sunset_3531.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 4.0",
+      "author": "Paul Harrison",
+      "note": "Orange sky over a treeline and a crane.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 8,
+        "setting": 5,
+        "wow": 1
+      }
+    },
+    {
+      "id": "trees-cypress",
+      "source": "https://commons.wikimedia.org/wiki/File:Cypress_tree_alley_at_sunset_in_Asciano,_Tuscany.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Cypress_tree_alley_at_sunset_in_Asciano%2C_Tuscany.jpg/3840px-Cypress_tree_alley_at_sunset_in_Asciano%2C_Tuscany.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 2.0",
+      "author": "Eric Kilby",
+      "note": "Peach sky over a Tuscan cypress alley.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 5,
+        "reach": 3,
+        "setting": 9,
+        "wow": 1
+      }
+    },
+    {
+      "id": "trees-silhouettes",
+      "source": "https://commons.wikimedia.org/wiki/File:Silhouettes_of_trees_at_sunset.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Silhouettes_of_trees_at_sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "CC BY-SA 4.0",
+      "author": "Basile Morin",
+      "note": "Bare tree silhouettes against orange sky.",
+      "labels": {
+        "is_sunset": true,
+        "palette": 4,
+        "reach": 5,
+        "setting": 8,
+        "wow": 1
+      }
+    },
+    {
+      "id": "karst-reflection",
+      "source": "https://commons.wikimedia.org/wiki/File:Water_reflection_of_karst_mountains,_wooden_hut,_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields,_Vang_Vieng,_Laos.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Water_reflection_of_karst_mountains%2C_wooden_hut%2C_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields%2C_Vang_Vieng%2C_Laos.jpg/3840px-Water_reflection_of_karst_mountains%2C_wooden_hut%2C_trees_and_colorful_clouds_at_sunset_with_green_paddy_fields%2C_Vang_Vieng%2C_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC BY-SA 4.0",
+      "author": "Basile Morin",
+      "note": "Daytime: karst mountains reflected in a paddy field.",
+      "labels": {
+        "is_sunset": false
+      }
+    },
+    {
+      "id": "not-diary",
+      "source": "https://commons.wikimedia.org/wiki/File:Thomas_Butler_Gunn_Diaries-_Volume_8,_page_102,_November_2-7,_1856.jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Thomas_Butler_Gunn_Diaries-_Volume_8%2C_page_102%2C_November_2-7%2C_1856.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "Public domain",
+      "author": "Gunn, Thomas Butler, 1826-1903",
+      "note": "Handwritten diary page.",
+      "labels": {
+        "is_sunset": false
+      }
+    },
+    {
+      "id": "not-price-building",
+      "source": "https://commons.wikimedia.org/wiki/File:Price_Building_illuminated_at_night_in_Quebec_City.jpg",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Price_Building_illuminated_at_night_in_Quebec_City.jpg/3840px-Price_Building_illuminated_at_night_in_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "license": "CC0",
+      "author": "Wilfredor",
+      "note": "City at night.",
+      "labels": {
+        "is_sunset": false
+      }
+    },
+    {
+      "id": "not-rockies-book",
+      "source": "https://commons.wikimedia.org/wiki/File:The_Rockies_of_Canada;_(1909)_(14740727616).jpg",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/2/2e/The_Rockies_of_Canada%3B_%281909%29_%2814740727616%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "license": "No restrictions",
+      "author": "Wilcox, Walter Dwight, 1869- [from old catalog]",
+      "note": "Old book scan.",
+      "labels": {
+        "is_sunset": false
+      }
+    }
+  ]
+}
