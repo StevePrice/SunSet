@@ -230,6 +230,8 @@ When a sunset is shared by email, the email works like a postcard that invites t
 9. **Share Page (web)** — what a friend sees when they open a shared link: photo, title, score, story, reaction instructions, reaction buttons, note box, thank-you message, and "Start your own Journal" link
 10. **Afterglow** (from your friends) — reactions received on an entry: totals, names, notes, and Share button
 
+**Copyright footer (all screens):** Every screen above, including the Share Page, shows a small line at the bottom: **"© 2026 Sunset Soul. All rights reserved."** Use the smallest text size and a muted color from the design system so it doesn't compete with the content. The shared-by-email message (6.9c) ends with the same line.
+
 ## 8. Out of Scope for MVP
 
 - Public story feed
