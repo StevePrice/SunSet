@@ -27,7 +27,7 @@ export async function generateMetadata(props: PageProps<"/s/[id]">): Promise<Met
   const card = `${env.BETTER_AUTH_URL}/s/${id}/card?v=${await cardVersion(content)}`;
   const title = share.title ?? (share.ownerName ? `A sunset from ${share.ownerName}` : "A sunset on Sunset Soul");
   const description = content.story ?? shareByline(share);
-  const image = { url: card, width: CARD_WIDTH, height: CARD_HEIGHT, alt: content.story ?? "A sunset" };
+  const image = { url: card, type: "image/jpeg", width: CARD_WIDTH, height: CARD_HEIGHT, alt: content.story ?? "A sunset" };
   return {
     title: `${title} · Sunset Soul`,
     description,
