@@ -1,6 +1,6 @@
 # Sunset Soul — Product Requirements Document (PRD)
 **Status:** Draft — MVP scope
-**Last updated:** November 4, 2026
+**Last updated:** November 8, 2026
 **Companion doc:** Sunset Soul – Concept & Strategy (sunset-soul-concept.md)
 
 ---
@@ -135,6 +135,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - Share also includes a link to a simple web page for the entry (the Share Page), where friends can react (see 6.9)
 - Share uses the device's native share sheet (text, iMessage, email, other installed apps) — **no in-app friend system or social graph in MVP**
 - Recipients do not need the app to view a shared entry
+- Shares sent by email follow the email rules in 6.9c (small preview photo plus a button to the Share Page)
 
 ### 6.7 Live Global Map
 - Separate map view showing sunsets that users have explicitly chosen to post publicly (distinct action from friend share-out)
@@ -159,13 +160,18 @@ The web page that opens when a friend taps a shared link. Its look matches the f
 - A small label at the top: *"[Name] shared a sunset with you"*
 - The photo fills the top of the page
 - Below it: the entry's title, composite score, and story (if present)
+- **Instructions above the reactions,** so friends know what to do:
+  - Heading: **"How did this sunset make you feel?"**
+  - Smaller line underneath: **"Tap a reaction to let [Name] know."**
 - Three reaction buttons: **Wow**, **Wish I was there**, **Love this!**
+  - Shaped as rounded "pill" buttons with a simple line icon beside each word, so they clearly look tappable (no emoji, per the design system)
 - The first time a friend taps a reaction, they're asked for their first name (one quick prompt; they aren't asked again on that device)
 - When a friend taps a reaction:
-  - The button turns gold and its count goes up by one
-  - A box appears to add a short note to the sender, with a turquoise **Send** button
+  - The button fills with the `reaction-selected` color (peach blush) and its count goes up by one
+  - A box appears to add a short note, with the placeholder text **"Add a note for [Name] (optional)"** and a **Send** button in the `action` color
   - Tapping the reaction again undoes it
-- At the bottom: a **Start your own Journal** button that invites friends to join the app (the built-in growth path)
+- **After sending,** a short thank-you replaces the note box: **"Sent! [Name] will see your reaction."** Friends can still change their reactions afterward.
+- At the bottom: a **Start your own Journal** link that invites friends to join the app (the built-in growth path). It's styled as a text link, not a button, so Send stays the one main button on the page (design system rule).
 - No app download or account is needed to react
 
 #### 6.9b What the user sees (Afterglow)
@@ -183,8 +189,16 @@ A screen opened from Entry Detail. The title is **"Afterglow"** in large text, w
 - Friends are asked for their first name on their first tap, so the user knows who reacted.
 - Friends on the Share Page see only the reaction counts. Names and notes are seen only by the user who shared.
 - The user can delete any reaction or note; the counts update.
-- Colors stay warm: gold for selected reactions, turquoise for Send. No red.
+- Colors follow the design system: `reaction-selected` (peach blush) for tapped reactions, `action` for the Send button. No red.
 - Basic spam protection: limit how many reactions one visitor can send on one entry.
+
+#### 6.9c Shared by email
+When a sunset is shared by email, the email works like a postcard that invites the friend to the Share Page. It doesn't try to be the whole experience.
+
+- **Small preview photo.** The photo is resized to no more than **600 pixels wide** (the standard email width) and compressed to a small file size (under about 200 KB). Never send the full-size original photo in the email.
+- Under the photo: **"[Name] shared a sunset with you"** and the entry title
+- A clear button: **"See [Name]'s sunset and react"**, which opens the Share Page (6.9a), where the full-size photo and the reactions are
+- **Build note:** today the full-size photo shows up enormous in the email. Check how the email is being created. If the app writes the email itself, use the 600-pixel preview. If it goes through the phone's share menu, hand over a reduced-size image along with the link instead of the original photo.
 
 **Not in MVP (later ideas)**
 - More reactions, such as "I felt this" and "Sending love" (for tender or bittersweet stories)
@@ -203,7 +217,7 @@ A screen opened from Entry Detail. The title is **"Afterglow"** in large text, w
 6. **Entry Detail** — full photo, title, story, score breakdown, Wow reason line, link to Afterglow, share action, "post to map" action
 7. **Live Map** — global map view of public posted entries, tap a pin to view detail
 8. **Settings** — account, notification preferences
-9. **Share Page (web)** — what a friend sees when they open a shared link: photo, title, score, story, reaction buttons, note box, and "Start your own Journal" button
+9. **Share Page (web)** — what a friend sees when they open a shared link: photo, title, score, story, reaction instructions, reaction buttons, note box, thank-you message, and "Start your own Journal" link
 10. **Afterglow** (from your friends) — reactions received on an entry: totals, names, notes, and Share button
 
 ## 8. Out of Scope for MVP
