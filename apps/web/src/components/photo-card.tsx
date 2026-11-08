@@ -15,6 +15,7 @@ export function PhotoCard({
   score = null,
   square = false,
   bleed = false,
+  corners = "md",
   loading,
   className = "",
 }: {
@@ -25,11 +26,13 @@ export function PhotoCard({
   score?: number | null;
   square?: boolean;
   bleed?: boolean;
+  /** radius.md (14pt) for photos; radius.sm (10pt) for small ones (the All photos grid, thumbnails). */
+  corners?: "md" | "sm";
   loading?: "lazy" | "eager";
   className?: string;
 }) {
   return (
-    <div className={`relative overflow-hidden ${bleed ? "mx-auto w-full max-w-2xl md:rounded-ss-md" : "rounded-ss-md"} ${className}`}>
+    <div className={`relative overflow-hidden ${bleed ? "mx-auto w-full max-w-2xl md:rounded-ss-md" : corners === "sm" ? "rounded-ss-sm" : "rounded-ss-md"} ${className}`}>
       <img
         src={src}
         alt={alt}

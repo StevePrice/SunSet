@@ -42,7 +42,7 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
       </header>
 
       <div className="flex items-center gap-4">
-        <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square className="w-20 shrink-0 rounded-ss-sm" />
+        <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square corners="sm" className="w-20 shrink-0" />
         <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} />}</p>
       </div>
 
