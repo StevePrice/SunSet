@@ -136,6 +136,16 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - Share uses the device's native share sheet (text, iMessage, email, other installed apps) — **no in-app friend system or social graph in MVP**
 - Recipients do not need the app to view a shared entry
 - Shares sent by email follow the email rules in 6.9c (small preview photo plus a button to the Share Page)
+- **Photo sizes for sharing.** Never share the original photo straight from the camera (often 4000+ pixels and several MB). The app makes a right-sized copy for each place the photo goes:
+
+  | Where it's shared | Image size | Notes |
+  |---|---|---|
+  | Instagram, Snapchat, TikTok, Facebook Stories | 1080 × 1920 pixels (tall) | Standard Stories size; smaller looks blurry |
+  | Text messages (link preview) | About 1200 × 630 pixels | The phone shows it as a preview bubble for the Share Page link |
+  | Email | File 1200 pixels wide, displayed at 600 pixels wide | Fits the standard email width and stays sharp on modern phone screens (see 6.9c) |
+  | Share Page (web) | About 1600–2000 pixels on the long side | Sharp, but compressed so it loads quickly |
+
+  - All copies are compressed (JPEG or similar) to keep file sizes small.
 
 ### 6.7 Live Global Map
 - Separate map view showing sunsets that users have explicitly chosen to post publicly (distinct action from friend share-out)
@@ -195,10 +205,10 @@ A screen opened from Entry Detail. The title is **"Afterglow"** in large text, w
 #### 6.9c Shared by email
 When a sunset is shared by email, the email works like a postcard that invites the friend to the Share Page. It doesn't try to be the whole experience.
 
-- **Small preview photo.** The photo is resized to no more than **600 pixels wide** (the standard email width) and compressed to a small file size (under about 200 KB). Never send the full-size original photo in the email.
+- **Small preview photo.** The photo is **displayed at 600 pixels wide** (the standard email width). The image file itself is 1200 pixels wide so it looks sharp on modern phone screens, and it's compressed to a small file size (under about 300 KB). Never send the full-size original photo in the email. (See the photo size table in 6.6.)
 - Under the photo: **"[Name] shared a sunset with you"** and the entry title
 - A clear button: **"See [Name]'s sunset and react"**, which opens the Share Page (6.9a), where the full-size photo and the reactions are
-- **Build note:** today the full-size photo shows up enormous in the email. Check how the email is being created. If the app writes the email itself, use the 600-pixel preview. If it goes through the phone's share menu, hand over a reduced-size image along with the link instead of the original photo.
+- **Build note:** today the full-size photo shows up enormous in the email. Check how the email is being created. If the app writes the email itself, use the 600-pixel-wide preview. If it goes through the phone's share menu, hand over a reduced-size image along with the link instead of the original photo.
 
 **Not in MVP (later ideas)**
 - More reactions, such as "I felt this" and "Sending love" (for tender or bittersweet stories)
