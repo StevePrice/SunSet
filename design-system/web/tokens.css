@@ -35,6 +35,11 @@
   --ss-score: #FF9B5C;
   --ss-on-score: #1D2B5C;
   --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+  --ss-map-water: #16224A;
+  --ss-map-land: #273A72;
+  --ss-map-coastline: #3D5290;
+  --ss-map-pin-ring: #FFF6EC;
+  --ss-map-pin-outline: #16224A;
   --ss-space-1: 4px;
   --ss-space-2: 8px;
   --ss-space-3: 12px;
@@ -83,6 +88,11 @@
     --ss-score: #FF9B5C;
     --ss-on-score: #1D2B5C;
     --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+    --ss-map-water: #C9D8EE;
+    --ss-map-land: #FBF6EE;
+    --ss-map-coastline: #C7BBA6;
+    --ss-map-pin-ring: #FFFFFF;
+    --ss-map-pin-outline: #1D2B5C;
   }
 }
 
@@ -111,6 +121,11 @@
   --ss-score: #FF9B5C;
   --ss-on-score: #1D2B5C;
   --ss-photo-scrim: rgba(22, 34, 74, 0.55);
+  --ss-map-water: #C9D8EE;
+  --ss-map-land: #FBF6EE;
+  --ss-map-coastline: #C7BBA6;
+  --ss-map-pin-ring: #FFFFFF;
+  --ss-map-pin-outline: #1D2B5C;
 }
 
 .ss-display { font-family: var(--ss-font-serif); font-size: 2.5rem; line-height: 1.100; font-weight: 600; letter-spacing: -0.01em; }

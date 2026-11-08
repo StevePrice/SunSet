@@ -37,16 +37,26 @@
     <color name="on_action">#FFFFFFFF</color>
     <!-- Keyboard and accessibility focus outline, 3px, on every surface. -->
     <color name="focus_ring">#FF2C4A8C</color>
-    <!-- Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). -->
+    <!-- Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. -->
     <color name="reaction_selected">#FFFBD2BC</color>
     <!-- 1px border on reaction-selected so the chip reads as pressed. -->
     <color name="reaction_selected_border">#FFF2B08E</color>
     <!-- Text on reaction-selected. -->
     <color name="on_reaction">#FF1D2B5C</color>
-    <!-- Score badge fill, on photos and beside titles. -->
+    <!-- Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. -->
     <color name="score">#FFFF9B5C</color>
     <!-- Numbers on score. 6.5:1. -->
     <color name="on_score">#FF1D2B5C</color>
     <!-- Behind white text laid over a photo (home-screen previews, share cards only). -->
     <color name="photo_scrim">#8C16224A</color>
+    <!-- Live Map oceans and lakes. Night water in dark mode, soft sky blue in light mode. -->
+    <color name="map_water">#FFC9D8EE</color>
+    <!-- Live Map land, on map-water. -->
+    <color name="map_land">#FFFBF6EE</color>
+    <!-- 1.5px line where map-land meets map-water. -->
+    <color name="map_coastline">#FFC7BBA6</color>
+    <!-- 3px ring around each photo pin on the Live Map. -->
+    <color name="map_pin_ring">#FFFFFFFF</color>
+    <!-- 1.5px outline outside map-pin-ring, so pins stand out on land and water alike. -->
+    <color name="map_pin_outline">#FF1D2B5C</color>
 </resources>
