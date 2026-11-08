@@ -23,6 +23,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
   const [name, setName] = useState("");
   const [note, setNote] = useState(initial.note ?? "");
   const [noteSent, setNoteSent] = useState(initial.note !== null);
+  const [editingNote, setEditingNote] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +51,10 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     }
     setAskingName(null);
     setState(body as PublicReactions);
-    if (pending.action === "note") setNoteSent(true);
+    if (pending.action === "note") {
+      setNoteSent(true);
+      setEditingNote(false);
+    }
   }
 
   function tap(kind: ReactionKind) {
@@ -71,10 +75,17 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     else void send(pending);
   }
 
+  const who = ownerName ?? "them";
   const showNote = state.mine.length > 0 || state.note !== null;
 
   return (
-    <section aria-label="Reactions" className="flex flex-col gap-4">
+    <section aria-labelledby="reactions-heading" className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 id="reactions-heading" className="font-serif text-title-3">
+          How did this sunset make you feel?
+        </h2>
+        <p className="text-ink-muted">Tap a reaction to let {who} know.</p>
+      </div>
       <div className="flex flex-wrap gap-2">
         {REACTION_KINDS.map((kind) => {
           return (
@@ -113,10 +124,23 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
         </form>
       )}
 
-      {showNote && !askingName && (
+      {showNote && !askingName && noteSent && !editingNote && (
+        <div className="flex flex-col items-start gap-1">
+          <p role="status">Sent! {ownerName ?? "They"} will see your reaction.</p>
+          <button
+            type="button"
+            onClick={() => setEditingNote(true)}
+            className="inline-flex min-h-12 items-center text-label underline"
+          >
+            Edit your note
+          </button>
+        </div>
+      )}
+
+      {showNote && !askingName && !(noteSent && !editingNote) && (
         <form onSubmit={submitNote} className="flex flex-col gap-2">
-          <label htmlFor="reaction-note">
-            Add a note for {ownerName ?? "them"} (optional)
+          <label htmlFor="reaction-note" className="sr-only">
+            Add a note for {who} (optional)
           </label>
           <div className="flex gap-2">
             <input
@@ -127,11 +151,11 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
                 setNoteSent(false);
               }}
               maxLength={MAX_NOTE_LENGTH}
-              placeholder="Best night of the whole trip"
+              placeholder={`Add a note for ${who} (optional)`}
               className={`${fieldClass} ss-story flex-1`}
             />
-            <Button type="submit" variant="action" disabled={busy || noteSent}>
-              {noteSent ? "Sent" : "Send"}
+            <Button type="submit" variant="action" disabled={busy}>
+              Send
             </Button>
           </div>
           <p className="text-caption text-ink-muted">

@@ -134,6 +134,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Decision (2026-11-08):** reaction colours follow the design system (peach blush for a tapped reaction), not the gold and turquoise first written in the PRD. Screens are built with plain styling, since Phase 4c restyles them.
 
+**Share Page copy (2026-11-08):** heading "How did this sunset make you feel?", "Tap a reaction to let [Name] know.", note placeholder, "Sent! [Name] will see your reaction." thank-you, and Start your own Journal as a text link (PRD 6.9a, updated by Louise).
+
 ### Phase 4c: Adopt the design system
 **Goal:** the app looks like Sunset Soul, and future look-and-feel changes are a one-file edit. See [design-system/README.md](design-system/README.md) and [brand/logo/LOGO-USAGE.md](brand/logo/LOGO-USAGE.md).
 - Import `design-system/web/tokens.css` and map it to role-based Tailwind names (`bg-surface`, `text-ink`, `bg-action`, `bg-score` …), dark mode included
@@ -151,6 +153,10 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Photo framing: full bleed only at the top of Entry Detail, on the score reveal and on Stories cards; inset 16pt with 14pt corners elsewhere
 - Journal with two views: **Stories** and **All photos** (two columns, grouped by month)
 - Light-mode rule: `score` and `reaction-selected` are fills only, never text or icon colours
+- Reaction pills get a simple line icon beside each word (no emoji). Louise chooses or approves the icon style; the design system has no icon set yet
+- Share images as compressed JPEGs: the Stories card (1080×1920) and link-preview card (about 1200×630) are PNGs today, often several MB. next/og only outputs PNG, so this needs a JPEG encoder that runs on Workers. Sizes per PRD 6.6
+- Share Page photo at 1600–2000 px on the long side (it serves the 2560 px display photo today): a new photo size, filled in for existing entries
+- Email (PRD 6.9c), decided 2026-11-08 with Louise: email shares go through the phone's share sheet with the small JPEG; no app-sent share email
 
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).

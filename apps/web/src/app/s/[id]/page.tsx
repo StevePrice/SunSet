@@ -1,9 +1,9 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { ButtonLink } from "@/components/button";
 import { Logo } from "@/components/logo";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreBreakdown } from "@/components/score-card";
@@ -62,7 +62,9 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
           <Logo width={132} />
         </p>
         <p className="text-ink-muted">A place to keep the sunsets that move you.</p>
-        <ButtonLink href="/sign-in?mode=sign-up">Start your own Journal</ButtonLink>
+        <Link href="/sign-in?mode=sign-up" className="inline-flex min-h-12 items-center text-label underline">
+          Start your own Journal
+        </Link>
       </footer>
     </main>
   );
