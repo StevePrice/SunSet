@@ -1,15 +1,16 @@
-import Link from "next/link";
+import { ButtonLink } from "@/components/button";
+import { Logo } from "@/components/logo";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-linear-to-b from-orange-200 via-rose-300 to-indigo-900 px-6 text-center">
-      <h1 className="text-5xl font-semibold tracking-tight text-white drop-shadow">Sunset Soul</h1>
-      <p className="max-w-md text-lg text-white/90">
-        A place to keep and share the sunsets that move you. Coming soon.
-      </p>
-      <Link href="/sign-in" className="rounded-full bg-white/90 px-5 py-2 font-medium text-rose-700 hover:bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
+      <h1>
+        <Logo layout="stacked" width={240} />
+      </h1>
+      <p className="max-w-md text-ink-story">A place to keep and share the sunsets that move you. Coming soon.</p>
+      <ButtonLink href="/sign-in" variant="action">
         Sign in
-      </Link>
+      </ButtonLink>
     </main>
   );
 }

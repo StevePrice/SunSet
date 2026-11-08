@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   await requireAdmin();
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-6">
-      <nav className="flex flex-wrap items-center gap-4 border-b border-zinc-200 pb-3 text-sm dark:border-zinc-800">
+      <nav className="flex flex-wrap items-center gap-4 border-b border-divider pb-3 text-caption">
         <strong>Admin</strong>
         <Link href="/admin" className="underline">
           Users

@@ -1,11 +1,13 @@
-/* eslint-disable @next/next/no-img-element -- Journal photos are private and served by /api/photos. */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries } from "@/lib/entries";
 import { reactionTotals } from "@/lib/reactions";
+import { ButtonLink } from "@/components/button";
 import { LocalDate } from "@/components/local-date";
+import { AppHeader } from "@/components/logo";
+import { PhotoCard } from "@/components/photo-card";
 
 export const metadata = { title: "Your Journal · Sunset Soul" };
 
@@ -16,50 +18,48 @@ export default async function JournalPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
-      <header className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">Your Journal</h1>
-        <Link href="/journal/new" className="rounded-full bg-orange-600 px-5 py-2 font-medium text-white hover:bg-orange-700">
+      <AppHeader />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="font-serif text-title-1">Your Journal</h1>
+        <ButtonLink href="/journal/new" variant="action">
           New sunset
-        </Link>
-      </header>
+        </ButtonLink>
+      </div>
 
       {entries.length === 0 ? (
-        <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-300 px-6 py-16 text-center dark:border-zinc-700">
-          <p className="text-lg">No sunsets yet.</p>
-          <p className="text-zinc-600 dark:text-zinc-400">The next time one stops you in your tracks, save it here.</p>
+        <section className="flex flex-col items-center gap-3 rounded-ss-lg bg-surface-sunken px-6 py-10 text-center">
+          <p className="font-serif text-title-3">No sunsets yet.</p>
+          <p className="text-ink-muted">The next time one stops you in your tracks, save it here.</p>
         </section>
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {entries.map((entry) => (
             <li key={entry.id}>
               <Link href={`/journal/${entry.id}`} className="group relative flex flex-col gap-1">
-                {entry.displayScore != null && (
-                  <span className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-sm font-semibold text-white">
-                    {entry.displayScore}
-                  </span>
-                )}
-                <img
+                <PhotoCard
                   src={`/api/photos/${entry.id}/thumb`}
                   alt={entry.story ?? "A sunset from your Journal"}
-                  className="aspect-square w-full rounded-xl object-cover group-hover:opacity-90"
+                  score={entry.displayScore}
+                  square
                   loading="lazy"
+                  className="group-hover:opacity-90"
                 />
-                <span className="text-sm font-medium">
+                <span className="text-label font-bold">
                   <LocalDate iso={entry.takenAt.toISOString()} />
                 </span>
                 {reactions.has(entry.id) && (
-                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <span className="text-caption text-ink-muted">
                     {reactions.get(entry.id)} {reactions.get(entry.id) === 1 ? "reaction" : "reactions"} from friends
                   </span>
                 )}
-                {entry.story && <span className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">{entry.story}</span>}
+                {entry.story && <span className="line-clamp-2 text-caption text-ink-muted">{entry.story}</span>}
               </Link>
             </li>
           ))}
         </ul>
       )}
 
-      <nav className="text-sm text-zinc-600 dark:text-zinc-400">
+      <nav className="text-label">
         <Link href="/account" className="underline">
           Account
         </Link>

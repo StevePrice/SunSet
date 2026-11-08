@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/button";
+import { ReactionChip } from "@/components/reaction-chip";
+import { fieldClass, noticeClass } from "@/components/styles";
 import {
   MAX_NOTE_LENGTH,
   MAX_VISITOR_NAME_LENGTH,
@@ -74,32 +77,22 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     <section aria-label="Reactions" className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
         {REACTION_KINDS.map((kind) => {
-          const selected = state.mine.includes(kind);
           return (
-            <button
+            <ReactionChip
               key={kind}
-              type="button"
-              aria-pressed={selected}
+              label={REACTION_LABELS[kind]}
+              count={state.counts[kind]}
+              selected={state.mine.includes(kind)}
               disabled={busy}
               onClick={() => tap(kind)}
-              className={`flex min-h-12 items-center gap-2 rounded-full border px-5 text-lg disabled:opacity-60 ${
-                selected
-                  ? "border-[#F2B08E] bg-[#FBD2BC] text-[#1D2B5C]"
-                  : "border-zinc-400 bg-transparent"
-              }`}
-            >
-              <span>{REACTION_LABELS[kind]}</span>
-              <span className="tabular-nums" aria-label={`${state.counts[kind]} so far`}>
-                {state.counts[kind]}
-              </span>
-            </button>
+            />
           );
         })}
       </div>
 
       {askingName && (
-        <form onSubmit={submitName} className="flex flex-col gap-2 rounded-2xl border border-zinc-300 p-4 dark:border-zinc-700">
-          <label htmlFor="visitor-name" className="text-lg">
+        <form onSubmit={submitName} className="flex flex-col gap-2 rounded-ss-lg bg-surface-raised p-4">
+          <label htmlFor="visitor-name">
             What&apos;s your first name? {ownerName ? `So ${ownerName} knows who reacted.` : "So they know who reacted."}
           </label>
           <div className="flex gap-2">
@@ -111,18 +104,18 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
               autoComplete="given-name"
               autoFocus
               required
-              className="min-h-12 min-w-0 flex-1 rounded-lg border border-zinc-400 px-3 text-lg dark:bg-zinc-900"
+              className={`${fieldClass} flex-1`}
             />
-            <button type="submit" disabled={busy || !name.trim()} className="min-h-12 rounded-lg bg-[#2C4A8C] px-5 text-lg text-white disabled:opacity-60">
+            <Button type="submit" variant="action" disabled={busy || !name.trim()}>
               Continue
-            </button>
+            </Button>
           </div>
         </form>
       )}
 
       {showNote && !askingName && (
         <form onSubmit={submitNote} className="flex flex-col gap-2">
-          <label htmlFor="reaction-note" className="text-lg">
+          <label htmlFor="reaction-note">
             Add a note for {ownerName ?? "them"} (optional)
           </label>
           <div className="flex gap-2">
@@ -135,24 +128,20 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
               }}
               maxLength={MAX_NOTE_LENGTH}
               placeholder="Best night of the whole trip"
-              className="min-h-12 min-w-0 flex-1 rounded-lg border border-zinc-400 px-3 text-lg dark:bg-zinc-900"
+              className={`${fieldClass} ss-story flex-1`}
             />
-            <button
-              type="submit"
-              disabled={busy || noteSent}
-              className="min-h-12 rounded-lg bg-[#2C4A8C] px-5 text-lg text-white disabled:opacity-60"
-            >
+            <Button type="submit" variant="action" disabled={busy || noteSent}>
               {noteSent ? "Sent" : "Send"}
-            </button>
+            </Button>
           </div>
-          <p className="text-base text-zinc-600 dark:text-zinc-400">
+          <p className="text-caption text-ink-muted">
             Only {ownerName ?? "the person who shared this"} sees your name and note. Others see the counts.
           </p>
         </form>
       )}
 
       {error && (
-        <p role="alert" className="text-lg">
+        <p role="alert" className={noticeClass}>
           {error}
         </p>
       )}

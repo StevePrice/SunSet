@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ScoreBadge } from "@/components/score-badge";
 import type { EntryScore, ScoreStatus } from "@/lib/scores";
 
 type ScoreState = EntryScore | { status: "none" };
@@ -48,9 +49,9 @@ export function ScoreCard({ entryId, initial }: { entryId: string; initial: Scor
     setRequesting(false);
   }
 
-  const box = "rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-900";
+  const box = "rounded-ss-lg bg-surface-raised p-5";
   const retry = (label: string) => (
-    <button type="button" disabled={requesting} onClick={rescore} className="mt-2 text-sm underline disabled:opacity-50">
+    <button type="button" disabled={requesting} onClick={rescore} className="mt-2 text-caption underline disabled:opacity-50">
       {label}
     </button>
   );
@@ -88,33 +89,34 @@ export function ScoreCard({ entryId, initial }: { entryId: string; initial: Scor
 /** A finished score: the overall number, the four parts, and what the AI saw. */
 export function ScoreBreakdown({ score, whose = "your" }: { score: EntryScore; whose?: string }) {
   return (
-    <section className="flex flex-col gap-4 rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-900" aria-label="Sunset score">
-      <div className="flex items-baseline gap-2">
-        <span className="text-5xl font-semibold text-orange-600">{score.displayScore}</span>
-        <span className="text-zinc-500">/ 100</span>
-      </div>
+    <section className="flex flex-col gap-4 rounded-ss-lg bg-surface-raised p-5" aria-label="Sunset score">
+      {score.displayScore != null && (
+        <div className="flex">
+          <ScoreBadge score={score.displayScore} size="lg" />
+        </div>
+      )}
       <dl className="flex flex-col gap-2">
         {(Object.keys(LABELS) as (keyof typeof LABELS)[]).map((key) => (
           <div key={key} className="grid grid-cols-[7rem_1fr_2rem] items-center gap-3">
-            <dt className="text-sm">{LABELS[key]}</dt>
-            <dd className="h-2 overflow-hidden rounded-full bg-zinc-300 dark:bg-zinc-700">
-              <div className="h-full rounded-full bg-orange-500" style={{ width: `${(score[key] ?? 0) * 10}%` }} />
+            <dt className="text-caption">{LABELS[key]}</dt>
+            <dd className="h-2 overflow-hidden rounded-ss-pill bg-divider">
+              <div className="h-full rounded-ss-pill bg-score" style={{ width: `${(score[key] ?? 0) * 10}%` }} />
             </dd>
-            <dd className="text-right text-sm tabular-nums">{score[key]}</dd>
+            <dd className="text-right text-caption tabular-nums">{score[key]}</dd>
           </div>
         ))}
       </dl>
       {score.settingType && (
-        <p className="text-sm">
+        <p className="text-caption">
           <strong>{SETTINGS[score.settingType] ?? score.settingType}.</strong> {score.settingReason}
         </p>
       )}
       {score.wowReason && (
-        <p className="text-sm">
+        <p className="text-caption">
           <strong>Wow:</strong> {score.wowReason}
         </p>
       )}
-      <p className="text-xs text-zinc-500">
+      <p className="text-caption text-ink-muted">
         Palette and Reach are measured from {whose} photo&apos;s colours; Setting and Wow Factor are judged by AI.
       </p>
     </section>

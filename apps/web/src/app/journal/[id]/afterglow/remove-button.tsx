@@ -19,7 +19,7 @@ export function RemoveButton({
       type="button"
       disabled={pending}
       aria-label={label}
-      className="min-h-12 px-2 text-base underline disabled:opacity-50"
+      className="min-h-12 px-2 text-label text-ink-muted underline disabled:opacity-50"
       onClick={async () => {
         if (!confirm(`${label}? This can't be undone.`)) return;
         setPending(true);

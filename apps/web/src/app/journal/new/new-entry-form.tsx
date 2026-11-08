@@ -12,7 +12,7 @@ import { preparePhoto, UnsupportedPhotoError, type PreparedPhoto } from "@/lib/p
 type LocationChoice = "photo" | "device" | "none";
 
 const pickerClass =
-  "flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-zinc-300 px-4 py-6 text-center font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900";
+  "flex flex-1 cursor-pointer items-center justify-center rounded-ss-md border border-border-subtle px-4 py-6 text-center font-bold hover:bg-surface-raised";
 
 export function NewEntryForm() {
   const router = useRouter();
@@ -111,9 +111,9 @@ export function NewEntryForm() {
             <input type="file" accept="image/*" className="sr-only" onChange={onPick} disabled={processing} />
           </label>
         </div>
-        {processing && <p className="text-zinc-600 dark:text-zinc-400">Preparing your photo…</p>}
-        {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-        <Link href="/journal" className="text-sm underline">
+        {processing && <p className="text-ink-muted">Preparing your photo…</p>}
+        {error && <p role="alert" className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{error}</p>}
+        <Link href="/journal" className="text-caption underline">
           Back to your Journal
         </Link>
       </div>
@@ -122,16 +122,16 @@ export function NewEntryForm() {
 
   return (
     <form onSubmit={onSave} className="flex flex-col gap-5">
-      <img src={prepared.previewUrl} alt="Your sunset" className="w-full rounded-2xl" />
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <img src={prepared.previewUrl} alt="Your sunset" className="w-full rounded-ss-lg" />
+      <p className="text-caption text-ink-muted">
         {prepared.takenAt ? `Taken ${formatTakenAt(prepared.takenAt)}` : "Date taken unknown; we'll use today."}
       </p>
 
       {writeMyself ? (
         <label className="flex flex-col gap-2">
-          <span className="font-medium">The story (optional)</span>
+          <span className="font-bold">The story (optional)</span>
           <textarea
-            className="min-h-28 rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className="min-h-28 ss-story min-h-12 w-full min-w-0 rounded-ss-md border border-border-subtle bg-surface-raised px-3 py-2 text-ink placeholder:text-ink-muted"
             placeholder="What was happening when you took this?"
             maxLength={MAX_STORY_LENGTH}
             value={story}
@@ -139,7 +139,7 @@ export function NewEntryForm() {
           />
         </label>
       ) : (
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-ink-muted">
           After you save, I&apos;ll ask a few questions to help you tell the story behind it.{" "}
           <button type="button" className="underline" onClick={() => setWriteMyself(true)}>
             Write it myself instead
@@ -148,7 +148,7 @@ export function NewEntryForm() {
       )}
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 font-medium">Location</legend>
+        <legend className="mb-1 font-bold">Location</legend>
         {prepared.location && (
           <label className="flex items-center gap-2">
             <input type="radio" name="location" checked={choice === "photo"} onChange={() => setChoice("photo")} />
@@ -161,7 +161,7 @@ export function NewEntryForm() {
             Where I am now ({formatLocation(deviceLocation)})
           </label>
         ) : (
-          <button type="button" className="self-start text-sm underline" onClick={useDeviceLocation}>
+          <button type="button" className="self-start text-caption underline" onClick={useDeviceLocation}>
             Use where I am now
           </button>
         )}
@@ -169,17 +169,17 @@ export function NewEntryForm() {
           <input type="radio" name="location" checked={choice === "none"} onChange={() => setChoice("none")} />
           No location
         </label>
-        <p className="text-sm text-zinc-500">Your Journal is private, including its locations. The Sunset Soul team can see it only to run and support the app.</p>
+        <p className="text-caption text-ink-muted">Your Journal is private, including its locations. The Sunset Soul team can see it only to run and support the app.</p>
       </fieldset>
 
-      {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
+      {error && <p role="alert" className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{error}</p>}
       <div className="flex gap-3">
         <button
           type="submit"
           name="next"
           value={writeMyself ? "entry" : "story"}
           disabled={saving}
-          className="flex-1 rounded-lg bg-orange-600 px-4 py-3 font-medium text-white hover:bg-orange-700 disabled:opacity-50"
+          className="flex-1 inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 bg-action text-on-action hover:bg-action/90"
         >
           {saving ? "Saving…" : writeMyself ? "Save to my Journal" : "Save and tell its story"}
         </button>
@@ -189,7 +189,7 @@ export function NewEntryForm() {
             name="next"
             value="entry"
             disabled={saving}
-            className="rounded-lg border border-zinc-300 px-4 py-3 dark:border-zinc-700"
+            className="inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 border border-border-subtle bg-transparent text-ink hover:bg-surface-raised"
           >
             Save without a story
           </button>
@@ -197,7 +197,7 @@ export function NewEntryForm() {
         <button
           type="button"
           disabled={saving}
-          className="rounded-lg border border-zinc-300 px-4 py-3 dark:border-zinc-700"
+          className="inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 border border-border-subtle bg-transparent text-ink hover:bg-surface-raised"
           onClick={() => setPrepared(null)}
         >
           Pick another

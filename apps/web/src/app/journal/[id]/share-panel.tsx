@@ -2,6 +2,8 @@
 
 import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
 import { createShareAction, stopSharingAction, updateSharePlaceAction, type ShareLink } from "../actions";
+import { Button, ButtonAnchor } from "@/components/button";
+import { fieldClass, noticeClass, panelClass } from "@/components/styles";
 import { MAX_PLACE_LENGTH } from "@/lib/shares";
 
 // Creating the link is a separate tap from opening the share sheet: iOS only opens the sheet
@@ -61,58 +63,40 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
     setPending(false);
   }
 
-  const box = "flex flex-col gap-3 rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800";
+  const box = panelClass;
   if (!share) {
     return (
       <section className={box} aria-label="Share">
         <p>Share this sunset with a link anyone can open, no account needed.</p>
-        {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-        <button
-          type="button"
-          disabled={pending}
-          onClick={create}
-          className="self-start rounded-lg bg-orange-600 px-4 py-2 font-medium text-white disabled:opacity-50"
-        >
+        {error && <p role="alert" className={noticeClass}>{error}</p>}
+        <Button variant="action" disabled={pending} onClick={create} className="self-start">
           Create a share link
-        </button>
+        </Button>
       </section>
     );
   }
 
   return (
     <section className={box} aria-label="Share">
-      <p className="text-sm">Anyone with this link can see the photo, story, score and date, and react to it. The exact location is never shared.</p>
-      <input readOnly value={share.url} aria-label="Share link" onFocus={(e) => e.target.select()} className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
+      <p>Anyone with this link can see the photo, story, score and date, and react to it. The exact location is never shared.</p>
+      <input readOnly value={share.url} aria-label="Share link" onFocus={(e) => e.target.select()} className={`${fieldClass} text-caption`} />
       <div className="flex flex-wrap gap-3">
-        <a
-          href={`sms:?&body=${encodeURIComponent(`${SHARE_TEXT}: ${share.url}`)}`}
-          className="flex min-h-12 items-center rounded-lg bg-orange-600 px-4 py-2 font-medium text-white"
-        >
+        <ButtonAnchor variant="action" href={`sms:?&body=${encodeURIComponent(`${SHARE_TEXT}: ${share.url}`)}`}>
           Messages
-        </a>
-        {canShare && (
-          <button
-            type="button"
-            onClick={() => shareMore(share.url)}
-            className="min-h-12 rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-700"
-          >
-            More…
-          </button>
-        )}
-        <button
-          type="button"
+        </ButtonAnchor>
+        {canShare && <Button onClick={() => shareMore(share.url)}>More…</Button>}
+        <Button
           onClick={async () => {
             await navigator.clipboard.writeText(share.url);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }}
-          className="rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-700"
         >
           {copied ? "Copied" : "Copy link"}
-        </button>
+        </Button>
       </div>
       <form action={placeAction} className="flex flex-col gap-2">
-        <label htmlFor="share-place" className="text-sm">
+        <label htmlFor="share-place">
           Place name to show (optional)
         </label>
         <div className="flex gap-2">
@@ -122,15 +106,15 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
             defaultValue={share.place ?? ""}
             maxLength={MAX_PLACE_LENGTH}
             placeholder="e.g. Ocean Beach, San Diego"
-            className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className={`${fieldClass} flex-1`}
           />
-          <button type="submit" disabled={placePending} className="rounded-lg border border-zinc-300 px-4 py-2 disabled:opacity-50 dark:border-zinc-700">
+          <Button type="submit" disabled={placePending}>
             Save
-          </button>
+          </Button>
         </div>
-        {placeState?.error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{placeState.error}</p>}
+        {placeState?.error && <p role="alert" className={noticeClass}>{placeState.error}</p>}
       </form>
-      <button type="button" disabled={pending} onClick={stop} className="self-start text-sm text-red-700 underline disabled:opacity-50">
+      <button type="button" disabled={pending} onClick={stop} className="inline-flex min-h-12 items-center self-start text-label underline disabled:opacity-50">
         Stop sharing
       </button>
     </section>

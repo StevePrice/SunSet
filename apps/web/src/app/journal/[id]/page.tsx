@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- Journal photos are private and served by /api/photos. */
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -10,6 +9,9 @@ import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
 import { originalWords } from "@/lib/story/prompts";
 import { getSession } from "@/lib/story/sessions";
+import { buttonClass } from "@/components/button";
+import { AppHeader } from "@/components/logo";
+import { PhotoCard } from "@/components/photo-card";
 import { ScoreCard } from "@/components/score-card";
 import { LocalDate } from "@/components/local-date";
 import { formatLocation } from "@/lib/format";
@@ -45,48 +47,48 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
-      <Link href="/journal" className="text-sm underline">
+      <AppHeader />
+      <Link href="/journal" className="inline-flex min-h-12 items-center self-start text-label underline">
         ← Your Journal
       </Link>
-      <img
+      <PhotoCard
         src={`/api/photos/${entry.id}/display`}
         alt={entry.story ?? "Your sunset"}
         width={entry.photoWidth}
         height={entry.photoHeight}
-        className="h-auto w-full rounded-2xl"
       />
       <div className="flex flex-col gap-1">
-        {entry.title && <h1 className="text-3xl font-semibold tracking-tight">{entry.title}</h1>}
-        <p className={entry.title ? "text-zinc-600 dark:text-zinc-400" : "text-2xl font-semibold"}>
+        {entry.title && <h1 className="font-serif text-title-2">{entry.title}</h1>}
+        <p className={entry.title ? "text-ink-muted" : "text-title-2 font-semibold"}>
           <LocalDate iso={entry.takenAt.toISOString()} />
         </p>
-        {entry.location && <p className="text-sm text-zinc-600 dark:text-zinc-400">{formatLocation(entry.location)}</p>}
+        {entry.location && <p className="text-caption text-ink-muted">{formatLocation(entry.location)}</p>}
       </div>
       <EditStoryForm id={entry.id} story={entry.story} hasLocation={entry.location !== null} />
       <Link
         href={`/journal/${entry.id}/story`}
         className={
           words
-            ? "self-start text-sm underline"
-            : "self-start rounded-lg bg-orange-600 px-4 py-2 font-medium text-white hover:bg-orange-700"
+            ? "inline-flex min-h-12 items-center self-start text-label underline"
+            : buttonClass("secondary", "self-start")
         }
       >
         {words ? "Add more to my story" : "Tell its story"}
       </Link>
       {words && (
-        <details className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-          <summary className="cursor-pointer text-sm font-medium">What you wrote</summary>
-          <p className="mt-3 whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">{words}</p>
+        <details className="rounded-ss-lg bg-surface-raised p-4">
+          <summary className="cursor-pointer text-label font-bold">What you wrote</summary>
+          <p className="mt-3 whitespace-pre-wrap text-ink-story">{words}</p>
         </details>
       )}
       <ScoreCard entryId={entry.id} initial={score ?? { status: "none" }} />
       {(share || reactionCount > 0) && (
         <Link
           href={`/journal/${entry.id}/afterglow`}
-          className="flex min-h-12 items-center justify-between rounded-2xl border border-zinc-200 px-5 py-3 dark:border-zinc-800"
+          className="flex min-h-12 flex-wrap items-center justify-between gap-2 rounded-ss-lg bg-surface-raised px-5 py-3"
         >
-          <span className="text-lg font-medium">Afterglow</span>
-          <span className="text-base text-zinc-600 dark:text-zinc-400">
+          <span className="font-serif text-title-3">Afterglow</span>
+          <span className="text-base text-ink-muted">
             {reactionCount === 0 ? "No reactions yet" : `${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"} from friends`} →
           </span>
         </Link>

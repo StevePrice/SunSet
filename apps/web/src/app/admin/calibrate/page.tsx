@@ -18,7 +18,7 @@ export default async function CalibratePage(props: PageProps<"/admin/calibrate">
             key={p}
             href={`/admin/calibrate?param=${p}`}
             aria-current={p === param ? "page" : undefined}
-            className={`rounded-full px-4 py-1.5 text-sm ${p === param ? "bg-orange-600 text-white" : "border border-zinc-300 dark:border-zinc-700"}`}
+            className={`rounded-ss-pill px-4 py-1.5 text-caption ${p === param ? "bg-action text-on-action" : "border border-border-subtle"}`}
           >
             {PARAM_INFO[p].label}
           </Link>

@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { Logo } from "@/components/logo";
 import { getEnabledSocialProviders } from "@/lib/auth";
 import { SignInForm } from "./sign-in-form";
 
@@ -8,8 +9,9 @@ export const metadata = { title: "Sign in · Sunset Soul" };
 export default function SignInPage(props: PageProps<"/sign-in">) {
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight">Sign in to Sunset Soul</h1>
-      <Suspense fallback={<p className="text-zinc-500">Loading…</p>}>
+      <Logo width={200} />
+      <h1 className="font-serif text-title-1">Sign in to Sunset Soul</h1>
+      <Suspense fallback={<p className="text-ink-muted">Loading…</p>}>
         <SignInOptions searchParams={props.searchParams} />
       </Suspense>
     </main>

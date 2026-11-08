@@ -46,7 +46,7 @@ export function RatePairs({
 
   if (!pair) {
     return (
-      <p className="rounded-2xl bg-zinc-100 p-6 dark:bg-zinc-900">
+      <p className="rounded-ss-lg bg-surface-raised p-6">
         You&apos;ve compared every pair for {info.label}.{" "}
         <Link href={`/admin/calibrate/results?param=${param}`} className="underline">
           See the results
@@ -69,9 +69,9 @@ export function RatePairs({
         <img
           src={`/api/admin/calibration/${p.id}`}
           alt=""
-          className="aspect-[4/3] w-full rounded-xl bg-zinc-200 object-cover ring-orange-600 group-hover:ring-4 dark:bg-zinc-800"
+          className="aspect-[4/3] w-full rounded-ss-md bg-surface-raised object-cover ring-action group-hover:ring-4"
         />
-        <span className="text-xs text-zinc-500">{p.credit}</span>
+        <span className="text-caption text-ink-muted">{p.credit}</span>
       </button>
     );
   };
@@ -79,8 +79,8 @@ export function RatePairs({
   return (
     <section className="flex flex-col gap-4">
       <div>
-        <h1 className="text-2xl font-semibold">{info.question}</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{info.hint}</p>
+        <h1 className="text-title-2 font-semibold">{info.question}</h1>
+        <p className="text-caption text-ink-muted">{info.hint}</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {photo("left")}
@@ -91,11 +91,11 @@ export function RatePairs({
           type="button"
           onClick={() => vote("same")}
           disabled={pending}
-          className="rounded-lg border border-zinc-300 px-4 py-2 disabled:opacity-50 dark:border-zinc-700"
+          className="inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 border border-border-subtle bg-transparent text-ink hover:bg-surface-raised"
         >
           About the same
         </button>
-        <span className="text-sm text-zinc-500">
+        <span className="text-caption text-ink-muted">
           {pair.done + (pending ? 1 : 0)} of {pair.total} pairs done{count ? ` · ${count} this visit` : ""}. About 40 per
           parameter is enough for a first ranking. Keys: ← → ↓
         </span>

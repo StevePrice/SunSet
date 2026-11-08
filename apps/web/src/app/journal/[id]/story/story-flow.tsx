@@ -8,10 +8,10 @@ import type { StoryView } from "@/lib/story/sessions";
 import { answerAction, draftAction, openersAction, otherQuestionAction, saveStoryAction, type DraftResult } from "./actions";
 
 const SHORT_ANSWER_WORDS = 15;
-const button = "rounded-lg px-4 py-2 font-medium disabled:opacity-50";
-const primary = `${button} bg-orange-600 text-white hover:bg-orange-700`;
-const secondary = `${button} border border-zinc-300 dark:border-zinc-700`;
-const field = "rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900";
+const button = "inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50";
+const primary = `${button} bg-action text-on-action hover:bg-action/90`;
+const secondary = `${button} border border-border-subtle bg-transparent text-ink hover:bg-surface-raised`;
+const field = "min-h-12 w-full min-w-0 rounded-ss-md border border-border-subtle bg-surface-raised px-3 py-2 text-ink placeholder:text-ink-muted";
 
 export function StoryFlow({ entryId, initial }: { entryId: string; initial: StoryView }) {
   const [view, setView] = useState(initial);
@@ -31,14 +31,14 @@ export function StoryFlow({ entryId, initial }: { entryId: string; initial: Stor
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <img src={`/api/photos/${entryId}/thumb`} alt="Your sunset" className="h-20 w-20 rounded-xl object-cover" />
-        <p className="text-xs text-zinc-500">
+        <img src={`/api/photos/${entryId}/thumb`} alt="Your sunset" className="h-20 w-20 rounded-ss-md object-cover" />
+        <p className="text-caption text-ink-muted">
           Your photo and words are sent to Claude, Anthropic&apos;s AI, to write questions and your story. Anthropic doesn&apos;t
           train its models on them. Your story stays private unless you share it.
         </p>
       </div>
       {view.safetyConcern && <SupportNotice />}
-      {error && <p role="alert" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">{error}</p>}
+      {error && <p role="alert" className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{error}</p>}
       {phase === "interview" ? (
         <Interview entryId={entryId} view={view} busy={busy} run={run} onFinish={() => setPhase("story")} />
       ) : (
@@ -50,7 +50,7 @@ export function StoryFlow({ entryId, initial }: { entryId: string; initial: Stor
 
 function SupportNotice() {
   return (
-    <section role="note" className="rounded-2xl bg-sky-50 p-4 text-sm leading-6 text-sky-950">
+    <section role="note" className="rounded-ss-lg bg-surface-raised p-4 leading-7 text-ink">
       It sounds like you&apos;re carrying something heavy. You don&apos;t have to go through it alone. In the US, you can call or
       text <strong>988</strong> any time to reach the Suicide &amp; Crisis Lifeline. Elsewhere,{" "}
       <a href="https://findahelpline.com" className="underline" target="_blank" rel="noreferrer">
@@ -110,10 +110,10 @@ function Interview({
   return (
     <section className="flex flex-col gap-4" aria-label="Interview">
       {view.turns.length > 0 && (
-        <ol className="flex flex-col gap-3 text-sm">
+        <ol className="flex flex-col gap-3 text-caption">
           {view.turns.map((turn, i) => (
             <li key={i} className="flex flex-col gap-1">
-              {turn.question && <span className="text-zinc-500">{turn.question}</span>}
+              {turn.question && <span className="text-ink-muted">{turn.question}</span>}
               <span className="whitespace-pre-wrap">{turn.answer}</span>
             </li>
           ))}
@@ -122,15 +122,15 @@ function Interview({
 
       {starting && (
         <div className="flex flex-col gap-2">
-          <p className="font-medium">Pick a question, or just start telling it.</p>
-          {view.openers.length === 0 && <p className="animate-pulse text-zinc-500">Thinking of a few questions…</p>}
+          <p className="font-bold">Pick a question, or just start telling it.</p>
+          {view.openers.length === 0 && <p className="animate-pulse text-ink-muted">Thinking of a few questions…</p>}
           {view.openers.map((q) => (
             <button
               key={q}
               type="button"
               onClick={() => setPicked(picked === q ? null : q)}
               aria-pressed={picked === q}
-              className={`rounded-xl border px-4 py-3 text-left ${picked === q ? "border-orange-600 bg-orange-50 dark:bg-orange-950" : "border-zinc-300 dark:border-zinc-700"}`}
+              className={`rounded-ss-md border px-4 py-3 text-left ${picked === q ? "border-reaction-selected-border bg-reaction-selected text-on-reaction" : "border-border-subtle"}`}
             >
               {q}
             </button>
@@ -139,16 +139,16 @@ function Interview({
       )}
 
       {!starting && view.nextQuestion && (
-        <p className="text-xl font-medium" aria-live="polite">
+        <p className="text-title-3 font-bold" aria-live="polite">
           {offerOneMore ? `One quick question before I write it up: ${view.nextQuestion}` : view.nextQuestion}
         </p>
       )}
       {done && (
-        <p className="text-xl font-medium" aria-live="polite">
+        <p className="text-title-3 font-bold" aria-live="polite">
           That&apos;s a lovely memory. Want to see it written up?
         </p>
       )}
-      {busy && !starting && <p className="animate-pulse text-sm text-zinc-500">Thinking…</p>}
+      {busy && !starting && <p className="animate-pulse text-caption text-ink-muted">Thinking…</p>}
 
       <textarea
         value={answer}
@@ -189,7 +189,7 @@ function Interview({
         )}
       </div>
       {starting && (
-        <Link href={`/journal/${entryId}`} className="text-sm underline">
+        <Link href={`/journal/${entryId}`} className="text-caption underline">
           Not now
         </Link>
       )}
@@ -240,7 +240,7 @@ function YourStory({ entryId, turns, onAddMore }: { entryId: string; turns: numb
   const draft = loaded[style];
   const text = texts[style] ?? "";
   const tab = (active: boolean) =>
-    `rounded-full px-4 py-1.5 text-sm ${active ? "bg-orange-600 text-white" : "border border-zinc-300 dark:border-zinc-700"}`;
+    `rounded-ss-pill px-4 py-1.5 text-caption ${active ? "bg-action text-on-action" : "border border-border-subtle"}`;
 
   return (
     <form
@@ -252,7 +252,7 @@ function YourStory({ entryId, turns, onAddMore }: { entryId: string; turns: numb
         })
       }
     >
-      <h2 className="text-2xl font-semibold">Your story</h2>
+      <h2 className="text-title-2 font-semibold">Your story</h2>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Story style">
         <button type="button" className={tab(kind === "my")} aria-pressed={kind === "my"} onClick={() => setKind("my")}>
           My story
@@ -270,13 +270,13 @@ function YourStory({ entryId, turns, onAddMore }: { entryId: string; turns: numb
           ))}
         </div>
       ) : (
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-caption">
           <input type="checkbox" checked={photoDetails} onChange={(e) => setPhotoDetails(e.target.checked)} /> Add details from my photo
         </label>
       )}
 
       {draft?.stale && (
-        <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+        <p className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">
           You&apos;ve added more since you edited this version.{" "}
           <button
             type="button"
@@ -288,25 +288,25 @@ function YourStory({ entryId, turns, onAddMore }: { entryId: string; turns: numb
         </p>
       )}
       {loading && !draft ? (
-        <p className="min-h-40 animate-pulse rounded-lg bg-zinc-100 p-4 text-zinc-500 dark:bg-zinc-900">Writing your story…</p>
+        <p className="min-h-40 animate-pulse rounded-ss-md bg-surface-raised p-4 text-ink-muted">Writing your story…</p>
       ) : (
         <textarea
           name="story"
           aria-label="Story"
           value={text}
           onChange={(e) => setTexts((t) => ({ ...t, [style]: e.target.value }))}
-          className={`${field} min-h-40 text-lg leading-8`}
+          className={`${field} min-h-40 ss-story`}
         />
       )}
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-caption">
         Title
         <input name="title" value={title ?? ""} onChange={(e) => setTitle(e.target.value)} maxLength={80} className={field} />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-caption">
         Caption for sharing
         <input name="caption" value={caption ?? ""} onChange={(e) => setCaption(e.target.value)} maxLength={200} className={field} />
       </label>
-      {error && <p role="alert" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">{error}</p>}
+      {error && <p role="alert" className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{error}</p>}
       <div className="flex flex-wrap gap-3">
         <button type="submit" disabled={saving || loading || !text.trim()} className={primary}>
           {saving ? "Saving…" : "Save to my Journal"}
@@ -315,7 +315,7 @@ function YourStory({ entryId, turns, onAddMore }: { entryId: string; turns: numb
           Add more to my story
         </button>
       </div>
-      <p className="text-xs text-zinc-500">Written from {turns === 1 ? "your answer" : `your ${turns} answers`}. Edit anything you like.</p>
+      <p className="text-caption text-ink-muted">Written from {turns === 1 ? "your answer" : `your ${turns} answers`}. Edit anything you like.</p>
     </form>
   );
 }

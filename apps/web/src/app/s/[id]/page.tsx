@@ -1,10 +1,11 @@
-/* eslint-disable @next/next/no-img-element -- the photo is served by /s/[id]/photo. */
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { ButtonLink } from "@/components/button";
+import { Logo } from "@/components/logo";
+import { PhotoCard } from "@/components/photo-card";
 import { ScoreBreakdown } from "@/components/score-card";
 import { withDrizzle } from "@/lib/db";
 import { CARD_HEIGHT, CARD_WIDTH, cardContent, cardVersion, shareByline } from "@/lib/share-card";
@@ -46,31 +47,22 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
-      <p className="text-lg text-zinc-600 dark:text-zinc-400">
+      <p className="text-lg text-ink-muted">
         {share.ownerName ? `${share.ownerName} shared a sunset with you` : "A sunset shared with you"}
       </p>
-      <img
-        src={`/s/${id}/photo`}
-        alt={share.story ?? "A sunset"}
-        width={share.photoWidth}
-        height={share.photoHeight}
-        className="h-auto w-full rounded-2xl"
-      />
-      {share.title && <h1 className="text-3xl font-semibold tracking-tight">{share.title}</h1>}
-      <p className="text-base text-zinc-600 dark:text-zinc-400">{shareByline(share)}</p>
+      <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={share.photoWidth} height={share.photoHeight} />
+      {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
+      <p className="text-base text-ink-muted">{shareByline(share)}</p>
       {share.score?.status === "done" && <ScoreBreakdown score={share.score} whose="the" />}
-      {share.story && <p className="whitespace-pre-wrap text-lg leading-8">{share.story}</p>}
+      {share.story && <p className="ss-story whitespace-pre-wrap text-ink-story">{share.story}</p>}
       <Reactions shareId={id} initial={reactions} ownerName={share.ownerName} />
-      <footer className="mt-4 flex flex-col items-start gap-3 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-        <p>
-          Shared from <strong>Sunset Soul</strong>, a place to keep the sunsets that move you.
+      <footer className="mt-4 flex flex-col items-start gap-3 border-t border-divider pt-5">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span>Shared from</span>
+          <Logo width={132} />
         </p>
-        <Link
-          href="/sign-in?mode=sign-up"
-          className="flex min-h-12 items-center rounded-lg border border-zinc-400 px-5 text-lg font-medium"
-        >
-          Start your own Journal
-        </Link>
+        <p className="text-ink-muted">A place to keep the sunsets that move you.</p>
+        <ButtonLink href="/sign-in?mode=sign-up">Start your own Journal</ButtonLink>
       </footer>
     </main>
   );

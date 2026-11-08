@@ -7,11 +7,11 @@ import { authClient } from "@/lib/auth-client";
 type Mode = "magic-link" | "sign-in" | "sign-up" | "forgot";
 type Providers = { google: boolean; apple: boolean };
 
-const inputClass = "w-full rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900";
+const inputClass = "min-h-12 w-full min-w-0 rounded-ss-md border border-border-subtle bg-surface-raised px-3 py-2 text-ink placeholder:text-ink-muted";
 const buttonClass =
-  "w-full rounded-lg bg-orange-600 px-4 py-2 font-medium text-white hover:bg-orange-700 disabled:opacity-50";
+  "w-full inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 bg-action text-on-action hover:bg-action/90";
 const secondaryButtonClass =
-  "w-full rounded-lg border border-zinc-300 px-4 py-2 font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900";
+  "w-full inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 border border-border-subtle bg-transparent text-ink hover:bg-surface-raised";
 
 export function SignInForm({ providers, initialMode = "magic-link" }: { providers: Providers; initialMode?: Mode }) {
   const router = useRouter();
@@ -85,7 +85,7 @@ export function SignInForm({ providers, initialMode = "magic-link" }: { provider
               Continue with Google
             </button>
           )}
-          <p className="text-center text-sm text-zinc-500">or use your email</p>
+          <p className="text-center text-caption text-ink-muted">or use your email</p>
         </div>
       )}
 
@@ -132,14 +132,14 @@ export function SignInForm({ providers, initialMode = "magic-link" }: { provider
         </button>
       </form>
 
-      {notice && <p className="rounded-lg bg-green-50 p-3 text-sm text-green-800">{notice}</p>}
+      {notice && <p className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{notice}</p>}
       {error && (
-        <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">
+        <p role="alert" className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">
           {error}
         </p>
       )}
 
-      <nav className="flex flex-col gap-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <nav className="flex flex-col gap-1 text-caption text-ink-muted">
         {mode !== "magic-link" && (
           <button type="button" className="text-left underline" onClick={() => switchMode("magic-link")}>
             Sign in with an email link instead

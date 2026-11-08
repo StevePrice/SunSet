@@ -33,7 +33,7 @@ export default async function AdminEntryPage(props: PageProps<"/admin/entries/[i
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-5">
-      <Link href={`/admin/users/${owner.id}`} className="text-sm underline">
+      <Link href={`/admin/users/${owner.id}`} className="text-caption underline">
         ← {owner.name.trim() || owner.email}&apos;s Journal
       </Link>
       <img
@@ -41,36 +41,36 @@ export default async function AdminEntryPage(props: PageProps<"/admin/entries/[i
         alt={entry.title ?? entry.story ?? "A sunset"}
         width={entry.photoWidth}
         height={entry.photoHeight}
-        className="h-auto w-full rounded-2xl"
+        className="h-auto w-full rounded-ss-lg"
       />
       <div className="flex flex-col gap-1">
-        {entry.title && <h1 className="text-2xl font-semibold">{entry.title}</h1>}
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        {entry.title && <h1 className="text-title-2 font-semibold">{entry.title}</h1>}
+        <p className="text-caption text-ink-muted">
           <LocalDate iso={entry.takenAt.toISOString()} />
           {entry.location && ` · ${formatLocation(entry.location)}`}
           {share && " · shared publicly"}
         </p>
       </div>
-      {entry.story ? <p className="whitespace-pre-wrap text-lg leading-8">{entry.story}</p> : <p className="text-zinc-500">No story.</p>}
-      {entry.caption && <p className="text-sm text-zinc-600 dark:text-zinc-400">Caption: {entry.caption}</p>}
+      {entry.story ? <p className="ss-story whitespace-pre-wrap text-ink-story">{entry.story}</p> : <p className="text-ink-muted">No story.</p>}
+      {entry.caption && <p className="text-caption text-ink-muted">Caption: {entry.caption}</p>}
       {score?.status === "done" ? (
         <ScoreBreakdown score={score} whose="the" />
       ) : (
-        <p className="text-sm text-zinc-500">Score: {score?.status ?? "not scored with the current scorer"}</p>
+        <p className="text-caption text-ink-muted">Score: {score?.status ?? "not scored with the current scorer"}</p>
       )}
       {session && session.turns.length > 0 && (
-        <section className="flex flex-col gap-3 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-          <h2 className="font-medium">Story interview</h2>
-          <ol className="flex flex-col gap-3 text-sm">
+        <section className="flex flex-col gap-3 rounded-ss-lg border border-divider p-4">
+          <h2 className="font-bold">Story interview</h2>
+          <ol className="flex flex-col gap-3 text-caption">
             {session.turns.map((t, i) => (
               <li key={i}>
-                <p className="text-zinc-500">{t.question ?? "(started without a question)"}</p>
+                <p className="text-ink-muted">{t.question ?? "(started without a question)"}</p>
                 <p className="whitespace-pre-wrap">{t.answer}</p>
               </li>
             ))}
           </ol>
           {(session.sensitive || session.safetyConcern) && (
-            <p className="text-sm text-amber-800">
+            <p className="text-caption text-ink-muted">
               Flagged: {[session.sensitive && "sensitive", session.safetyConcern && "safety concern"].filter(Boolean).join(", ")}
             </p>
           )}
