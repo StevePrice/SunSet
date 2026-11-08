@@ -38,7 +38,7 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
       </Link>
       <header className="flex flex-col gap-1">
         <h1 className="font-serif text-title-1">Afterglow</h1>
-        <p className="text-lg text-ink-muted">from your friends</p>
+        <p className="text-body text-ink-muted">from your friends</p>
       </header>
 
       <div className="flex items-center gap-4">
@@ -49,7 +49,7 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
       <dl className="grid grid-cols-3 gap-2">
         {REACTION_KINDS.map((kind) => (
           <div key={kind} className="flex flex-col-reverse items-center gap-1 rounded-ss-lg bg-surface-raised p-3 text-center">
-            <dt className="text-base">{REACTION_LABELS[kind]}</dt>
+            <dt className="text-label">{REACTION_LABELS[kind]}</dt>
             <dd className="font-serif text-title-1 tabular-nums">{afterglow.counts[kind]}</dd>
           </div>
         ))}

@@ -39,6 +39,13 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Generated design tokens and logo copies are up to date
+        run: |
+          npm run tokens --workspace=@sunset/web
+          git diff --exit-code -- apps/web/src/lib apps/web/public/brand || {
+            echo "::error::Run 'npm run tokens --workspace=@sunset/web' and commit the result (design-system or brand/logo changed)."
+            exit 1
+          }
       - run: npm run lint --workspace=@sunset/web
       - run: npm run typecheck --workspace=@sunset/web
       - run: npm test --workspace=@sunset/web

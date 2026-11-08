@@ -88,7 +88,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           className="flex min-h-12 flex-wrap items-center justify-between gap-2 rounded-ss-lg bg-surface-raised px-5 py-3"
         >
           <span className="font-serif text-title-3">Afterglow</span>
-          <span className="text-base text-ink-muted">
+          <span className="text-label text-ink-muted">
             {reactionCount === 0 ? "No reactions yet" : `${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"} from friends`} →
           </span>
         </Link>

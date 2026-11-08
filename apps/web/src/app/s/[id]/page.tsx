@@ -47,12 +47,12 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
-      <p className="text-lg text-ink-muted">
+      <p className="text-body text-ink-muted">
         {share.ownerName ? `${share.ownerName} shared a sunset with you` : "A sunset shared with you"}
       </p>
       <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={share.photoWidth} height={share.photoHeight} />
       {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
-      <p className="text-base text-ink-muted">{shareByline(share)}</p>
+      <p className="text-label text-ink-muted">{shareByline(share)}</p>
       {share.score?.status === "done" && <ScoreBreakdown score={share.score} whose="the" />}
       {share.story && <p className="ss-story whitespace-pre-wrap text-ink-story">{share.story}</p>}
       <Reactions shareId={id} initial={reactions} ownerName={share.ownerName} />

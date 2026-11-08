@@ -4,10 +4,11 @@
 //
 //   npm run tokens --workspace=@sunset/web
 //
-// Writes (both committed, both exempt from the raw-colour lint check):
+// Writes (all committed; CI fails if they're out of date):
 //   apps/web/src/lib/design-tokens.generated.ts  colours (dark and light), spacing, radius, sizes
 //   apps/web/src/lib/og-assets.generated.ts      brand fonts (base64 TTF) and the logo mark (SVG)
-import { readFile, writeFile } from "node:fs/promises";
+//   apps/web/public/brand/                       copies of the logo files the app serves
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root));
@@ -54,4 +55,17 @@ const mark = (await read("brand/logo/sunset-soul-mark-for-dark-backgrounds.svg")
 assets += `\n/** brand/logo/sunset-soul-mark-for-dark-backgrounds.svg (viewBox ${mark.match(/viewBox="([^"]+)"/)[1]}) */\nexport const markForDarkBackgroundsSvg = ${JSON.stringify(mark)};\n`;
 await writeFile(new URL("apps/web/src/lib/og-assets.generated.ts", root), assets);
 
-console.log("Wrote design-tokens.generated.ts and og-assets.generated.ts");
+// The logo files the app and emails serve, copied from the logo kit so they never drift.
+const servedLogos = [
+  "sunset-soul-logo-horizontal-transparent-for-dark-backgrounds.svg",
+  "sunset-soul-logo-horizontal-transparent-for-light-backgrounds.svg",
+  "sunset-soul-logo-horizontal-transparent-for-light-backgrounds.png",
+  "sunset-soul-logo-stacked-transparent-for-dark-backgrounds.svg",
+  "sunset-soul-logo-stacked-transparent-for-light-backgrounds.svg",
+];
+await mkdir(new URL("apps/web/public/brand/", root), { recursive: true });
+for (const file of servedLogos) {
+  await copyFile(new URL(`brand/logo/${file}`, root), new URL(`apps/web/public/brand/${file}`, root));
+}
+
+console.log("Wrote design-tokens.generated.ts, og-assets.generated.ts and public/brand/");

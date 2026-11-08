@@ -2,7 +2,9 @@
 // class (bg-zinc-100, text-white, from-orange-200 ...), an arbitrary colour class (bg-[#FBD2BC]),
 // or a hex / rgb() / hsl() colour literal. Use the role names in globals.css (bg-surface,
 // text-ink, bg-action ...) or, where CSS can't reach (next/og cards, emails), the generated
-// design-tokens.generated.ts. Runs as part of `npm run lint` in apps/web.
+// design-tokens.generated.ts. Also fails on Tailwind's default text sizes (text-sm, text-lg ...):
+// use the design-system type scale (text-caption, text-label, text-body, text-title-3 ...).
+// Runs as part of `npm run lint` in apps/web.
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 
@@ -18,6 +20,7 @@ const rules = [
   { name: "arbitrary colour class", re: /(?<![\w-])[a-z-]+-\[(?:#|rgba?\(|hsla?\(|oklch\()[^\]]*\]/g },
   { name: "hex colour", re: /(?<![\w&])#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\w-])/g },
   { name: "rgb()/hsl() colour", re: /\b(?:rgba?|hsla?|oklch)\(\s*[\d.]/g },
+  { name: "Tailwind default text size", re: /(?<![\w-])text-(?:xs|sm|base|lg|xl|[2-9]xl)(?![\w-])/g },
 ];
 
 async function* files(dir) {
@@ -40,7 +43,7 @@ for await (const file of files(srcDir)) {
 
 if (problems.length) {
   console.error(problems.join("\n"));
-  console.error(`\n${problems.length} raw colour(s). Use the design-system role names instead (see apps/web/src/app/globals.css).`);
+  console.error(`\n${problems.length} problem(s). Use the design-system role names and type scale instead (see apps/web/src/app/globals.css).`);
   process.exit(1);
 }
-console.log("check-colors: no raw colours in apps/web/src.");
+console.log("check-colors: no raw colours or default text sizes in apps/web/src.");
