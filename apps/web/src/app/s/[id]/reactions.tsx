@@ -52,7 +52,10 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     setAskingName(null);
     setState(body as PublicReactions);
     if (pending.action === "note") {
-      setNoteSent(true);
+      // A blank note removes the note, so there's nothing to thank them for: show the empty box again.
+      const saved = (body as PublicReactions).note;
+      setNoteSent(saved !== null);
+      setNote(saved ?? "");
       setEditingNote(false);
     }
   }
