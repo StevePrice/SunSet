@@ -6,6 +6,7 @@
 // Colours, fonts and the logo mark come from the design system (generated token and asset
 // modules), since Satori can't read CSS variables. The cards are always dark: they sit on photos.
 import { ImageResponse } from "next/og";
+import type { ReactNode } from "react";
 import { colors, radius } from "@/lib/design-tokens.generated";
 import { formatTakenAt } from "@/lib/format";
 import {
@@ -22,7 +23,7 @@ export const CARD_HEIGHT = 630;
 export const STORIES_WIDTH = 1080;
 export const STORIES_HEIGHT = 1920;
 // Bump when the layout changes, so cached cards are redrawn.
-const LAYOUT_VERSION = "2";
+const LAYOUT_VERSION = "3";
 const MAX_CARD_STORY = 140;
 const MAX_STORIES_STORY = 280;
 
@@ -74,11 +75,32 @@ export async function cardVersion(content: CardContent | StoriesContent, kind: C
   return Array.from(digest.slice(0, 8), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Satori draws in image pixels. Design-system sizes are in points on a phone, so they're scaled
-// by how much the image is enlarged when shown on one: the link card at about 2×, the Stories
-// card (full screen, 1080px across a ~390pt phone) at about 2.75×.
-const CARD_SCALE = 2;
-const STORIES_SCALE = 2.75;
+// Satori draws in image pixels; the design system's sizes are in points on a phone. Each card has
+// one scale factor (pixels per point), and every size on it is written in points and multiplied by
+// it, so the mark, badge, insets and text keep the design's proportions:
+// - link card (1200×630): 2 px/pt, about how much a phone's link preview enlarges it;
+// - Stories card (1080×1920): 2.75 px/pt, since it fills a ~393pt-wide phone screen (1080 / 393).
+// The inset is how far the mark (top-left) and score badge (bottom-right) sit from the edges
+// (LOGO-USAGE.md: 12pt, 24pt on full-screen Stories cards).
+export type CardLayout = { width: number; height: number; scale: number; inset: number };
+export const CARD_LAYOUT: CardLayout = { width: CARD_WIDTH, height: CARD_HEIGHT, scale: 2, inset: 12 };
+export const STORIES_LAYOUT: CardLayout = { width: STORIES_WIDTH, height: STORIES_HEIGHT, scale: 2.75, inset: 24 };
+
+// The logo mark per LOGO-USAGE.md, in points: 34pt wide, centred on a 48pt photo-scrim square
+// with 10pt corners.
+export const MARK_PT = { width: 34, square: 48, radius: 10 } as const;
+
+/** Where the mark's scrim square sits on a card, in image pixels. */
+export function markBox(layout: CardLayout) {
+  const px = (pt: number) => pt * layout.scale;
+  return {
+    left: px(layout.inset),
+    top: px(layout.inset),
+    size: px(MARK_PT.square),
+    radius: px(MARK_PT.radius),
+    markWidth: px(MARK_PT.width),
+  };
+}
 
 const ink = colors.dark.ink;
 const sunken = colors.dark.surfaceSunken;
@@ -106,77 +128,101 @@ function fonts(): Fonts {
   return fontCache;
 }
 
-/** The logo mark per LOGO-USAGE.md: 34pt wide on a 48pt photo-scrim square with 10pt corners. */
-function Mark({ scale }: { scale: number }) {
-  const width = 34 * scale;
+/** The logo mark in the card's top-left corner, on its photo-scrim square. */
+function Mark({ layout }: { layout: CardLayout }) {
+  const box = markBox(layout);
   return (
     <div
       style={{
+        position: "absolute",
+        top: box.top,
+        left: box.left,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: 48 * scale,
-        height: 48 * scale,
-        borderRadius: 10 * scale,
+        width: box.size,
+        height: box.size,
+        borderRadius: box.radius,
         backgroundColor: colors.dark.photoScrim,
       }}
     >
-      <img src={markSrc} alt="Sunset Soul" width={width} height={width * MARK_RATIO} />
+      <img src={markSrc} alt="Sunset Soul" width={box.markWidth} height={box.markWidth * MARK_RATIO} />
     </div>
   );
 }
 
-/** The score as the design system's badge: apricot fill, on-score numbers. */
-function ScoreBadge({ score, size, scale }: { score: number; size: number; scale: number }) {
+/** The score as the design system's badge: apricot fill, on-score numbers. `size` is in points. */
+function ScoreBadge({ score, size, layout }: { score: number; size: number; layout: CardLayout }) {
+  const px = size * layout.scale;
   return (
     <div
       style={{
         display: "flex",
+        flexShrink: 0,
         alignItems: "baseline",
-        gap: size / 10,
-        padding: `${size / 8}px ${size / 3}px`,
-        borderRadius: radius.sm * scale,
+        gap: px / 10,
+        padding: `${px / 8}px ${px / 3}px`,
+        borderRadius: radius.sm * layout.scale,
         backgroundColor: colors.dark.score,
         color: colors.dark.onScore,
         fontFamily: "Atkinson Hyperlegible",
         fontWeight: 700,
       }}
     >
-      <span style={{ fontSize: size }}>{score}</span>
-      <span style={{ fontSize: size * 0.44, fontWeight: 400 }}>/ 100</span>
+      <span style={{ fontSize: px }}>{score}</span>
+      <span style={{ fontSize: px * 0.44, fontWeight: 400 }}>/ 100</span>
+    </div>
+  );
+}
+
+/**
+ * The bottom of a card: the title and story across the full width, then the byline on the left
+ * and, opposite the mark, the score badge in the bottom-right corner. The badge only shares a row
+ * with the one-line byline, so the text never runs under it.
+ */
+function BottomText({ layout, score, badgeSize, gap, byline, children }: {
+  layout: CardLayout;
+  score: number | null;
+  badgeSize: number;
+  gap: number;
+  byline: string;
+  children: ReactNode;
+}) {
+  const inset = layout.inset * layout.scale;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: inset,
+        right: inset,
+        bottom: inset,
+        display: "flex",
+        flexDirection: "column",
+        gap: gap * layout.scale,
+        color: ink,
+      }}
+    >
+      {children}
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16 * layout.scale }}>
+        <div style={{ display: "flex", flexShrink: 1, fontFamily: "Atkinson Hyperlegible", fontSize: 13 * layout.scale }}>{byline}</div>
+        {score !== null && <ScoreBadge score={score} size={badgeSize} layout={layout} />}
+      </div>
     </div>
   );
 }
 
 export function renderCard(content: CardContent, photo: ArrayBuffer): Promise<ArrayBuffer> {
+  const layout = CARD_LAYOUT;
+  const pt = (n: number) => n * layout.scale;
   const response = new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", backgroundColor: colors.dark.surfacePage }}>
         <img src={photoSrc(photo)} alt="" width={CARD_WIDTH} height={CARD_HEIGHT} style={{ position: "absolute", objectFit: "cover" }} />
-        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: photoGradient(35, 40) }} />
-        <div style={{ position: "absolute", top: 40, left: 48, display: "flex" }}>
-          <Mark scale={CARD_SCALE} />
-        </div>
-        {content.score !== null && (
-          <div style={{ position: "absolute", top: 36, right: 44, display: "flex" }}>
-            <ScoreBadge score={content.score} size={64} scale={CARD_SCALE} />
-          </div>
-        )}
-        <div
-          style={{
-            position: "absolute",
-            left: 48,
-            right: 48,
-            bottom: 40,
-            display: "flex",
-            flexDirection: "column",
-            gap: 14,
-            color: ink,
-          }}
-        >
-          {content.story && <div style={{ fontFamily: "Fraunces", fontSize: 40, lineHeight: 1.3 }}>{content.story}</div>}
-          <div style={{ fontFamily: "Atkinson Hyperlegible", fontSize: 26 }}>{content.byline}</div>
-        </div>
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: photoGradient(30, 40) }} />
+        <Mark layout={layout} />
+        <BottomText layout={layout} score={content.score} badgeSize={32} gap={6} byline={content.byline}>
+          {content.story && <div style={{ fontFamily: "Fraunces", fontSize: pt(20), lineHeight: 1.3 }}>{content.story}</div>}
+        </BottomText>
       </div>
     ),
     { width: CARD_WIDTH, height: CARD_HEIGHT, fonts: fonts() },
@@ -185,6 +231,8 @@ export function renderCard(content: CardContent, photo: ArrayBuffer): Promise<Ar
 }
 
 export function renderStoriesCard(content: StoriesContent, photo: ArrayBuffer): Promise<ArrayBuffer> {
+  const layout = STORIES_LAYOUT;
+  const pt = (n: number) => n * layout.scale;
   const response = new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", backgroundColor: colors.dark.surfacePage }}>
@@ -195,33 +243,14 @@ export function renderStoriesCard(content: StoriesContent, photo: ArrayBuffer): 
           height={STORIES_HEIGHT}
           style={{ position: "absolute", objectFit: "cover" }}
         />
-        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: photoGradient(20, 45) }} />
-        <div style={{ position: "absolute", top: 96, left: 72, display: "flex" }}>
-          <Mark scale={STORIES_SCALE} />
-        </div>
-        {content.score !== null && (
-          <div style={{ position: "absolute", top: 84, right: 72, display: "flex" }}>
-            <ScoreBadge score={content.score} size={80} scale={STORIES_SCALE} />
-          </div>
-        )}
-        <div
-          style={{
-            position: "absolute",
-            left: 72,
-            right: 72,
-            bottom: 160,
-            display: "flex",
-            flexDirection: "column",
-            gap: 24,
-            color: ink,
-          }}
-        >
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: photoGradient(15, 45) }} />
+        <Mark layout={layout} />
+        <BottomText layout={layout} score={content.score} badgeSize={30} gap={9} byline={content.byline}>
           {content.title && (
-            <div style={{ fontFamily: "Fraunces", fontSize: 72, lineHeight: 1.15, fontWeight: 600 }}>{content.title}</div>
+            <div style={{ fontFamily: "Fraunces", fontSize: pt(26), lineHeight: 1.15, fontWeight: 600 }}>{content.title}</div>
           )}
-          {content.story && <div style={{ fontFamily: "Fraunces", fontSize: 46, lineHeight: 1.4 }}>{content.story}</div>}
-          <div style={{ fontFamily: "Atkinson Hyperlegible", fontSize: 34 }}>{content.byline}</div>
-        </div>
+          {content.story && <div style={{ fontFamily: "Fraunces", fontSize: pt(17), lineHeight: 1.4 }}>{content.story}</div>}
+        </BottomText>
       </div>
     ),
     { width: STORIES_WIDTH, height: STORIES_HEIGHT, fonts: fonts() },
