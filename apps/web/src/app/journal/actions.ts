@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
-import { deleteEntry, photoKey, updateEntry } from "@/lib/entries";
+import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
 import { parseStory } from "@/lib/entry-input";
 import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
 import {
@@ -42,7 +42,7 @@ export async function deleteEntryAction(id: string): Promise<void> {
   });
   if (deleted) {
     const { env } = await getCloudflareContext({ async: true });
-    await env.PHOTOS.delete([photoKey(user.id, id, "display"), photoKey(user.id, id, "thumb")]);
+    await env.PHOTOS.delete(entryPhotoKeys(user.id, id));
     if (shareId) await deleteShareCards(env.PHOTOS, shareId);
   }
   revalidatePath("/journal");

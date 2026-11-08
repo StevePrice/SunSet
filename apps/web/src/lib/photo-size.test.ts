@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fitWithin } from "./photo-size";
+import { fitWithin, SHARE_PHOTO_EDGE } from "./photo-size";
 
 describe("fitWithin", () => {
   it("scales the longer edge down to the limit, keeping the aspect ratio", () => {
@@ -9,5 +9,13 @@ describe("fitWithin", () => {
 
   it("never scales up", () => {
     expect(fitWithin(800, 600, 2560)).toEqual({ width: 800, height: 600 });
+  });
+});
+
+describe("SHARE_PHOTO_EDGE", () => {
+  it("is within the Share Page's 1600–2000px range and smaller than the display photo", () => {
+    expect(SHARE_PHOTO_EDGE).toBeGreaterThanOrEqual(1600);
+    expect(SHARE_PHOTO_EDGE).toBeLessThanOrEqual(2000);
+    expect(fitWithin(2560, 1920, SHARE_PHOTO_EDGE)).toEqual({ width: 1800, height: 1350 });
   });
 });

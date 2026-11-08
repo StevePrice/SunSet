@@ -12,6 +12,7 @@ import { CARD_HEIGHT, CARD_WIDTH, cardContent, cardVersion, shareByline } from "
 import { parseVisitorId, VISITOR_COOKIE } from "@/lib/reaction-input";
 import { getPublicReactions } from "@/lib/reactions";
 import { getPublicShare } from "@/lib/shares";
+import { fitWithin, SHARE_PHOTO_EDGE } from "@/lib/photo-size";
 import { Reactions } from "./reactions";
 
 // A shared sunset, readable by anyone with the link and no account. Not indexed by search engines.
@@ -44,13 +45,15 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
   const visitorId = parseVisitorId((await cookies()).get(VISITOR_COOKIE)?.value);
   const reactions = await withDrizzle((db) => getPublicReactions(db, id, visitorId));
   if (!reactions) notFound();
+  // /photo serves the share size (the display photo scaled to SHARE_PHOTO_EDGE).
+  const photo = fitWithin(share.photoWidth, share.photoHeight, SHARE_PHOTO_EDGE);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
       <p className="text-body text-ink-muted">
         {share.ownerName ? `${share.ownerName} shared a sunset with you` : "A sunset shared with you"}
       </p>
-      <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={share.photoWidth} height={share.photoHeight} />
+      <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={photo.width} height={photo.height} />
       {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
       <p className="text-label text-ink-muted">{shareByline(share)}</p>
       {share.score?.status === "done" && <ScoreBreakdown score={share.score} whose="the" />}
