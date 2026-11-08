@@ -94,6 +94,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
           return (
             <ReactionChip
               key={kind}
+              kind={kind}
               label={REACTION_LABELS[kind]}
               count={state.counts[kind]}
               selected={state.mine.includes(kind)}
