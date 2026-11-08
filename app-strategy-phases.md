@@ -119,6 +119,39 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Status:** ✅ done (2026-11-03). Tested from Steve's iPhone with a friend: the preview showed in Messages and the link opened without an account. Each entry gets a "Create a share link" panel: an unguessable link at `/s/{id}`, the native share sheet, Copy link, an optional place name typed by the owner (the exact location is never shared), and Stop sharing, which kills the link for good. The card (photo, story, score, name, date in the owner's time zone) is drawn with `next/og` and cached in R2. The automated browser test passes on staging. Follow-ups: the card is a ~1.2 MB PNG (fine for iMessage; some apps, such as WhatsApp, may skip previews that large), and accounts created by magic link have no display name yet.
 
+### Phase 4b: Share with friends
+**Goal:** friends who receive a shared sunset can react to it, and the sender sees their reactions. See PRD sections 6.6 and 6.9.
+- **Share Page** (`/s/{id}`): "[Name] shared a sunset with you", the photo across the top, then title, score and story
+- **Reactions:** Wow, Wish I was there, Love this! No account needed. A friend gives their first name on their first tap (remembered on that device), can add an optional note of about 100 characters, can choose more than one reaction, and taps again to undo. Friends see counts only; names and notes are private to the sender
+- **Spam limit** on reactions per visitor per entry
+- **Afterglow screen** from Entry Detail: reaction totals, who reacted, their notes, deleting a reaction, and a Share button
+- **Reaction indicator** on Journal entries
+- **Vertical Stories card** (1080×1920), alongside the current link-preview card
+- **Share panel:** Messages and More (the phone's share sheet with the Stories image attached). Direct Instagram, Snapchat, TikTok and Facebook buttons need a native app and wait until then
+- **Start your own Journal** button on the Share Page
+
+**Done when:** a friend reacts from a texted link on an iPhone without an account, and the sender sees the reaction and note in Afterglow.
+
+**Decision (2026-11-08):** reaction colours follow the design system (peach blush for a tapped reaction), not the gold and turquoise first written in the PRD. Screens are built with plain styling, since Phase 4c restyles them.
+
+### Phase 4c: Adopt the design system
+**Goal:** the app looks like Sunset Soul, and future look-and-feel changes are a one-file edit. See [design-system/README.md](design-system/README.md) and [brand/logo/LOGO-USAGE.md](brand/logo/LOGO-USAGE.md).
+- Import `design-system/web/tokens.css` and map it to role-based Tailwind names (`bg-surface`, `text-ink`, `bg-action`, `bg-score` …), dark mode included
+- Brand fonts: Fraunces (headings) and Atkinson Hyperlegible (body)
+- Shared components: `Button`, `ScoreBadge`, `PhotoCard`, `ReactionChip`
+- Replace every hard-coded colour (189 in 23 files at last count) with the role names
+- A TypeScript token file generated from `design-tokens.json` for the share-card renderer, which can't read CSS
+- A lint/CI check that fails on raw palette classes or hex colours in pages
+- **Logo:** home and sign-in pages, a header on Journal, Entry Detail and Account, the Share Page footer, favicon and iPhone home-screen icon, and HTML versions of the sign-in, confirmation and reset emails
+
+**Done when:** no page uses a raw colour, the lint check passes in CI, and changing a token in `tokens.css` changes the app everywhere.
+
+### Phase 4d: Design updates (Louise, 2026-11-05)
+- Share and Stories cards: the logo mark top-left (12pt in, 24pt on Stories cards), the score badge bottom-right
+- Photo framing: full bleed only at the top of Entry Detail, on the score reveal and on Stories cards; inset 16pt with 14pt corners elsewhere
+- Journal with two views: **Stories** and **All photos** (two columns, grouped by month)
+- Light-mode rule: `score` and `reaction-selected` are fills only, never text or icon colours
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
@@ -169,13 +202,29 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - In-app friend circles
 - Community voting that affects map retention
 - A weighted, trained scoring model
-- Native iOS and Android apps
+- Native iOS and Android apps (possibly React Native with Expo). Revisit after the beta: direct Instagram, Snapchat, TikTok and Facebook share buttons need a native app
 - Monetization: printed photo books, a premium tier
 
 ### Order and dependencies
 - **0 → 1 → 2 → 3** is the critical path. Phase 2 alone tests the core hypothesis.
-- **4, 5 and 6** can be built in parallel after Phase 3. Phase 5 is best done after 4, so share cards can show the new stories.
+- **Next (set 2026-11-08):** 4b → 4c → 4d, then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **7** follows Phase 6, and **8** comes last.
+
+### Remaining estimates (2026-11-08)
+Rough planning numbers. "Human" is one developer who knows the codebase (±30%). "With Claude, total" includes review, phone testing and fixes.
+
+| Phase | Human alone | With Claude, coding | With Claude, total |
+|---|---|---|---|
+| 4b Share with friends | 4–6 days | 3–5 hours | 1.5–2 days |
+| 4c Adopt the design system (with logo) | 3–3.5 days | 2.5–4 hours | about 1 day |
+| 4d Design updates | 1–1.5 days | 1–1.5 hours | half a day to a day |
+| 5 Story Capture, the rest | 4–5 days | 3–5 hours | 1.5–2 days |
+| 6 Live Global Map | 6–8 days | 5–8 hours | 2–3 days |
+| 7 Hardening and beta | 6–8 days | 5–8 hours | 2–3 days |
+| 8 Daily Ritual | 2–3 days | 2–3 hours | about a day |
+| **Total** | **26–35 days** | **21–35 hours** | **9.5–13.5 days** |
+
+Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
 
 ---
 

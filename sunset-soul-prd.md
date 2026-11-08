@@ -162,8 +162,8 @@ The web page that opens when a friend taps a shared link. Its look matches the f
 - Three reaction buttons: **Wow**, **Wish I was there**, **Love this!**
 - The first time a friend taps a reaction, they're asked for their first name (one quick prompt; they aren't asked again on that device)
 - When a friend taps a reaction:
-  - The button turns gold and its count goes up by one
-  - A box appears to add a short note to the sender, with a turquoise **Send** button
+  - The button fills with the design system's `reaction-selected` color (peach blush) and its count goes up by one
+  - A box appears to add a short note to the sender, with a **Send** button in the design system's `action` color
   - Tapping the reaction again undoes it
 - At the bottom: a **Start your own Journal** button that invites friends to join the app (the built-in growth path)
 - No app download or account is needed to react
@@ -183,7 +183,7 @@ A screen opened from Entry Detail. The title is **"Afterglow"** in large text, w
 - Friends are asked for their first name on their first tap, so the user knows who reacted.
 - Friends on the Share Page see only the reaction counts. Names and notes are seen only by the user who shared.
 - The user can delete any reaction or note; the counts update.
-- Colors stay warm: gold for selected reactions, turquoise for Send. No red.
+- Colors follow the Sunset Soul design system (`design-system/`): `reaction-selected` (peach blush) for tapped reactions, `action` for Send. No red.
 - Basic spam protection: limit how many reactions one visitor can send on one entry.
 
 **Not in MVP (later ideas)**
