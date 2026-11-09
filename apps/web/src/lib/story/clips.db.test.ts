@@ -9,6 +9,7 @@ import { withAi } from "./ai-guard";
 import {
   clipKey,
   clipsForAnswer,
+  countRecordings,
   createClip,
   deleteAllRecordings,
   deleteEntryRecordings,
@@ -90,7 +91,9 @@ describe.skipIf(!url)("voice recordings and Settings", () => {
     const aliceEntry = await newEntry(alice);
     const alicesClip = (await newClip(alice, aliceEntry))!;
 
+    expect(await countRecordings(db, bob)).toBe(3);
     expect((await deleteAllRecordings(db, bob)).sort()).toEqual(keys.sort());
+    expect(await countRecordings(db, bob)).toBe(0);
     for (const entryId of mine) expect(await listClips(db, bob, entryId)).toEqual([]);
     expect(await getClip(db, alice, alicesClip.id)).not.toBeNull();
     expect(await deleteAllRecordings(db, bob)).toEqual([]);

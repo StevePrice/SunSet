@@ -8,18 +8,20 @@ import type { Location } from "@/lib/entry-input";
 import { MAX_STORY_LENGTH } from "@/lib/entry-input";
 import { formatLocation, formatTakenAt } from "@/lib/format";
 import { preparePhoto, UnsupportedPhotoError, type PreparedPhoto } from "@/lib/photo-processing";
+import { MicIcon } from "../[id]/story/voice-recorder";
 
 type LocationChoice = "photo" | "device" | "none";
 
 const pickerClass =
   "flex flex-1 cursor-pointer items-center justify-center rounded-ss-md border border-border-subtle px-4 py-6 text-center font-bold hover:bg-surface-raised";
 
-export function NewEntryForm() {
+/** With AI story help off (Settings), this is the MVP form: a plain story box with one prompt. */
+export function NewEntryForm({ aiHelp }: { aiHelp: boolean }) {
   const router = useRouter();
   const [prepared, setPrepared] = useState<PreparedPhoto | null>(null);
   const [processing, setProcessing] = useState(false);
   const [story, setStory] = useState("");
-  const [writeMyself, setWriteMyself] = useState(false);
+  const [writeMyself, setWriteMyself] = useState(!aiHelp);
   const [choice, setChoice] = useState<LocationChoice>("none");
   const [deviceLocation, setDeviceLocation] = useState<Location | null>(null);
   const [saving, setSaving] = useState(false);
@@ -140,7 +142,7 @@ export function NewEntryForm() {
         </label>
       ) : (
         <p className="text-ink-muted">
-          After you save, I&apos;ll ask a few questions to help you tell the story behind it.{" "}
+          After you save, I&apos;ll ask a few questions to help you tell the story behind it. Just tap the mic and talk, or type.{" "}
           <button type="button" className="underline" onClick={() => setWriteMyself(true)}>
             Write it myself instead
           </button>
@@ -181,6 +183,7 @@ export function NewEntryForm() {
           disabled={saving}
           className="flex-1 inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 bg-action text-on-action hover:bg-action/90"
         >
+          {!saving && !writeMyself && <MicIcon className="h-5 w-5" />}
           {saving ? "Saving…" : writeMyself ? "Save to my Journal" : "Save and tell its story"}
         </button>
         {!writeMyself && (

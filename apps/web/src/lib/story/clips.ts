@@ -1,7 +1,7 @@
 // Voice recordings for AI Story Capture, one clip per spoken answer. Like entries.ts, every
 // function is scoped to the owner. The audio itself lives in R2 next to the entry's photos; callers
 // delete the R2 objects using the keys these functions return.
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray } from "drizzle-orm";
 import { entries, storyClips, storySessions, type StoryTurn } from "@/db/schema";
 import type { Db } from "@/lib/db";
 
@@ -61,6 +61,11 @@ export async function setClipTranscript(db: Db, userId: string, clipId: string, 
     .update(storyClips)
     .set({ transcript })
     .where(and(eq(storyClips.id, clipId), eq(storyClips.userId, userId)));
+}
+
+export async function countRecordings(db: Db, userId: string): Promise<number> {
+  const [row] = await db.select({ n: count() }).from(storyClips).where(eq(storyClips.userId, userId));
+  return row?.n ?? 0;
 }
 
 /** Turns with their recording links removed; the words, and whether they were spoken, stay. */

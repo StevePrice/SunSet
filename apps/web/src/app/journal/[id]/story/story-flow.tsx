@@ -3,9 +3,21 @@
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
+import { AiPrivacyText } from "@/components/ai-privacy";
+import { noticeClass } from "@/components/styles";
 import type { StoryStyle } from "@/lib/story/prompts";
 import type { StoryView } from "@/lib/story/sessions";
-import { answerAction, draftAction, openersAction, otherQuestionAction, saveStoryAction, type DraftResult } from "./actions";
+import {
+  acceptAiNoticeAction,
+  answerAction,
+  declineAiNoticeAction,
+  draftAction,
+  openersAction,
+  otherQuestionAction,
+  saveStoryAction,
+  type DraftResult,
+} from "./actions";
+import { VoiceRecorder } from "./voice-recorder";
 
 const SHORT_ANSWER_WORDS = 15;
 const button = "inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50";
@@ -13,7 +25,8 @@ const primary = `${button} bg-action text-on-action hover:bg-action/90`;
 const secondary = `${button} border border-border-subtle bg-transparent text-ink hover:bg-surface-raised`;
 const field = "min-h-12 w-full min-w-0 rounded-ss-md border border-border-subtle bg-surface-raised px-3 py-2 text-ink placeholder:text-ink-muted";
 
-export function StoryFlow({ entryId, initial }: { entryId: string; initial: StoryView }) {
+export function StoryFlow({ entryId, initial, noticeSeen }: { entryId: string; initial: StoryView; noticeSeen: boolean }) {
+  const [noticeOpen, setNoticeOpen] = useState(!noticeSeen);
   const [view, setView] = useState(initial);
   const [phase, setPhase] = useState<"interview" | "story">(initial.turns.length ? "story" : "interview");
   const [error, setError] = useState<string | null>(null);
@@ -28,13 +41,17 @@ export function StoryFlow({ entryId, initial }: { entryId: string; initial: Stor
     });
   }
 
+  if (noticeOpen) {
+    return <FirstUseNotice entryId={entryId} onContinue={() => setNoticeOpen(false)} />;
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <img src={`/api/photos/${entryId}/thumb`} alt="Your sunset" className="h-20 w-20 rounded-ss-md object-cover" />
         <p className="text-caption text-ink-muted">
-          Your photo and words are sent to Claude, Anthropic&apos;s AI, to write questions and your story. Anthropic doesn&apos;t
-          train its models on them. Your story stays private unless you share it.
+          Your photo, recordings and words are processed by AI services (Anthropic Claude and Cloudflare Workers AI) to make
+          questions, transcripts and your story. Recordings are private and never shared.
         </p>
       </div>
       {view.safetyConcern && <SupportNotice />}
@@ -45,6 +62,38 @@ export function StoryFlow({ entryId, initial }: { entryId: string; initial: Stor
         <YourStory entryId={entryId} turns={view.turns.length} onAddMore={() => setPhase("interview")} />
       )}
     </div>
+  );
+}
+
+/** Shown once, the first time a user starts AI story help (Story Capture PRD 6.9). */
+function FirstUseNotice({ entryId, onContinue }: { entryId: string; onContinue: () => void }) {
+  const [pending, startPending] = useTransition();
+  return (
+    <section className="flex flex-col gap-4 rounded-ss-lg bg-surface-raised p-5" aria-labelledby="ai-notice-title">
+      <h2 id="ai-notice-title" className="text-title-3 font-bold">
+        Before we start
+      </h2>
+      <AiPrivacyText />
+      <p className="text-ink-muted">You can turn AI story help off at any time in your account settings.</p>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          disabled={pending}
+          className={primary}
+          onClick={() =>
+            startPending(async () => {
+              await acceptAiNoticeAction();
+              onContinue();
+            })
+          }
+        >
+          Continue
+        </button>
+        <button type="button" disabled={pending} className={secondary} onClick={() => startPending(() => declineAiNoticeAction(entryId))}>
+          Turn off AI help
+        </button>
+      </div>
+    </section>
   );
 }
 
@@ -77,6 +126,12 @@ function Interview({
   const [answer, setAnswer] = useState("");
   const [picked, setPicked] = useState<string | null>(null);
   const [offerOneMore, setOfferOneMore] = useState(false);
+  // Voice first: the mic is the main way to answer until the user chooses to type.
+  const [typing, setTyping] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const [clipIds, setClipIds] = useState<string[]>([]);
+  const [recording, setRecording] = useState(false);
+  const showBox = typing || answer.trim() !== "";
   const starting = view.turns.length === 0;
   const done = !starting && view.nextQuestion === null;
 
@@ -90,15 +145,39 @@ function Interview({
 
   function send() {
     const text = answer;
+    const clips = clipIds;
     setAnswer("");
+    setClipIds([]);
     setOfferOneMore(false);
     run(async () => {
-      const result = await answerAction(entryId, question, text, !done);
+      const result = await answerAction(entryId, question, text, !done, clips);
       if (!result.error) setPicked(null);
-      else setAnswer(text);
+      else {
+        setAnswer(text);
+        setClipIds(clips);
+      }
       return result;
     });
   }
+
+  const recorder = (prominent: boolean, label: string) => (
+    <VoiceRecorder
+      entryId={entryId}
+      prominent={prominent}
+      label={label}
+      disabled={busy}
+      onActiveChange={setRecording}
+      onClip={(id) => setClipIds((ids) => [...ids, id])}
+      onTranscript={(text) => {
+        setVoiceNote(null);
+        setAnswer((a) => (a.trim() ? `${a.trim()} ${text}` : text));
+      }}
+      onTypeInstead={(message) => {
+        setTyping(true);
+        setVoiceNote(message ?? null);
+      }}
+    />
+  );
 
   function finish() {
     const only = view.turns[0];
@@ -150,38 +229,63 @@ function Interview({
       )}
       {busy && !starting && <p className="animate-pulse text-caption text-ink-muted">Thinking…</p>}
 
-      <textarea
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-        aria-label="Your answer"
-        placeholder={done ? "Anything else you'd like to add?" : "Just tell me about it, like you'd tell a friend."}
-        className={`${field} min-h-28`}
-      />
+      {voiceNote && (
+        <p role="alert" className={noticeClass}>
+          {voiceNote}
+        </p>
+      )}
+      {showBox ? (
+        <>
+          {clipIds.length > 0 && answer.trim() && (
+            <p className="text-caption text-ink-muted">Here&apos;s what I heard. Fix anything I got wrong before you carry on.</p>
+          )}
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            aria-label="Your answer"
+            placeholder={done ? "Anything else you'd like to add?" : "Just tell me about it, like you'd tell a friend."}
+            className={`${field} min-h-28`}
+          />
+          {recorder(false, answer.trim() ? "Add more by voice" : "Speak instead")}
+        </>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {!done && <p className="text-ink-muted">Just tell me about it, like you&apos;d tell a friend.</p>}
+          {recorder(!done, done ? "Add something by voice" : "Tap to talk")}
+          <button type="button" onClick={() => setTyping(true)} className="inline-flex min-h-12 items-center self-start text-label underline">
+            Type instead
+          </button>
+        </div>
+      )}
       <div className="flex flex-wrap gap-3">
         {done ? (
           <>
-            <button type="button" onClick={onFinish} disabled={busy} className={primary}>
+            <button type="button" onClick={onFinish} disabled={busy || recording} className={primary}>
               See my story
             </button>
-            <button type="button" onClick={send} disabled={busy || !answer.trim()} className={secondary}>
-              Add this
-            </button>
+            {showBox && (
+              <button type="button" onClick={send} disabled={busy || recording || !answer.trim()} className={secondary}>
+                Add this
+              </button>
+            )}
           </>
         ) : (
           <>
-            <button type="button" onClick={send} disabled={busy || !answer.trim()} className={primary}>
-              Keep going
-            </button>
+            {showBox && (
+              <button type="button" onClick={send} disabled={busy || recording || !answer.trim()} className={primary}>
+                Keep going
+              </button>
+            )}
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || recording}
               onClick={() => run(() => (starting ? openersAction(entryId, true) : otherQuestionAction(entryId)))}
               className={secondary}
             >
               Ask me something else
             </button>
             {!starting && (
-              <button type="button" onClick={finish} disabled={busy} className={secondary}>
+              <button type="button" onClick={finish} disabled={busy || recording} className={secondary}>
                 {offerOneMore ? "Skip, write it now" : "That's my story"}
               </button>
             )}
