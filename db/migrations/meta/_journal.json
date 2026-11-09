@@ -57,6 +57,13 @@
       "when": 1794160807926,
       "tag": "0007_share_reactions",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794185339178,
+      "tag": "0008_voice_and_settings",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,7 @@ import { withDrizzle } from "@/lib/db";
 import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
 import { parseStory } from "@/lib/entry-input";
 import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
+import { deleteAllRecordings, deleteEntryRecordings, listClips } from "@/lib/story/clips";
 import {
   createShare,
   deleteShare,
@@ -36,17 +37,45 @@ export async function updateStoryAction(id: string, _prev: ActionResult, form: F
 export async function deleteEntryAction(id: string): Promise<void> {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const { deleted, shareId } = await withDrizzle(async (db) => {
+  const { deleted, shareId, clipKeys } = await withDrizzle(async (db) => {
     const share = await getShareForEntry(db, user.id, id);
-    return { deleted: await deleteEntry(db, user.id, id), shareId: share?.id };
+    // Voice recordings go with the entry; their rows are removed by the cascade.
+    const clips = await listClips(db, user.id, id);
+    return { deleted: await deleteEntry(db, user.id, id), shareId: share?.id, clipKeys: clips.map((c) => c.r2Key) };
   });
   if (deleted) {
     const { env } = await getCloudflareContext({ async: true });
-    await env.PHOTOS.delete(entryPhotoKeys(user.id, id));
+    await deleteObjects([...entryPhotoKeys(user.id, id), ...clipKeys]);
     if (shareId) await deleteShareCards(env.PHOTOS, shareId);
   }
   revalidatePath("/journal");
   redirect("/journal");
+}
+
+/** "Delete recording" on Entry Detail: removes the audio, keeps every word. */
+export async function deleteRecordingAction(entryId: string): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  const keys = await withDrizzle((db) => deleteEntryRecordings(db, user.id, entryId));
+  await deleteObjects(keys);
+  revalidatePath(`/journal/${entryId}`);
+}
+
+/** "Delete all recordings" in Settings. Returns how many were deleted. */
+export async function deleteAllRecordingsAction(): Promise<{ deleted: number }> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  const keys = await withDrizzle((db) => deleteAllRecordings(db, user.id));
+  await deleteObjects(keys);
+  revalidatePath("/journal", "layout");
+  return { deleted: keys.length };
+}
+
+// R2 deletes at most 1000 keys per call.
+async function deleteObjects(keys: string[]) {
+  if (!keys.length) return;
+  const { env } = await getCloudflareContext({ async: true });
+  for (let i = 0; i < keys.length; i += 1000) await env.PHOTOS.delete(keys.slice(i, i + 1000));
 }
 
 export type ShareLink = { url: string; place: string | null };
