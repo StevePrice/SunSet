@@ -78,9 +78,20 @@ Shown once, after the first sign-in, when the account has no first name (account
 - Header and bottom bar. Title "Your Journal".
 - `surface-sunken` card: logo mark · **No sunsets yet** · "The next time one stops you in your tracks, save it here with the story behind it." · **Save your first sunset** (main button → New sunset) · "A photo you took earlier works too."
 
-### 3.5 New sunset (changed · B2) — `/journal/new`
-- **Cancel** at top left. No header button, no bottom bar.
-- "Take a photo" / "Choose from your photos" as today; then the photo inset, **Choose a different photo** link, and a card with **Date taken** and **Place** rows, each with **Change**.
+### 3.5 New sunset (changed · B2a and B2b) — `/journal/new`
+Every **New sunset** button (header, empty Journal) opens step one.
+
+**B2a · Choose a photo (first step):**
+- **Cancel** at top left (back to where they came from). No header button, no bottom bar.
+- **New sunset** (`title-1`) · "Add one you're watching now, or one you took earlier."
+- Two large cards (`surface-raised`, `border-subtle`, 112px tall, whole card tappable), each with a 64px round icon, a `title-3` label and a `caption` line:
+  - **Take a photo** · "Opens your camera" (camera input, `capture="environment"`)
+  - **Choose from your photos** · "A sunset you took earlier" (photo library input)
+- A `surface-sunken` note: "Older photos keep the date and place they were taken, so they land in the right spot in your Journal. You can change either one."
+- No main button on this screen; the two cards are the choice.
+
+**B2b · Photo chosen:**
+- **Cancel** at top left. The photo inset, a **Choose a different photo** link (back to B2a), and a card with **Date taken** and **Place** rows, each with **Change**.
 - **Add your story** (main button): **saves the entry first**, then opens the story screen (B3a). Same as today's "Save and tell its story", renamed.
 - **Save for now** (text link): saves and opens Entry Detail. "You can add a story any time."
 - **Remove** the story box from this screen.
