@@ -72,7 +72,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Emails (magic links, verification, password reset) go through Cloudflare Email Service from `hello@sunsetsoul.app`; in local development they are logged instead
 - Auth rate limits stored in Postgres, keyed on Cloudflare's client IP header
 - Migrations for users, sessions, accounts, verifications and rate limits; the entries table comes in Phase 2
-- Staging deploys from pushes to the `Steve` branch (for example `staging.sunsetsoul.app`). `main` is not merged until Phase 3 or 4 is tested
+- Staging (`staging.sunsetsoul.app`) is deployed by hand from the `Steve` branch with `npm run deploy` in `apps/web`; pushing doesn't deploy. Migrations run first through `scripts/staging-db.sh`
 
 **Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Deployed to `https://staging.sunsetsoul.app` (Worker `sunset-staging`). **Done for email sign-in (2026-11-02):** a real sign-up received its confirmation email, verified, and signed in. Google and Apple switch on once their credentials are added.
 
@@ -158,7 +158,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Share Page photo at 1600–2000 px on the long side (it serves the 2560 px display photo today): a new photo size, filled in for existing entries
 - Email (PRD 6.9c), decided 2026-11-08 with Louise: email shares go through the phone's share sheet with the small JPEG; no app-sent share email
 
-**Status:** merged into Steve 2026-11-08, not yet deployed to staging; reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill. Card and photo byte sizes not measured yet (check on staging).
+**Status:** ✅ deployed to staging 2026-11-08 (with the copyright footer, PRD section 7). The link-preview card is now a 69 KB JPEG (it was about 1.2 MB as a PNG). The reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill.
 
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
@@ -215,7 +215,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 ### Order and dependencies
 - **0 → 1 → 2 → 3** is the critical path. Phase 2 alone tests the core hypothesis.
-- **Next (set 2026-11-08):** 4b → 4c → 4d, then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
+- **Next (set 2026-11-08):** 4b → 4c → 4d (all done), then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)
