@@ -168,7 +168,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - **Entry Detail order:** photo, title, date and place, Wow line, story, recording, Edit, **Share** (one button, straight to the share menu), Afterglow row, Score details, Delete
 - **Afterglow** gets the link settings (Copy link, place name, Stop sharing) and four reaction totals
 - **Share Page:** title added, score removed, "Let [Name] know you saw it" / "Tap one or more, and add a note if you like.", **Sending hugs** as a fourth reaction, sunset-style icons, checkmark on a tapped reaction, two rows of two
-- **Story flow:** "Add your story" (saves first) → "The story behind this moment": typing first, **Need ideas?** (story ideas replace the opening questions and the interview), **Or tell it out loud** below; microphone note, recording and review screens; **Delete recording** in Edit; no caption field. Reuse the voice work on `phase-5-voice-settings`
+- **Story flow:** "Add your story" (saves first) → "The story behind this moment": typing first, **Need ideas?** (story ideas replace the opening questions and the interview), **Rather talk than type?** below; microphone note, recording and review screens; **Delete recording** in Edit; no caption field. Reuse the voice work on `phase-5-voice-settings`
 - **Journal:** All photos view designed (two columns by month, count), last view remembered, empty state with "Save your first sunset"
 - **Fixes:** Share Page date matches the Journal (owner's time zone), one form of place names, AI titles for entries without one
 

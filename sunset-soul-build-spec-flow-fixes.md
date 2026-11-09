@@ -119,13 +119,13 @@ Top to bottom:
 - Heading **The story behind this moment** (`title-1`).
 - **Typing box first:** large (about 240px tall), `story` font, placeholder *"Where were you, and what made you stop to take this?"*
 - **Need ideas?** link (lightbulb icon) under the box → opens **Story ideas** (3.9). Closed by default.
-- **Voice panel** below (`surface-sunken` card): a 64px round microphone button (secondary style: `surface-raised`, `border-subtle`, not the action color) · **Or tell it out loud** · "Talk like you're telling a friend. We'll turn it into words you can change."
+- **Voice panel** below (`surface-sunken` card): a 64px round microphone button (secondary style: `surface-raised`, `border-subtle`, not the action color) · **Rather talk than type?** · "Tell it in your own voice. We'll write it down, and you can hear it again later."
 - **Save** (main button) · "Not ready? Save now and add your story any time." Saving with an empty box returns to Entry Detail with no story.
 - **Removed:** the three opening questions shown up front, the interview-first flow, "Keep going" and "That's my story" as the main path, and the "Caption for sharing" field.
 
 ### 3.8 Microphone note, recording, and review (new · B3b, B3c, B3d)
 **First tap on the microphone (B3b), once per person:**
-- A bottom sheet over a dimmed screen (navy shade, so the sheet clearly sits on top): mic icon · **Tell your story out loud** · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** (main button → the browser's microphone prompt, then recording) · **Type instead** (text link, closes the sheet).
+- A bottom sheet over a dimmed screen (navy shade, so the sheet clearly sits on top): mic icon · **Tell it in your own voice** · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** (main button → the browser's microphone prompt, then recording) · **Type instead** (text link, closes the sheet).
 - If the person denies the microphone: a plain sentence on the story screen ("Sunset Soul can't use your microphone. You can type your story instead, or allow the microphone in your phone's settings."), and the typing box stays ready.
 
 **Recording (B3c):**

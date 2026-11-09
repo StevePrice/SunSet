@@ -60,7 +60,7 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 ### 6.1 Entry Point
 - After a photo is chosen, New sunset shows **Add your story** (main button) and **Save for now** (link). Add your story saves the entry first, then opens **The story behind this moment**.
 - **Typing comes first** (decided Nov 8, 2026: most people will type). A large typing box sits right under the heading, with the hint *"Where were you, and what made you stop to take this?"*
-- **Voice sits right below it:** a panel with a round microphone button (secondary style, not the screen's main button), **"Or tell it out loud"** and *"Talk like you're telling a friend. We'll turn it into words you can change."*
+- **Voice sits right below it:** a panel with a round microphone button (secondary style, not the screen's main button), **"Rather talk than type?"** and *"Tell it in your own voice. We'll write it down, and you can hear it again later."*
 - The user can switch between speaking and typing at any time.
 - **Save** is the screen's main button. The user can skip the story entirely ("Not ready? Save now and add your story any time."). A story is never required.
 - AI story help can be turned off in Settings. When off, the New Entry screen behaves as in the MVP (plain text caption with one static prompt).
@@ -87,7 +87,7 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 - If the user shares something painful (grief, illness, loss, a hard time), the interviewer becomes gentler and may end the interview sooner. See the Interviewer Guide.
 
 ### 6.4 Voice Recording
-- **First tap on the microphone (once per person):** a short sheet before the phone's own permission prompt: "Tell your story out loud" · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** / **Type instead**.
+- **First tap on the microphone (once per person):** a short sheet before the phone's own permission prompt: "Tell it in your own voice" · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** / **Type instead**.
 - **While recording:** "Listening", a timer, a gentle moving line, a large **Stop** button, "Take your time. Pauses are fine. Up to 2 minutes." Recording stops on its own at 2 minutes.
 - When the user stops, the transcript appears in the box to change ("Here are your words. Change anything you like."), with a "Your recording · 0:48 · Only you can hear it" row (play, **Add more**).
 - When the user speaks, the app records audio and transcribes it to text.
@@ -157,7 +157,7 @@ The user's original words are **not a story style.** They live alongside the rec
 ## 7. User Flow
 
 1. User chooses or takes a photo on New sunset and taps **Add your story** (the entry is saved first), or **Save for now**.
-2. **The story behind this moment** opens: typing box first, **Need ideas?** under it, **Or tell it out loud** below.
+2. **The story behind this moment** opens: typing box first, **Need ideas?** under it, **Rather talk than type?** below.
 3. User types, or taps the microphone (first time: the microphone note), speaks, and taps Stop. Their words appear in the box.
 4. Optionally: **Need ideas?** for a question to nudge them, **Add more** to record more, **Help me polish it** for My story / Crafted story.
 5. User checks the suggested title and taps **Save**. The entry opens with the title, date and place, Wow line, story and (if spoken) "Hear it in your own voice".
@@ -168,7 +168,7 @@ The user's original words are **not a story style.** They live alongside the rec
 Designs: boards B2–B4 on https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2 (dark and light).
 
 1. **New sunset (changed)** — photo, date and place, **Add your story** (main), **Save for now**
-2. **The story behind this moment (changed)** — typing box first, Need ideas?, Or tell it out loud (microphone), Save
+2. **The story behind this moment (changed)** — typing box first, Need ideas?, Rather talk than type? (microphone), Save
 3. **Microphone note (new)** — shown once before the phone's permission prompt
 4. **Recording (new)** — Listening, timer, moving line, Stop
 5. **Review and Edit (new)** — recording row (play, Add more, Delete recording), words in the box, Need ideas?, Help me polish it (My story / Crafted story, lengths, photo details), title, Save

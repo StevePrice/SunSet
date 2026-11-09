@@ -60,7 +60,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - Each entry gets a short title suggested by AI, based on the photo and the story if one was added (e.g., "Standing like sticks"). The user can edit it.
 - If the AI is unavailable, the user can type a title, or the title is filled in once the AI is available. Saving is never blocked.
 - After choosing a photo, the New sunset screen shows the photo, date taken and place (each with **Change**), an **Add your story** button (main) and a **Save for now** link. There is no story box on this screen.
-- **Add your story** saves the entry first, then opens **The story behind this moment**: a typing box first (hint: "Where were you, and what made you stop to take this?"), **Need ideas?** (story ideas for this photo, closed until tapped), and below it **Or tell it out loud** (voice; see the Story Capture PRD). A story is never required.
+- **Add your story** saves the entry first, then opens **The story behind this moment**: a typing box first (hint: "Where were you, and what made you stop to take this?"), **Need ideas?** (story ideas for this photo, closed until tapped), and below it **Rather talk than type?** (voice; see the Story Capture PRD). A story is never required.
 - User can optionally tag a general location (auto-detected via device location, editable/removable by user)
 - On save, the entry is scored automatically (see 6.4) and added to the user's Journal
 
@@ -229,7 +229,7 @@ Designs for every MVP screen, in dark and light mode: https://claude.ai/artifact
 2. **Welcome** — "Welcome to Sunset Soul", first name (once)
 3. **Journal** — Stories and All photos views, empty state; header with New sunset, bottom bar Journal · You
 4. **New sunset** — choose or take a photo, date and place, Add your story / Save for now
-5. **The story behind this moment** — type first, Need ideas?, Or tell it out loud; first-use microphone note; recording; review and edit (recording playback, Add more, Delete recording, Help me polish it, title, Save)
+5. **The story behind this moment** — type first, Need ideas?, Rather talk than type?; first-use microphone note; recording; review and edit (recording playback, Add more, Delete recording, Help me polish it, title, Save)
 6. **Entry Detail** — full photo, title, date and place, Wow line, story, recording, Edit, Share, Afterglow row, Score details (closed), Delete
 7. **Afterglow** (from your friends) — totals for four reactions, names, notes, Share again, link settings
 8. **You** — first name, email, Sign out
