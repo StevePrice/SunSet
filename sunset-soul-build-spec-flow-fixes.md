@@ -6,6 +6,7 @@ This spec turns the November 8 design review into build instructions. It fixes t
 
 **Designs and references**
 - **Screen designs** (every screen, Dark mode and Light mode pages): https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2
+- **Screen pictures in this repo** (every screen, dark and light, one picture each, with the Build Spec section for each): [`design/screens/`](design/screens/README.md)
 - **Flow map** (three journeys, what changed on each screen): https://claude.ai/artifact/4DfUMuiEysmM7yLrGySPsV
 - **Design system** (brand book, tokens, component guidelines): https://claude.ai/artifact/PFq9iBSY5vUT7hxG5ymNaD and `design-system/` in this repo
 - Both links are private to Louise until she shares them. The board names below match the canvas (B1, B3a and so on).
