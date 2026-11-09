@@ -11,6 +11,8 @@ This spec turns the November 8 design review into build instructions. It fixes t
 - Both links are private to Louise until she shares them. The board names below match the canvas (B1, B3a and so on).
 - The designs use the design system's sample photos with Louise's real stories, so some photos don't match their story. Titles like "Lone Trees After the Fire", the Wow lines and the friend "Maria" are examples.
 
+**Why each decision was made:** `sunset-soul-flow-fixes-decisions.md`.
+
 **Where the PRDs changed:** `sunset-soul-prd.md` (6.1, 6.3, 6.4a, 6.5, 6.6, 6.9, 7) and `sunset-soul-prd-story-capture.md` (6.1–6.4, 6.7, 7, 8) are updated in this pull request to match this spec.
 
 ---
