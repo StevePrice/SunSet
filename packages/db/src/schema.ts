@@ -32,6 +32,9 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("user"),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
+  // Settings (Phase 5). AI story help on or off, and when the first-use AI notice was seen.
+  aiStoryHelp: boolean("ai_story_help").notNull().default(true),
+  aiNoticeSeenAt: timestamp("ai_notice_seen_at", { withTimezone: true }),
   ...timestamps,
 });
 
@@ -219,9 +222,11 @@ export const reactionNotes = pgTable(
 
 // One AI Story Capture interview per entry (Phase 5). `turns` holds each question and answer in
 // order; `drafts` holds each written version, keyed by style, with the number of turns it was
-// written from so stale drafts can be spotted.
-export type StoryTurn = { question: string | null; answer: string; via: "typed" | "spoken" };
+// written from so stale drafts can be spotted. A spoken answer lists its recordings (story_clips).
+export type StoryTurn = { question: string | null; answer: string; via: "typed" | "spoken"; clipIds?: string[] };
 export type StoryDraft = { text: string; turns: number; edited: boolean };
+// "What you said": the cleaned-up transcript, with the number of turns it was made from.
+export type StorySaid = { text: string; turns: number };
 
 export const storySessions = pgTable("story_sessions", {
   entryId: text("entry_id")
@@ -242,8 +247,32 @@ export const storySessions = pgTable("story_sessions", {
   drafts: jsonb("drafts").$type<Record<string, StoryDraft>>().notNull().default({}),
   title: text("title"),
   caption: text("caption"),
+  said: jsonb("said").$type<StorySaid>(),
   ...timestamps,
 });
+
+// One voice recording: a clip per spoken answer, private in R2 at
+// entries/{userId}/{entryId}/clips/{id}.{ext}. The transcript is kept even if the user edits
+// their answer, and stays null when transcription failed so it can be retried.
+export const storyClips = pgTable(
+  "story_clips",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    r2Key: text("r2_key").notNull(),
+    contentType: text("content_type").notNull(),
+    durationMs: integer("duration_ms").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    transcript: text("transcript"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("story_clips_entry_idx").on(table.entryId, table.createdAt), index("story_clips_user_idx").on(table.userId)],
+);
 
 // One row per AI call, for the per-user daily limit.
 export const aiCalls = pgTable(
