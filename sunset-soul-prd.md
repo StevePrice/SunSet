@@ -1,7 +1,7 @@
 # Sunset Soul — Product Requirements Document (PRD)
 **Status:** Draft — MVP scope
-**Last updated:** November 8, 2026
-**Companion doc:** Sunset Soul – Concept & Strategy (sunset-soul-concept.md)
+**Last updated:** November 8, 2026 (MVP flow fixes; see `sunset-soul-build-spec-flow-fixes.md`)
+**Companion docs:** Sunset Soul – Concept & Strategy (sunset-soul-concept.md) · Build Spec, Phase 4e flow fixes (sunset-soul-build-spec-flow-fixes.md) · Later List (sunset-soul-later-list.md)
 
 ---
 
@@ -36,10 +36,10 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 
 - As a user, I want to save a photo of a sunset I just saw, so that I can keep it as a memory.
 - As a user, I want to add a short story or caption to a sunset, so that the memory means more than just the photo.
-- As a user, I want to see a score for my sunset, so that I understand how it compares to an "ordinary" one.
+- As a user, I want to see a score for my sunset when I'm curious, so that I understand how it compares to an "ordinary" one (the score is a quiet detail, never on the photo).
 - As a user, I want to know why my sunset got its Wow score, so the score feels meaningful rather than random.
 - As a user, I want to look back through my past sunsets in one place, so that I can revisit memories over time.
-- As a user, I want to share a sunset (photo + score + story) with a few friends outside the app, so that I can show them a moment that mattered to me.
+- As a user, I want to share a sunset (photo + title + story) with a few friends outside the app, so that I can show them a moment that mattered to me.
 - As a user, I want to see how my friends reacted to a sunset I shared, so that I know it meant something to them too.
 - As a friend who received a shared sunset, I want to react with a simple tap without downloading an app, so that I can respond quickly and warmly.
 - As a user, I want to optionally post my sunset to a public map, so that others around the world can see it.
@@ -49,7 +49,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 
 ### 6.1 Account / Login
 - User can create an account and log in (method TBD — email, phone, or social login)
-- User provides a first name at sign-up; it appears on the Share Page ("Louise shared a sunset with you")
+- User provides a first name once, on a **Welcome** screen after the first sign-in ("Welcome to Sunset Soul" · "Your sunsets, your stories, shared with family and friends." · "What's your first name?"). It appears on the Share Page ("Louise shared a sunset with you") and can be changed on the You (account) screen. Accounts created by email link have no name until they give one here.
 - Journal entries and post history are tied to the account and persist across devices/reinstalls
 
 ### 6.2 Capture
@@ -59,8 +59,8 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 ### 6.3 Journal Entry Creation
 - Each entry gets a short title suggested by AI, based on the photo and the story if one was added (e.g., "Standing like sticks"). The user can edit it.
 - If the AI is unavailable, the user can type a title, or the title is filled in once the AI is available. Saving is never blocked.
-- User can optionally add a short text story/caption to the photo (not required to save)
-- Optional guided prompt may be shown (e.g., "What was happening when you took this?") to encourage story input
+- After choosing a photo, the New sunset screen shows the photo, date taken and place (each with **Change**), an **Add your story** button (main) and a **Save for now** link. There is no story box on this screen.
+- **Add your story** saves the entry first, then opens **The story behind this moment**: a typing box first (hint: "Where were you, and what made you stop to take this?"), **Need ideas?** (story ideas for this photo, closed until tapped), and below it **Or tell it out loud** (voice; see the Story Capture PRD). A story is never required.
 - User can optionally tag a general location (auto-detected via device location, editable/removable by user)
 - On save, the entry is scored automatically (see 6.4) and added to the user's Journal
 
@@ -70,7 +70,8 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
   - **The Reach** — proportion of frame showing sunset color vs. neutral
   - **The Setting** — basic foreground/silhouette detection
   - **The Wow Factor** — the overall gut reaction to the photo, judged by an AI model that can see images (see 6.4a)
-- Each parameter scored 1–10; composite score is a simple average, displayed to the user alongside the entry
+- Each parameter scored 1–10; composite score is a simple average
+- **Where the score shows:** only in a **Score details** row on Entry Detail, seen only by the owner (a small apricot badge; tap to see the four parts and the reasons). Never on a photo, in the Journal, on the Share Page, on share images or in Afterglow. How often people open Score details tells us whether they care about a score.
 - The score is calculated once when the entry is saved and stored with the entry; it does not change each time the entry is viewed
 - Scoring model is explicitly a simplified v1 — not the final trained/weighted version
 - Full definitions and anchor points are in the Concept doc (Sunset Scoring Algorithm)
@@ -102,7 +103,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - Never judge photography skill or image quality.
 
 **Output:**
-- A Wow score (1–10) and a **one-line reason** (about 15 words or fewer) explaining what makes the photo striking, shown on the Score Result screen and in Entry Detail. Example: *"Living trees standing among burned ones, glowing against the last light."*
+- A Wow score (1–10) and a **one-line reason** (about 15 words or fewer) explaining what makes the photo striking, shown on Entry Detail under the title and date ("Scoring…" in its place until it arrives). It is the part of the score people connect with. Example: *"Living trees standing among burned ones, glowing against the last light."*
 - The reason describes only what's visible. It never identifies people. It names a landmark only when it's clearly recognizable or the user has tagged the location.
 
 **Failure handling:** if the AI is unavailable when an entry is saved, the entry is saved with the other three scores and the Wow Factor (and composite) is completed as soon as the AI is available. No entry is lost or blocked.
@@ -113,16 +114,17 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - The reference test is re-run after any change to the AI instructions or AI model.
 
 ### 6.5 Journal (Personal Archive)
-- Chronological list/grid view of all saved entries
-- Each entry displays photo, title, score, date, and story (if present)
-- Entries with friend reactions show a small reaction indicator (see 6.9)
+- Two views, switched under the title: **Stories** (inset photo cards with date and place, title and the first three lines of the story) and **All photos** (two columns of square photos under month headings, photos only, with a count such as "15 sunsets"). The Journal remembers the last view used.
+- Nothing is drawn on the photos (no score).
+- Shared entries show "Shared · [n] reactions" (see 6.9)
 - Entries are private by default
-- User can open an entry to view full detail (photo, title, full story, score breakdown by parameter, Wow reason line, friend reactions)
+- User can open an entry to view full detail: photo (full bleed), title, date and place, Wow reason line, full story, the recording if spoken, Share, Afterglow, Score details (closed), Delete
+- **Navigation:** a header with the logo and a **New sunset** button (camera icon) on the main screens, and a bottom bar with **Journal · You**. Hidden while saving a sunset or telling a story; never on the Share Page.
 
 ### 6.6 Sharing (Share-Out, MVP)
-- From an entry, user can trigger a "Share" action
-- Share generates a full-photo share card (vertical, sized for Stories) containing: the photo, title, composite score, and the story (if present)
-- Tapping **Share** opens a share panel with large icons for **Instagram**, **Snapchat**, **TikTok**, and **Facebook**, plus **Messages** and a **More** button
+- **Share** is the main button on Entry Detail. In the MVP (web app) it creates the link if needed and opens the phone's share menu right away; the link settings (Copy link, place name, Stop sharing) live in Afterglow.
+- Share generates a full-photo share card (vertical, sized for Stories) containing: the photo, title, and the story (if present). **No score**; only the logo mark top-left.
+- **When there is a native app** (later): tapping **Share** opens a share panel with large icons for **Instagram**, **Snapchat**, **TikTok**, and **Facebook**, plus **Messages** and a **More** button
   - Tapping an icon opens that app with the share card ready to post
   - Icons appear only for apps installed on the phone
   - **More** opens the phone's built-in share menu (email, WhatsApp, and any other app)
@@ -168,16 +170,17 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 The web page that opens when a friend taps a shared link. Its look matches the full-photo Stories share card.
 
 - A small label at the top: *"[Name] shared a sunset with you"*
-- The photo fills the top of the page
-- Below it: the entry's title, composite score, and story (if present)
-- **Instructions above the reactions,** so friends know what to do:
-  - Heading: **"How did this sunset make you feel?"**
-  - Smaller line underneath: **"Tap a reaction to let [Name] know."**
-- Three reaction buttons: **Wow**, **Wish I was there**, **Love this!**
-  - Shaped as rounded "pill" buttons with a simple line icon beside each word, so they clearly look tappable (no emoji, per the design system)
+- The photo at the top of the page, with nothing on it
+- Below it: the entry's title, date and place, and story (if present). **No score.**
+- **An invitation above the reactions,** asking the friend to reply to the sender:
+  - Heading: **"Let [Name] know you saw it"**
+  - Smaller line underneath: **"Tap one or more, and add a note if you like."**
+- Four reaction buttons in two rows of two: **Wow**, **Wish I was there**, **Love this!**, **Sending hugs**
+  - Rounded "pill" buttons with a line icon in the Sunset Soul style beside each word (Wow: sun with rays; Wish I was there: horizon; Love this!: heart; Sending hugs: a person with open arms). No emoji.
+  - Sending hugs responds to the person, so it fits happy and bittersweet stories alike.
 - The first time a friend taps a reaction, they're asked for their first name (one quick prompt; they aren't asked again on that device)
 - When a friend taps a reaction:
-  - The button fills with the `reaction-selected` color (peach blush) and its count goes up by one
+  - The button fills with the `reaction-selected` color (peach blush), a small checkmark appears beside the count (never color alone), the icon gives one short animation (skipped under reduced motion), and the count goes up by one
   - A box appears to add a short note, with the placeholder text **"Add a note for [Name] (optional)"** and a **Send** button in the `action` color
   - Tapping the reaction again undoes it
 - **After sending,** a short thank-you replaces the note box: **"Sent! [Name] will see your reaction."** Friends can still change their reactions afterward.
@@ -188,9 +191,10 @@ The web page that opens when a friend taps a shared link. Its look matches the f
 A screen opened from Entry Detail. The title is **"Afterglow"** in large text, with **"from your friends"** in smaller text underneath.
 
 - A small photo and the entry title
-- Reaction totals (how many of each reaction)
+- Reaction totals (how many of each of the four reactions)
 - A list of who reacted and any notes they left (e.g., *Steve: "Best night of the whole trip"*)
-- A **Share** button at the bottom that opens the same share panel as 6.6 (Instagram, Snapchat, TikTok, Facebook, Messages, More)
+- A **Share again** button (same as 6.6)
+- **Link settings:** Copy link, the place name friends see, and Stop sharing (moved here from Entry Detail)
 
 **Rules**
 - Reactions are positive only. No negative reactions and no reactions about the score.
@@ -211,7 +215,7 @@ When a sunset is shared by email, the email works like a postcard that invites t
 - **Build note:** today the full-size photo shows up enormous in the email. Check how the email is being created. If the app writes the email itself, use the 600-pixel-wide preview. If it goes through the phone's share menu, hand over a reduced-size image along with the link instead of the original photo.
 
 **Not in MVP (later ideas)**
-- More reactions, such as "I felt this" and "Sending love" (for tender or bittersweet stories)
+- More reactions beyond the four ("Sending love" is covered by Sending hugs)
 - Voice-note reactions
 - "Send one back" — friend replies with their own sunset
 - Replying to a friend's reaction
@@ -219,20 +223,27 @@ When a sunset is shared by email, the email works like a postcard that invites t
 
 ## 7. Screens (MVP)
 
-1. **Onboarding / Login** — account creation, brief intro to the concept
-2. **Home / Capture** — camera or photo picker entry point
-3. **New Entry** — add story/caption, review/edit the AI-suggested title, confirm/edit location, save
-4. **Score Result** — shows composite score, four-parameter breakdown, and Wow reason line after save
-5. **Journal** — chronological grid/list of all saved entries, with reaction indicators
-6. **Entry Detail** — full photo, title, story, score breakdown, Wow reason line, link to Afterglow, share action, "post to map" action
-7. **Live Map** — global map view of public posted entries, tap a pin to view detail
-8. **Settings** — account, notification preferences
-9. **Share Page (web)** — what a friend sees when they open a shared link: photo, title, score, story, reaction instructions, reaction buttons, note box, thank-you message, and "Start your own Journal" link
-10. **Afterglow** (from your friends) — reactions received on an entry: totals, names, notes, and Share button
+Designs for every MVP screen, in dark and light mode: https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2 (screen-by-screen detail in `sunset-soul-build-spec-flow-fixes.md`).
+
+1. **Sign in** — email link or password
+2. **Welcome** — "Welcome to Sunset Soul", first name (once)
+3. **Journal** — Stories and All photos views, empty state; header with New sunset, bottom bar Journal · You
+4. **New sunset** — choose or take a photo, date and place, Add your story / Save for now
+5. **The story behind this moment** — type first, Need ideas?, Or tell it out loud; first-use microphone note; recording; review and edit (recording playback, Add more, Delete recording, Help me polish it, title, Save)
+6. **Entry Detail** — full photo, title, date and place, Wow line, story, recording, Edit, Share, Afterglow row, Score details (closed), Delete
+7. **Afterglow** (from your friends) — totals for four reactions, names, notes, Share again, link settings
+8. **You** — first name, email, Sign out
+9. **Share Page (web)** — "[Name] shared a sunset with you", photo, title, story, "Let [Name] know you saw it", four reactions, note box, thank-you, "Start your own Journal"
+10. **Live Map** and **Settings** — later; designed right before they're built (see the Later List)
+
+The separate Score Result screen is replaced by the Wow line and "Scoring…" on Entry Detail.
 
 **Copyright footer (all screens):** Every screen above, including the Share Page, shows a small line at the bottom: **"© 2026 Sunset Soul. All rights reserved."** Use the smallest text size and a muted color from the design system so it doesn't compete with the content. The shared-by-email message (6.9c) ends with the same line.
 
 ## 8. Out of Scope for MVP
+
+The full list of later features lives in `sunset-soul-later-list.md`.
+
 
 - Public story feed
 - In-app friend circle / social graph (sharing is share-out only; friend reactions are link-based, see 6.9)
@@ -248,7 +259,7 @@ When a sunset is shared by email, the email works like a postcard that invites t
 - [ ] Login method (email vs. phone vs. social)
 - [ ] AI vision provider and cost per photo for the Wow Factor
 - [ ] Should Palette, Reach, and Setting also use the AI vision model (possibly simpler to build and more accurate) instead of pixel analysis?
-- [ ] Does the Wow reason line appear on the share card, Share Page, and Live Map?
+- [x] Does the Wow reason line appear on the share card, Share Page, and Live Map? **Decided Nov 8, 2026:** no. It shows only on Entry Detail (owner).
 - [ ] Location precision/privacy approach for map pins (general area vs. exact point)
 - [ ] Platform priority — iOS first, Android first, or simultaneous
 - [ ] Friend Reactions: does a share link stay open forever, or expire after a set time?

@@ -1,5 +1,5 @@
 # Sunset Soul — Feature PRD: AI Story Capture
-**Status:** Draft — Phase 2 (first LLM feature)
+**Status:** Draft — Phase 2 (first LLM feature). **Revised November 8, 2026:** typing comes first and the AI helps only when asked; voice sits right below the typing box; story ideas replace the opening questions and the interview-first flow; no caption field. Screens and copy: `sunset-soul-build-spec-flow-fixes.md` (3.7–3.9).
 **Companion docs:**
 - Sunset Soul – Product Requirements Document, MVP (sunset-soul-prd.md)
 - Sunset Soul – Concept & Strategy (sunset-soul-concept.md)
@@ -30,10 +30,10 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 ## 4. Success Metrics (draft — refine before build)
 
 - % of saved entries that include a story (compare to MVP baseline)
-- % of story sessions that use voice vs. typing (goal: voice is the majority)
+- % of story sessions that use voice vs. typing (typing is expected to be the majority; voice is offered right below it)
 - Average story length and richness for spoken vs. typed sessions
 - Average number of follow-up questions answered per session
-- % of users who tap "Ask me something else" (signal of question quality)
+- % of story sessions that open "Need ideas?", and how often a story idea is tapped (signal of question quality)
 - Distribution of final style chosen (My story / Crafted story)
 - % of users who play back a recording or view their original words
 - % of AI-written stories edited by hand, and how heavily (signal of voice accuracy)
@@ -44,7 +44,7 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 
 - As a user, I want to tell the story of my sunset by speaking, so I don't have to type on my phone.
 - As a user, I want to type my story instead, when speaking out loud isn't practical.
-- As a user, I want a few suggested questions to start with, so I'm not facing a blank screen.
+- As a user, I want story ideas when I'm stuck, so I'm not facing a blank screen, without questions getting in the way when I already know what to say.
 - As a user, I want the app to ask me a follow-up question about what I said, so I remember and capture more of the moment.
 - As a user, I want to skip a question I don't like and get a different one.
 - As a user, I want to stop whenever I feel my story is complete.
@@ -58,22 +58,23 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 ## 6. Functional Requirements
 
 ### 6.1 Entry Point
-- After a photo is captured or selected, the New Entry screen opens with the story area front and center.
-- **Speaking is the encouraged way to tell a story.** People share more naturally, with more detail and more of their own voice, when they talk than when they type on a phone.
-- The **mic button is the primary, most prominent action** on the New Entry and Interview screens. Typing is always available but visually secondary (e.g., a smaller "Type instead" option).
-- A short, friendly cue invites speaking (e.g., "Just tell me about it, like you'd tell a friend").
-- The user can switch between speaking and typing at any time mid-session, and typing is never hidden or hard to find (some users can't or won't speak aloud, e.g., in public or for accessibility).
-- The user can skip the story entirely and save the entry with just the photo. A story is never required.
+- After a photo is chosen, New sunset shows **Add your story** (main button) and **Save for now** (link). Add your story saves the entry first, then opens **The story behind this moment**.
+- **Typing comes first** (decided Nov 8, 2026: most people will type). A large typing box sits right under the heading, with the hint *"Where were you, and what made you stop to take this?"*
+- **Voice sits right below it:** a panel with a round microphone button (secondary style, not the screen's main button), **"Or tell it out loud"** and *"Talk like you're telling a friend. We'll turn it into words you can change."*
+- The user can switch between speaking and typing at any time.
+- **Save** is the screen's main button. The user can skip the story entirely ("Not ready? Save now and add your story any time."). A story is never required.
 - AI story help can be turned off in Settings. When off, the New Entry screen behaves as in the MVP (plain text caption with one static prompt).
 
-### 6.2 Opening Questions
-- Before the user says anything, the app shows **three opening questions** tailored to the photo (for example, based on whether it shows water, people, a city skyline, or a car window).
-- The user taps one question to answer it, or ignores them and simply starts talking or typing.
-- The user can tap **"Ask me something else"** to replace the three opening questions with a new set.
-- If the photo can't be analyzed (e.g., poor connection), a fixed set of three general opening questions is shown instead.
+### 6.2 Story Ideas (replaces Opening Questions)
+- Questions are **not** shown up front. A **"Need ideas?"** link under the typing box opens **Story ideas**: three questions tailored to the photo (for example, based on whether it shows water, people, a city skyline, or a car window).
+- Tapping a question shows it **above the box** as a nudge; the user keeps telling the story in their own words.
+- **"More ideas"** replaces the three with a new set.
+- If the photo can't be analyzed (e.g., poor connection), a fixed set of three general questions is shown instead.
 - See the Interviewer Guide for question style and examples.
 
 ### 6.3 Follow-Up Questions
+**Revised Nov 8, 2026: not part of the main flow.** Story ideas (6.2) replace the interview. The follow-up behavior below is kept for reference and may return later (for example, inside Story ideas).
+
 - After the user answers, the AI asks **one follow-up question at a time**, based on what the user just said.
 - Maximum of **3 follow-up questions** per session (exact number tunable post-launch).
 - Three clear options are always visible during the interview:
@@ -86,15 +87,19 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 - If the user shares something painful (grief, illness, loss, a hard time), the interviewer becomes gentler and may end the interview sooner. See the Interviewer Guide.
 
 ### 6.4 Voice Recording
+- **First tap on the microphone (once per person):** a short sheet before the phone's own permission prompt: "Tell your story out loud" · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** / **Type instead**.
+- **While recording:** "Listening", a timer, a gentle moving line, a large **Stop** button, "Take your time. Pauses are fine. Up to 2 minutes." Recording stops on its own at 2 minutes.
+- When the user stops, the transcript appears in the box to change ("Here are your words. Change anything you like."), with a "Your recording · 0:48 · Only you can hear it" row (play, **Add more**).
 - When the user speaks, the app records audio and transcribes it to text.
-- The audio is **always saved** with the journal entry (private by default) and can be played back from Entry Detail.
+- The audio is **always saved** with the journal entry (private by default) and can be played back from Entry Detail ("Hear it in your own voice").
+- If the microphone is denied, the typing box stays ready with a plain explanation.
 - Each answer in the session is saved as part of one combined recording or as linked clips (engineering to decide; the user experience should feel like one recording).
 - Recommended maximum recording length per answer: ~2 minutes (tunable).
-- Users can delete a recording from Entry Detail, and can delete all recordings from Settings.
+- Users can delete a recording in **Edit** on each entry (**"Delete recording (your words stay)"**: the audio goes, the written story stays). Delete all recordings comes with Settings, later.
 - Recordings are never shared publicly or included in share-out unless a future feature explicitly allows it with user permission.
 
 ### 6.5 Written Story Styles
-After the interview ends, the app generates the written story. The user chooses between **two styles** and can switch at any time:
+Writing help is optional: a **"Help me polish it"** link appears once there are words, and opens the written styles. The user chooses between **two styles** and can switch at any time:
 
 | Style | What it is | Default? |
 |---|---|---|
@@ -124,10 +129,8 @@ The user's original words are **not a story style.** They live alongside the rec
 - My story and the original words never include photo details; they use only what the user said.
 
 ### 6.7 Title and Caption
-- For every story, the app automatically suggests:
-  - A **title** (2–6 words)
-  - A **one-line caption** (used on the share card and, if posted, the Live Map)
-- Both are editable.
+- For every story, the app automatically suggests a **title** (2–6 words), which is editable ("Suggested from your photo and story. Change it if you like.").
+- **No caption field** (removed Nov 8, 2026). Share cards use the title and the start of the story.
 
 ### 6.8 Accuracy Rules (all styles)
 - Never invent facts, events, people, feelings, or sensory details the user didn't share (photo details in the Crafted story are the only exception, per 6.6).
@@ -153,23 +156,24 @@ The user's original words are **not a story style.** They live alongside the rec
 
 ## 7. User Flow
 
-1. User captures or selects a sunset photo.
-2. New Entry screen opens with three opening questions and options to speak or type.
-3. User picks a question (or starts freely) and answers by voice or typing.
-4. AI asks one follow-up question. User answers, taps "Ask me something else," or taps "That's my story."
-5. Step 4 repeats up to three times.
-6. App shows the written story in **My story** style, with a suggested title and caption.
-7. User can switch to Crafted story, change length, toggle photo details, or edit by hand.
-8. User saves. Entry is scored (per MVP) and added to the Journal with the story, recording, and original words.
-9. Later, from Entry Detail, the user can play the recording and read "What you said" (or "What you wrote" for typed stories).
+1. User chooses or takes a photo on New sunset and taps **Add your story** (the entry is saved first), or **Save for now**.
+2. **The story behind this moment** opens: typing box first, **Need ideas?** under it, **Or tell it out loud** below.
+3. User types, or taps the microphone (first time: the microphone note), speaks, and taps Stop. Their words appear in the box.
+4. Optionally: **Need ideas?** for a question to nudge them, **Add more** to record more, **Help me polish it** for My story / Crafted story.
+5. User checks the suggested title and taps **Save**. The entry opens with the title, date and place, Wow line, story and (if spoken) "Hear it in your own voice".
+6. Later, **Edit** on Entry Detail reopens the same screen with the recording, "What you said" or "What you wrote", and **Delete recording**.
 
 ## 8. Screens (new or changed)
 
-1. **New Entry (changed)** — photo, three opening questions, large mic button (primary), "Type instead" option (secondary), skip option
-2. **Interview (new)** — current question, answer area (large mic button as primary, "Type instead" as secondary), "Keep going" (primary), "Ask me something else," "That's my story"
-3. **Your Story (new)** — "Add more to my story" option, written story with style switcher (My story / Crafted story), length control, "Add details from my photo" toggle (Crafted only), title and caption fields, edit, save
-4. **Entry Detail (changed)** — adds the recording player with "What you said" transcript underneath (or "What you wrote" for typed stories), and access to both story versions
-5. **Settings (changed)** — AI story help on/off, delete all recordings, data and privacy explanation
+Designs: boards B2–B4 on https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2 (dark and light).
+
+1. **New sunset (changed)** — photo, date and place, **Add your story** (main), **Save for now**
+2. **The story behind this moment (changed)** — typing box first, Need ideas?, Or tell it out loud (microphone), Save
+3. **Microphone note (new)** — shown once before the phone's permission prompt
+4. **Recording (new)** — Listening, timer, moving line, Stop
+5. **Review and Edit (new)** — recording row (play, Add more, Delete recording), words in the box, Need ideas?, Help me polish it (My story / Crafted story, lengths, photo details), title, Save
+6. **Entry Detail (changed)** — "Hear it in your own voice" row under the story; Edit opens the review screen
+7. **Settings (later)** — AI story help on/off, delete all recordings, data and privacy explanation
 
 ## 9. Out of Scope for This Feature
 

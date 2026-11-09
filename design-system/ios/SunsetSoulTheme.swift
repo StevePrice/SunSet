@@ -45,13 +45,13 @@ public enum SunsetSoul {
         public static let onAction = Color(light: (0xFF, 0xFF, 0xFF, 1.0), dark: (0xFF, 0xFF, 0xFF, 1.0))
         /// Keyboard and accessibility focus outline, 3px, on every surface.
         public static let focusRing = Color(light: (0x2C, 0x4A, 0x8C, 1.0), dark: (0xFB, 0xD2, 0xBC, 1.0))
-        /// Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream.
+        /// Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!, Sending hugs). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream.
         public static let reactionSelected = Color(light: (0xFB, 0xD2, 0xBC, 1.0), dark: (0xFB, 0xD2, 0xBC, 1.0))
         /// 1px border on reaction-selected so the chip reads as pressed.
         public static let reactionSelectedBorder = Color(light: (0xF2, 0xB0, 0x8E, 1.0), dark: (0xF2, 0xB0, 0x8E, 1.0))
         /// Text on reaction-selected.
         public static let onReaction = Color(light: (0x1D, 0x2B, 0x5C, 1.0), dark: (0x1D, 0x2B, 0x5C, 1.0))
-        /// Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text.
+        /// Score badge fill, shown only in the Score details row on Entry Detail. Never on photos. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text.
         public static let score = Color(light: (0xFF, 0x9B, 0x5C, 1.0), dark: (0xFF, 0x9B, 0x5C, 1.0))
         /// Numbers on score. 6.5:1.
         public static let onScore = Color(light: (0x1D, 0x2B, 0x5C, 1.0), dark: (0x1D, 0x2B, 0x5C, 1.0))

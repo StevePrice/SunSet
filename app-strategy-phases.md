@@ -160,6 +160,20 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Status:** merged into Steve 2026-11-08, not yet deployed to staging; reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill. Card and photo byte sizes not measured yet (check on staging).
 
+### Phase 4e: MVP flow fixes (Louise, 2026-11-08)
+**Goal:** the screens that exist flow simply for readers aged 50–65, with the photo and story first and the score a quiet detail. Full detail: [sunset-soul-build-spec-flow-fixes.md](sunset-soul-build-spec-flow-fixes.md); designs (dark and light): https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2.
+- **Navigation:** header with the logo (36px) and a **New sunset** button; bottom bar **Journal · You**. Hidden during tasks, never on the Share Page
+- **Welcome / first name** once after the first sign-in, so the Share Page says "[Name] shared a sunset with you"; name editable on You
+- **Score only in Score details** on Entry Detail (owner only); off photos, the Journal, the Share Page, share images and Afterglow. The Wow line sits under the title and date; no Score Result screen
+- **Entry Detail order:** photo, title, date and place, Wow line, story, recording, Edit, **Share** (one button, straight to the share menu), Afterglow row, Score details, Delete
+- **Afterglow** gets the link settings (Copy link, place name, Stop sharing) and four reaction totals
+- **Share Page:** title added, score removed, "Let [Name] know you saw it" / "Tap one or more, and add a note if you like.", **Sending hugs** as a fourth reaction, sunset-style icons, checkmark on a tapped reaction, two rows of two
+- **Story flow:** "Add your story" (saves first) → "The story behind this moment": typing first, **Need ideas?** (story ideas replace the opening questions and the interview), **Or tell it out loud** below; microphone note, recording and review screens; **Delete recording** in Edit; no caption field. Reuse the voice work on `phase-5-voice-settings`
+- **Journal:** All photos view designed (two columns by month, count), last view remembered, empty state with "Save your first sunset"
+- **Fixes:** Share Page date matches the Journal (owner's time zone), one form of place names, AI titles for entries without one
+
+**Done when:** see section 8 of the Build Spec.
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
@@ -216,6 +230,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 ### Order and dependencies
 - **0 → 1 → 2 → 3** is the critical path. Phase 2 alone tests the core hypothesis.
 - **Next (set 2026-11-08):** 4b → 4c → 4d, then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
+- **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)
