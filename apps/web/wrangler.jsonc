@@ -27,8 +27,11 @@
     "BETTER_AUTH_URL": "https://staging.sunsetsoul.app",
     "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
   },
-  // Journal photos. Private: served only to their owner through /api/photos.
+  // Journal photos and voice recordings. Private: served only to their owner through /api/photos and /api/clips.
   "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
+  // Workers AI: Whisper turns voice answers into text (AI Story Capture). Voice recordings are kept
+  // privately in PHOTOS next to the entry's photos.
+  "ai": { "binding": "AI" },
   // Scoring: each saved entry is queued for the sunset-scorer Worker.
   "queues": { "producers": [{ "binding": "SCORING", "queue": "sunset-scoring-staging" }] },
   // Cloudflare Email Service (magic links, verification, password reset).

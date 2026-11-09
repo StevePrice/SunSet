@@ -1,6 +1,6 @@
 // Story interview state. Like entries.ts, every function is scoped to the entry's owner.
 import { and, count, eq, gt } from "drizzle-orm";
-import { aiCalls, entries, storySessions, type StoryDraft, type StoryTurn } from "@/db/schema";
+import { aiCalls, entries, storySessions, type StoryDraft, type StorySaid, type StoryTurn } from "@/db/schema";
 import type { Db } from "@/lib/db";
 import { MAX_STORY_LENGTH } from "@/lib/entry-input";
 import { MAX_FOLLOW_UPS, type StoryStyle } from "./prompts";
@@ -101,6 +101,10 @@ export function saveDraft(
     title: session.title ?? suggested?.title?.slice(0, MAX_TITLE_LENGTH) ?? null,
     caption: session.caption ?? suggested?.caption?.slice(0, MAX_CAPTION_LENGTH) ?? null,
   });
+}
+
+export function saveSaid(db: Db, session: StorySession, said: StorySaid) {
+  return update(db, session, { said });
 }
 
 /** Puts the chosen story on the entry, where the Journal and share page read it. */
