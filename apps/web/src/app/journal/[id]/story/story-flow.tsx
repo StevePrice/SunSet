@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { AiPrivacyText } from "@/components/ai-privacy";
 import { noticeClass } from "@/components/styles";
+import { finishStep } from "@/lib/story/interview";
 import type { StoryStyle } from "@/lib/story/prompts";
 import type { StoryView } from "@/lib/story/sessions";
 import {
@@ -19,7 +20,6 @@ import {
 } from "./actions";
 import { VoiceRecorder } from "./voice-recorder";
 
-const SHORT_ANSWER_WORDS = 15;
 const button = "inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50";
 const primary = `${button} bg-action text-on-action hover:bg-action/90`;
 const secondary = `${button} border border-border-subtle bg-transparent text-ink hover:bg-surface-raised`;
@@ -179,11 +179,29 @@ function Interview({
     />
   );
 
+  // "That's my story" and "See my story". Words still in the box are saved first, so a voice answer
+  // that's been transcribed but not sent with "Keep going" isn't lost.
   function finish() {
-    const only = view.turns[0];
-    const short = view.turns.length === 1 && only.answer.split(/\s+/).length < SHORT_ANSWER_WORDS;
-    if (short && view.nextQuestion && !offerOneMore) setOfferOneMore(true);
-    else onFinish();
+    const step = finishStep({
+      pending: answer,
+      answers: view.turns.map((t) => t.answer),
+      hasNextQuestion: view.nextQuestion !== null,
+      offeredOneMore: offerOneMore,
+    });
+    if (step === "offer-one-more") return setOfferOneMore(true);
+    if (step === "finish") return onFinish();
+    const text = answer;
+    const clips = clipIds;
+    run(async () => {
+      const result = await answerAction(entryId, question, text, false, clips);
+      if (!result.error) {
+        setAnswer("");
+        setClipIds([]);
+        setOfferOneMore(false);
+        onFinish();
+      }
+      return result;
+    });
   }
 
   return (
@@ -260,7 +278,7 @@ function Interview({
       <div className="flex flex-wrap gap-3">
         {done ? (
           <>
-            <button type="button" onClick={onFinish} disabled={busy || recording} className={primary}>
+            <button type="button" onClick={finish} disabled={busy || recording} className={primary}>
               See my story
             </button>
             {showBox && (
