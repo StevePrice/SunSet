@@ -59,6 +59,7 @@ export function VoiceRecorder({
   const stream = useRef<MediaStream | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAt = useRef(0);
+  const unmounted = useRef(false);
 
   function release() {
     if (timer.current) clearInterval(timer.current);
@@ -69,6 +70,7 @@ export function VoiceRecorder({
 
   useEffect(
     () => () => {
+      unmounted.current = true;
       if (recorder.current?.state === "recording") {
         recorder.current.onstop = null;
         recorder.current.stop();
@@ -123,8 +125,21 @@ export function VoiceRecorder({
       onTypeInstead("Sunset Soul can't use your microphone. You can type instead, or allow the microphone in your browser settings and try again.");
       return;
     }
+    // The page was left while the permission prompt was open: turn the mic straight back off.
+    if (unmounted.current) {
+      release();
+      return;
+    }
     const chunks: Blob[] = [];
-    const rec = new MediaRecorder(stream.current, { mimeType: mime });
+    let rec: MediaRecorder;
+    try {
+      rec = new MediaRecorder(stream.current, { mimeType: mime });
+    } catch {
+      release();
+      setState({ kind: "idle" });
+      onTypeInstead("This browser can't record audio, so you can type your answer instead.");
+      return;
+    }
     recorder.current = rec;
     rec.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data);
@@ -140,7 +155,14 @@ export function VoiceRecorder({
       void upload(blob, durationMs);
     };
     startedAt.current = Date.now();
-    rec.start(1000);
+    try {
+      rec.start(1000);
+    } catch {
+      release();
+      setState({ kind: "idle" });
+      onTypeInstead("This browser can't record audio, so you can type your answer instead.");
+      return;
+    }
     setState({ kind: "recording", elapsedMs: 0 });
     timer.current = setInterval(() => {
       const elapsedMs = Date.now() - startedAt.current;
@@ -166,70 +188,91 @@ export function VoiceRecorder({
     }
   }
 
-  if (state.kind === "recording") {
-    return (
-      <div className="flex flex-col items-center gap-3 rounded-ss-lg bg-surface-raised p-5" aria-live="polite">
-        <p className="flex items-center gap-2 text-label font-bold">
-          <span className="h-3 w-3 animate-pulse rounded-ss-pill bg-action" aria-hidden="true" />
-          Recording {formatDuration(state.elapsedMs)}
-          <span className="font-normal text-ink-muted">of {formatDuration(MAX_RECORDING_SECONDS * 1000)}</span>
-        </p>
-        <button type="button" onClick={stop} className={buttonClass(prominent ? "action" : "secondary", "w-full")}>
-          Stop
-        </button>
-      </div>
-    );
-  }
+  // One status line that stays in the page, so screen readers hear each change of state once
+  // (the timer itself isn't announced every second).
+  const status =
+    state.kind === "starting"
+      ? "Starting the microphone."
+      : state.kind === "recording"
+        ? `Recording. Up to ${formatDuration(MAX_RECORDING_SECONDS * 1000)}.`
+        : state.kind === "uploading" || state.kind === "retrying"
+          ? "Recording stopped. Turning your words into text."
+          : "";
+  return (
+    <>
+      {body()}
+      <p role="status" className="sr-only">
+        {status}
+      </p>
+    </>
+  );
 
-  if (state.kind === "uploading" || state.kind === "retrying") {
-    return <p className="animate-pulse rounded-ss-lg bg-surface-raised p-5 text-center text-ink-muted">Turning your words into text…</p>;
-  }
-
-  if (state.kind === "transcribeFailed" || state.kind === "uploadFailed") {
-    const uploadFailed = state.kind === "uploadFailed";
-    return (
-      <div role="alert" className={`${noticeClass} flex flex-col gap-3`}>
-        <p>
-          {uploadFailed
-            ? "We couldn't save that recording. Check your connection and try again."
-            : `${state.message} Your recording is saved.`}
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className={buttonClass("secondary")}
-            onClick={() => (uploadFailed ? upload(state.blob, state.durationMs) : retry(state.clipId))}
-          >
-            Retry
-          </button>
-          <button
-            type="button"
-            className={buttonClass("secondary")}
-            onClick={() => {
-              setState({ kind: "idle" });
-              onTypeInstead();
-            }}
-          >
-            Type instead
+  function body() {
+    if (state.kind === "recording") {
+      return (
+        <div className="flex flex-col items-center gap-3 rounded-ss-lg bg-surface-raised p-5">
+          <p className="flex items-center gap-2 text-label font-bold">
+            <span className="h-3 w-3 animate-pulse rounded-ss-pill bg-action" aria-hidden="true" />
+            Recording {formatDuration(state.elapsedMs)}
+            <span className="font-normal text-ink-muted">of {formatDuration(MAX_RECORDING_SECONDS * 1000)}</span>
+          </p>
+          <button type="button" onClick={stop} className={buttonClass(prominent ? "action" : "secondary", "w-full")}>
+            Stop recording
           </button>
         </div>
-      </div>
+      );
+    }
+
+    if (state.kind === "uploading" || state.kind === "retrying") {
+      return <p className="animate-pulse rounded-ss-lg bg-surface-raised p-5 text-center text-ink-muted">Turning your words into text…</p>;
+    }
+
+    if (state.kind === "transcribeFailed" || state.kind === "uploadFailed") {
+      const uploadFailed = state.kind === "uploadFailed";
+      return (
+        <div role="alert" className={`${noticeClass} flex flex-col gap-3`}>
+          <p>
+            {uploadFailed
+              ? "We couldn't save that recording. Check your connection and try again."
+              : `${state.message} Your recording is saved.`}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              className={buttonClass("secondary")}
+              onClick={() => (uploadFailed ? upload(state.blob, state.durationMs) : retry(state.clipId))}
+            >
+              Retry
+            </button>
+            <button
+              type="button"
+              className={buttonClass("secondary")}
+              onClick={() => {
+                setState({ kind: "idle" });
+                onTypeInstead();
+              }}
+            >
+              Type instead
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        onClick={start}
+        disabled={disabled || state.kind === "starting"}
+        className={
+          prominent
+            ? "inline-flex min-h-20 w-full items-center justify-center gap-3 rounded-ss-lg bg-action px-5 py-3 text-title-3 font-bold text-on-action hover:bg-action/90 disabled:opacity-50"
+            : buttonClass("secondary", "self-start")
+        }
+      >
+        <MicIcon className={prominent ? "h-8 w-8" : "h-5 w-5"} />
+        {state.kind === "starting" ? "Starting…" : label}
+      </button>
     );
   }
-
-  return (
-    <button
-      type="button"
-      onClick={start}
-      disabled={disabled || state.kind === "starting"}
-      className={
-        prominent
-          ? "inline-flex min-h-20 w-full items-center justify-center gap-3 rounded-ss-lg bg-action px-5 py-3 text-title-3 font-bold text-on-action hover:bg-action/90 disabled:opacity-50"
-          : buttonClass("secondary", "self-start")
-      }
-    >
-      <MicIcon className={prominent ? "h-8 w-8" : "h-5 w-5"} />
-      {state.kind === "starting" ? "Starting…" : label}
-    </button>
-  );
 }
