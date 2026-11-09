@@ -20,6 +20,7 @@ export async function GET(request: Request, ctx: RouteContext<"/api/clips/[id]">
     "Content-Type": clip.contentType,
     "Accept-Ranges": "bytes",
     "Cache-Control": "private, max-age=3600",
+    "X-Content-Type-Options": "nosniff",
   });
   const size = clip.sizeBytes;
   const range = parseRange(request.headers.get("range"), size);
