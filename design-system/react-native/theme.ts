@@ -42,13 +42,13 @@ const darkColors = {
   onAction: "#FFFFFF",
   /** Keyboard and accessibility focus outline, 3px, on every surface. */
   focusRing: "#FBD2BC",
-  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
+  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!, Sending hugs). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
   reactionSelected: "#FBD2BC",
   /** 1px border on reaction-selected so the chip reads as pressed. */
   reactionSelectedBorder: "#F2B08E",
   /** Text on reaction-selected. */
   onReaction: "#1D2B5C",
-  /** Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
+  /** Score badge fill, shown only in the Score details row on Entry Detail. Never on photos. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
   score: "#FF9B5C",
   /** Numbers on score. 6.5:1. */
   onScore: "#1D2B5C",
@@ -103,13 +103,13 @@ const lightColors = {
   onAction: "#FFFFFF",
   /** Keyboard and accessibility focus outline, 3px, on every surface. */
   focusRing: "#2C4A8C",
-  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
+  /** Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!, Sending hugs). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. */
   reactionSelected: "#FBD2BC",
   /** 1px border on reaction-selected so the chip reads as pressed. */
   reactionSelectedBorder: "#F2B08E",
   /** Text on reaction-selected. */
   onReaction: "#1D2B5C",
-  /** Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
+  /** Score badge fill, shown only in the Score details row on Entry Detail. Never on photos. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. */
   score: "#FF9B5C",
   /** Numbers on score. 6.5:1. */
   onScore: "#1D2B5C",

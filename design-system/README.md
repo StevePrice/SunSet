@@ -71,11 +71,14 @@ Link `web/tokens.css` and keep `fonts/` beside the `web/` folder. Use `var(--ss-
 
 ## Rules that matter most
 
-- The photo leads. Never put text, filters or the logo on a person's photo inside the app; only the score badge sits on it.
-- On images shared outside the app (share card, Stories cards), put the logo mark (`brand/logo/sunset-soul-mark-for-dark-backgrounds.svg`, 34pt wide) in the photo's top-left corner on a 48pt square of `photoScrim` with 10pt corners. On those images the score badge sits in the bottom-right corner, opposite the mark.
-- Photos run full bleed (edge to edge) only at the top of Entry Detail, on the score reveal and on Stories cards. Everywhere else they are inset 16pt from the screen edges with 14pt corners (`radius.md`). No borders or frames around photos.
+- The photo leads. Never put anything on a person's photo inside the app: no score, no logo, no text, no filters.
+- On images shared outside the app (share card, Stories cards), put the logo mark (`brand/logo/sunset-soul-mark-for-dark-backgrounds.svg`, 34pt wide) in the photo's top-left corner on a 48pt square of `photoScrim` with 10pt corners. The mark is the only thing on a shared image: no score.
+- Photos run full bleed (edge to edge) only at the top of Entry Detail (including just after saving) and on Stories cards. Everywhere else they are inset 16pt from the screen edges with 14pt corners (`radius.md`). No borders or frames around photos.
 - The Journal has two views, switched by a two-part toggle under the title: **Stories** (inset photo cards: photo, date, title, first three lines of the story, 32pt apart) and **All photos** (a two-column grid of square photos, 8pt apart, 10pt corners, grouped under month headings, photos only). Never three columns.
-- Use one `action` button per screen. Use `score` (apricot) only for scores and `reaction-selected` (peach blush) only for tapped reactions.
+- Use one `action` button per screen. Use `score` (apricot) only for the score badge and `reaction-selected` (peach blush) only for tapped reactions.
+- The score is a quiet detail, shown to the owner only in the **Score details** row on Entry Detail. On Entry Detail the title, date and place come first, then the one-line Wow reason (`caption`, `inkMuted`), then the story.
+- Four reactions, fixed copy: **Wow**, **Wish I was there**, **Love this!**, **Sending hugs**, as line icons in the brand's style (sun with rays, horizon, heart, a person with open arms). A tapped reaction gets the `reactionSelected` fill **and** a checkmark, never color alone.
+- Navigation: on the main screens a header with the logo (36pt) and a **New sunset** button (secondary pill, camera icon), and a bottom tab bar **Journal · You** with a label under every icon. Hidden during tasks; never on the Share Page.
 - No red anywhere, no drop shadows, no emoji in the interface.
 - `score` and `reactionSelected` are fill colors only. In light mode never use them for text or icons: show scores as an apricot badge with `onScore` numbers, and keep links and labels in `ink`.
 - Draw the Live Map with the `map*` colors (water, land, coastline, pin ring and outline), never the surface colors.

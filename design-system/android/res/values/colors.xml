@@ -37,13 +37,13 @@
     <color name="on_action">#FFFFFFFF</color>
     <!-- Keyboard and accessibility focus outline, 3px, on every surface. -->
     <color name="focus_ring">#FF2C4A8C</color>
-    <!-- Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. -->
+    <!-- Fill of a reaction chip the person has tapped (Wow, Wish I was there, Love this!, Sending hugs). A fill only: never a text or icon color in light mode, where it reads at about 1.4:1 on cream. -->
     <color name="reaction_selected">#FFFBD2BC</color>
     <!-- 1px border on reaction-selected so the chip reads as pressed. -->
     <color name="reaction_selected_border">#FFF2B08E</color>
     <!-- Text on reaction-selected. -->
     <color name="on_reaction">#FF1D2B5C</color>
-    <!-- Score badge fill, on photos and beside titles. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. -->
+    <!-- Score badge fill, shown only in the Score details row on Entry Detail. Never on photos. A fill only: in light mode a score is always a badge with on-score numbers, never apricot text. -->
     <color name="score">#FFFF9B5C</color>
     <!-- Numbers on score. 6.5:1. -->
     <color name="on_score">#FF1D2B5C</color>
