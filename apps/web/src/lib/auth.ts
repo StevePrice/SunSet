@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { haveIBeenPwned } from "better-auth/plugins/haveibeenpwned";
@@ -11,6 +12,7 @@ import { Client } from "pg";
 import * as schema from "@/db/schema";
 import { magicLinkEmail, resetPasswordEmail, sendEmail, verifyEmailEmail } from "@/lib/email";
 import { hashPassword, verifyPassword } from "@/lib/password";
+import { onSessionStart, parseAdminEmails } from "@/lib/user-admin";
 
 type ProviderEnv = Pick<
   CloudflareEnv,
@@ -24,7 +26,7 @@ export function enabledSocialProviders(env: ProviderEnv) {
   };
 }
 
-function createAuth(env: CloudflareEnv, client: Client, runInBackground: (task: Promise<unknown>) => void) {
+export function createAuth(env: CloudflareEnv, client: Client, runInBackground: (task: Promise<unknown>) => void) {
   const providers = enabledSocialProviders(env);
   return betterAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -39,6 +41,23 @@ function createAuth(env: CloudflareEnv, client: Client, runInBackground: (task: 
       backgroundTasks: { handler: runInBackground },
     },
     rateLimit: { storage: "database" },
+    databaseHooks: {
+      session: {
+        // Every sign-in method ends in a new session, so this one check covers password, magic link,
+        // Google and Apple. It also gives ADMIN_EMAILS accounts their role.
+        create: {
+          before: async (session) => {
+            const { allowed } = await onSessionStart(drizzle(client, { schema }), session.userId, parseAdminEmails(env.ADMIN_EMAILS));
+            if (!allowed) {
+              throw APIError.from("FORBIDDEN", {
+                message: "This account has been disabled. Contact support if you think that is a mistake.",
+                code: "ACCOUNT_DISABLED",
+              });
+            }
+          },
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,
