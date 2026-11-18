@@ -6,39 +6,11 @@
 // mail instead of sending it). Against a deployment (E2E_BASE_URL) nothing can read the mailbox,
 // so the tests sign in as an existing account named by E2E_USER_EMAIL and E2E_USER_PASSWORD and
 // skip sign-up and verification.
-import { readFileSync } from "node:fs";
-import { expect, test, type BrowserContext, type Page } from "@playwright/test";
+import { expect, test, type BrowserContext } from "@playwright/test";
+import { deployed, signIn, signUp } from "./helpers";
 
-const deployed = Boolean(process.env.E2E_BASE_URL);
-const logPath = process.env.E2E_SERVER_LOG ?? "e2e/server.log";
 const email = deployed ? (process.env.E2E_USER_EMAIL ?? "") : `smoke-${Date.now()}@example.com`;
 const password = deployed ? (process.env.E2E_USER_PASSWORD ?? "") : `Smoke-${crypto.randomUUID()}`;
-
-/** The link in the latest email logged for this address. */
-async function emailedLink(address: string): Promise<string> {
-  let link: string | undefined;
-  await expect
-    .poll(
-      () => {
-        const log = readFileSync(logPath, "utf8");
-        const start = log.lastIndexOf(`[email] to=${address}`);
-        link = start < 0 ? undefined : log.slice(start).match(/https?:\/\/\S+/)?.[0];
-        return link;
-      },
-      { message: `no email logged for ${address}` },
-    )
-    .toBeTruthy();
-  return link!;
-}
-
-async function signIn(page: Page) {
-  await page.goto("/sign-in");
-  await page.getByRole("button", { name: "Sign in with a password" }).click();
-  await page.getByPlaceholder("Email").fill(email);
-  await page.getByPlaceholder("Password").fill(password);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await expect(page).toHaveURL(/\/journal$/);
-}
 
 test.describe.configure({ mode: "serial" });
 
@@ -48,23 +20,15 @@ test.beforeAll(() => {
 
 test("sign up and verify the email", async ({ page }) => {
   test.skip(deployed, "Can't read a real mailbox; the deployed run uses an existing account.");
-  await page.goto("/sign-in");
-  await page.getByRole("button", { name: /create an account|sign up/i }).click();
-  await page.getByPlaceholder("Your name").fill("Smoke Tester");
-  await page.getByPlaceholder("Email").fill(email);
-  await page.getByPlaceholder(/^Password/).fill(password);
-  await page.getByRole("button", { name: "Create account" }).click();
-
   // Verifying the email signs the new account in.
-  await page.goto(await emailedLink(email));
-  await expect(page).toHaveURL(/\/journal$/);
+  await signUp(page, "Smoke Tester", email, password);
 });
 
 // Sign-in is rate limited, so only this test signs in; the rest reuse its session cookies.
 let session: Awaited<ReturnType<BrowserContext["cookies"]>> = [];
 
 test("sign in", async ({ page, context }) => {
-  await signIn(page);
+  await signIn(page, email, password);
   session = await context.cookies();
 });
 
