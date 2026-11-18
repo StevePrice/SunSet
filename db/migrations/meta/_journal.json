@@ -64,6 +64,13 @@
       "when": 1794185339178,
       "tag": "0008_voice_and_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795016315535,
+      "tag": "0009_admin_log",
+      "breakpoints": true
     }
   ]
 }

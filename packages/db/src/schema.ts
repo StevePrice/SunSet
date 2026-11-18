@@ -28,8 +28,10 @@ export const users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  // "admin" can see every Journal (logged in admin_views) and use the calibration tools.
+  // "admin" can see every Journal (logged in admin_log), manage accounts and use the calibration tools.
   role: text("role").notNull().default("user"),
+  // Set when an admin disables the account: it can't sign in by any method until re-enabled.
+  disabledAt: timestamp("disabled_at", { withTimezone: true }),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   // Settings (Phase 5). AI story help on or off, and when the first-use AI notice was seen.
@@ -290,19 +292,28 @@ export const aiCalls = pgTable(
   (table) => [index("ai_calls_user_created_idx").on(table.userId, table.createdAt)],
 );
 
-// Every time an admin opens someone else's Journal or entry.
-export const adminViews = pgTable(
-  "admin_views",
+// The activity log: every admin action, and every time an admin opens someone else's Journal or
+// entry. No foreign keys, and the emails are copied in, so a row still reads correctly after the
+// admin or the target account has been deleted. `adminId` is null when the system acted (an
+// account promoted by ADMIN_EMAILS). Actions: view_journal, view_entry, set_role, disable, enable,
+// sign_out_everywhere, delete_account, rescore_all.
+export const adminLog = pgTable(
+  "admin_log",
   {
     id: text("id").primaryKey(),
-    adminId: text("admin_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    viewedUserId: text("viewed_user_id").notNull(),
+    adminId: text("admin_id"),
+    adminEmail: text("admin_email"),
+    action: text("action").notNull(),
+    targetUserId: text("target_user_id"),
+    targetEmail: text("target_email"),
     entryId: text("entry_id"),
+    details: jsonb("details").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("admin_views_viewed_idx").on(table.viewedUserId, table.createdAt)],
+  (table) => [
+    index("admin_log_target_idx").on(table.targetUserId, table.createdAt),
+    index("admin_log_created_idx").on(table.createdAt),
+  ],
 );
 
 // The reference photo set the founders rate to calibrate the scorer (concept doc, "Keeping Scores
