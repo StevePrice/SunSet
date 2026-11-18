@@ -1,0 +1,128 @@
+name: Deploy to staging
+
+# Started by hand: Actions > Deploy to staging > Run workflow. It deploys the `sunset-staging`
+# Worker from the chosen ref (default: Steve), after that commit has passed CI. Steps:
+#   1. check the commit's CI run passed
+#   2. run database migrations (through an SSH tunnel to the Droplet)
+#   3. deploy the Worker
+#   4. run the smoke tests against https://staging.sunsetsoul.app
+#   5. if the smoke tests fail, `wrangler rollback` to the previous Worker version
+#
+# Rollback restores the Worker only, not the database. Write migrations so the previous version of
+# the app still works with them (add columns and tables first, remove them in a later release).
+#
+# NOT YET TESTED: it needs the secrets below, which only Steve can create. See docs/ci-credentials.md
+# for how to make each one with the least access that works.
+#
+# Secrets (GitHub environment "staging"):
+#   CLOUDFLARE_API_TOKEN       API token limited to Workers Scripts: Edit (plus Account Settings: Read,
+#                              which wrangler needs) on this one account. Not the full-account token.
+#   CLOUDFLARE_ACCOUNT_ID      The account the Worker is in.
+#   STAGING_DB_SSH_KEY         Private key of a forward-only SSH user on the Droplet (see the doc).
+#   STAGING_DB_SSH_KNOWN_HOSTS The Droplet's host key line (`ssh-keyscan -t ed25519 165.232.151.187`).
+#   STAGING_DB_SSH_USER        The forward-only user's name on the Droplet.
+#   STAGING_DB_MIGRATOR_URL    Connection string for the schema-only database role, as seen from the
+#                              Droplet's network but with host 127.0.0.1 and port 15432, for example
+#                              postgres://sunset_migrator:PASSWORD@127.0.0.1:15432/sunset
+#                              ?uselibpqcompat=true&sslmode=verify-ca&sslrootcert=/tmp/origin_ca.pem
+#   STAGING_DB_CA_PEM          The Cloudflare Origin CA root certificate (origin_ca_rsa_root.pem).
+#   E2E_USER_EMAIL, E2E_USER_PASSWORD
+#                              A verified test account on staging for the smoke tests. Its entry is
+#                              created and deleted on every run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit to deploy (it must have a passing CI run)
+        default: Steve
+        required: true
+
+# One deploy at a time; never cancel one half way.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  deploy:
+    name: Migrate, deploy, smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+      - name: The commit passed CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          result=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$sha" --json conclusion --jq '[.[] | select(.conclusion == "success")] | length')
+          if [ "$result" = "0" ]; then
+            echo "::error::No successful CI run for $sha. Push it and wait for CI first."
+            exit 1
+          fi
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web
+
+      - name: Open the database tunnel
+        env:
+          SSH_KEY: ${{ secrets.STAGING_DB_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STAGING_DB_SSH_KNOWN_HOSTS }}
+          CA_PEM: ${{ secrets.STAGING_DB_CA_PEM }}
+          SSH_USER: ${{ secrets.STAGING_DB_SSH_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$CA_PEM" > /tmp/origin_ca.pem
+          # Same forward as scripts/staging-db.sh.
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ExitOnForwardFailure=yes -f -N \
+            -L 127.0.0.1:15432:172.22.0.2:5432 "$SSH_USER@165.232.151.187"
+      - name: Run migrations
+        run: npm run db:migrate --workspace=@sunset/web
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DB_MIGRATOR_URL }}
+
+      - name: Deploy the Worker
+        run: npm run deploy
+        working-directory: apps/web
+
+      - name: Smoke tests against staging
+        id: smoke
+        run: npx playwright test
+        working-directory: apps/web
+        env:
+          E2E_BASE_URL: https://staging.sunsetsoul.app
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+
+      # Only when the deploy step ran and the smoke tests failed (not when a step before the deploy
+      # failed, when there is nothing new to roll back).
+      - name: Roll back the Worker
+        if: failure() && steps.smoke.outcome == 'failure'
+        run: npx wrangler rollback --name sunset-staging --message "Rolled back after failed smoke tests" --yes
+        working-directory: apps/web
+
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: staging-smoke-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          if-no-files-found: ignore
