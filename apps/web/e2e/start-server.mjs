@@ -23,9 +23,9 @@ if (wroteVars) {
   );
 }
 
-// wrangler.jsonc routes the Worker to staging.sunsetsoul.app, and wrangler dev then presents that
-// host to the app, which Better Auth rejects as an origin. --local-upstream keeps it on localhost.
-const args = ["opennextjs-cloudflare", "preview", "--", "--port", "8787", "--local-upstream", "localhost:8787"];
+// wrangler.e2e.jsonc has no staging route (wrangler dev would present staging.sunsetsoul.app to the
+// app, which Better Auth rejects as an origin) and no Workers AI binding (it needs a Cloudflare login).
+const args = ["opennextjs-cloudflare", "preview", "-c", "wrangler.e2e.jsonc", "--", "--port", "8787"];
 const child = spawn("npx", args, { stdio: ["ignore", "pipe", "pipe"] });
 for (const stream of [child.stdout, child.stderr]) {
   stream.on("data", (chunk) => {

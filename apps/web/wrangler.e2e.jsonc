@@ -1,0 +1,30 @@
+{
+  // The Worker as the smoke tests run it (e2e/start-server.mjs): wrangler.jsonc without what needs
+  // Cloudflare itself. Workers AI and the staging route and self-reference have no local copy, and
+  // wrangler would try to open a remote session for them, which needs a Cloudflare login. Keep the
+  // bindings the smoke path uses in step with wrangler.jsonc.
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "sunset-e2e",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "60f126f5bbb9486c94faafde3a0f7f3d",
+      // CI overrides it with WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE.
+      "localConnectionString": "postgres://sunset:sunset@localhost:5432/sunset"
+    }
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "http://localhost:8787",
+    "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
+  },
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
+  // Saving an entry queues a score; nothing consumes the queue here.
+  "queues": { "producers": [{ "binding": "SCORING", "queue": "sunset-scoring-e2e" }] }
+}
