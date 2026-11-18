@@ -194,6 +194,8 @@ e. **Tests:** data-access tests for each action and the last-admin rule, and a b
 
 **Done when:** on staging, an admin named only by `ADMIN_EMAILS` promotes, disables (the user is signed out at once), re-enables and deletes a test account, and each step shows in the activity log.
 
+**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` isn't set on staging yet; existing admins keep their role. The "Done when" check on staging is still to do.
+
 **Later, not in 5b:** invite-only sign-up for the beta (a decision for Phase 7), self-service data export and account deletion (Phase 7's user rights, reusing 5b's delete), and a moderator role when Phase 6 adds the hide switch.
 
 ### Phase 5c: Test and deploy from CI
