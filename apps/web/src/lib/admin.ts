@@ -1,11 +1,14 @@
-// Admin access. Admins can read every Journal; each view is logged in admin_views. Nothing here
-// lets an admin change another user's data.
+// Admin access. Admins can read every Journal; each view, and every other admin action, is logged
+// in admin_log. Account changes (role, disable, delete) are in user-admin.ts.
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { SCORER_VERSION } from "@sunset/scoring";
 import { and, count, desc, eq, isNull, max } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
-import { adminViews, entries, entryScores, users } from "@/db/schema";
+import { entries, entryScores, users } from "@/db/schema";
+import { logAdminAction } from "@/lib/admin-log";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle, type Db } from "@/lib/db";
+import { parseAdminEmails, promoteListedAdmin } from "@/lib/user-admin";
 
 export async function isAdmin(db: Db, userId: string): Promise<boolean> {
   const [row] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId));
@@ -16,13 +19,19 @@ export async function isAdmin(db: Db, userId: string): Promise<boolean> {
 export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  if (!(await withDrizzle((db) => isAdmin(db, user.id)))) notFound();
+  const { env } = await getCloudflareContext({ async: true });
+  const admin = await withDrizzle(async (db) => {
+    // A session that began before ADMIN_EMAILS listed this email still gets the role.
+    await promoteListedAdmin(db, user.id, parseAdminEmails(env.ADMIN_EMAILS));
+    return isAdmin(db, user.id);
+  });
+  if (!admin) notFound();
   return user;
 }
 
 export async function logAdminView(db: Db, adminId: string, viewedUserId: string, entryId: string | null = null) {
   if (adminId === viewedUserId) return;
-  await db.insert(adminViews).values({ id: crypto.randomUUID(), adminId, viewedUserId, entryId });
+  await logAdminAction(db, { adminId, action: entryId ? "view_entry" : "view_journal", targetUserId: viewedUserId, entryId });
 }
 
 export type AdminUserRow = {
@@ -30,6 +39,7 @@ export type AdminUserRow = {
   name: string;
   email: string;
   role: string;
+  disabledAt: Date | null;
   emailVerified: boolean;
   createdAt: Date;
   entryCount: number;
@@ -43,6 +53,7 @@ export async function listUsers(db: Db): Promise<AdminUserRow[]> {
       name: users.name,
       email: users.email,
       role: users.role,
+      disabledAt: users.disabledAt,
       emailVerified: users.emailVerified,
       createdAt: users.createdAt,
       entryCount: count(entries.id),
