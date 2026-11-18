@@ -22,7 +22,10 @@
   ],
   "vars": {
     "BETTER_AUTH_URL": "http://localhost:8787",
-    "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>"
+    "EMAIL_FROM": "Sunset Soul <hello@sunsetsoul.app>",
+    // The admin smoke tests (e2e/admin.spec.ts) sign up as this address and expect it to become
+    // admin with no other help. A secret on the real Workers; a plain var here, as it's test-only.
+    "ADMIN_EMAILS": "smoke-admin@example.com"
   },
   "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "sunset-photos" }],
   // Saving an entry queues a score; nothing consumes the queue here.
