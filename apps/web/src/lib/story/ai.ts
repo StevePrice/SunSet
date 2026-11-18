@@ -11,6 +11,9 @@ import {
   interviewText,
   OPENERS_PROMPT,
   openersSchema,
+  SAID_PROMPT,
+  saidInput,
+  saidSchema,
   storyPrompt,
   storySchema,
   type StoryStyle,
@@ -98,4 +101,17 @@ export async function writeStory(
     fast: false,
   });
   return { story: output.story.trim(), title: output.title.trim(), caption: output.caption.trim(), usage };
+}
+
+/** Cleans the spoken answers for "What you said"; one cleaned answer per spoken answer, in order. */
+export async function cleanTranscripts(env: AiEnv, spoken: string[]) {
+  const { output, usage } = await ask(env, {
+    model: QUESTION_MODEL,
+    system: SAID_PROMPT,
+    content: [{ type: "text", text: saidInput(spoken) }],
+    schema: saidSchema,
+    fast: true,
+  });
+  if (output.answers.length !== spoken.length) throw new StoryAiError("Wrong number of cleaned answers.");
+  return { answers: output.answers, usage };
 }

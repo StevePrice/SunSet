@@ -55,6 +55,56 @@ jobs:
       - run: npm test --workspace=@sunset/scoring --workspace=@sunset/db
       - run: npm run typecheck --workspace=@sunset/scoring --workspace=@sunset/db --workspace=@sunset/scorer
 
+  smoke:
+    name: Smoke tests (the app running, in a browser)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: sunset_smoke
+          POSTGRES_USER: sunset
+          POSTGRES_PASSWORD: sunset
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sunset -d sunset_smoke"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # wrangler dev reads this instead of wrangler.jsonc's Hyperdrive localConnectionString.
+      WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE: postgres://sunset:sunset@localhost:5432/sunset_smoke
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web
+      - name: Migrate the database
+        run: npm run db:migrate --workspace=@sunset/web
+        env:
+          DATABASE_URL: postgres://sunset:sunset@localhost:5432/sunset_smoke
+      - run: npm run build:worker --workspace=@sunset/web
+      # Starts the built Worker (dummy secrets, emails written to the log instead of sent, no AI
+      # key) and runs sign up, sign in, save an entry, Journal and share link in Chromium.
+      - name: Smoke tests
+        run: npx playwright test
+        working-directory: apps/web
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: smoke-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+            apps/web/e2e/server.log
+          if-no-files-found: ignore
+
   scorer:
     name: Scorer (tests)
     runs-on: ubuntu-latest

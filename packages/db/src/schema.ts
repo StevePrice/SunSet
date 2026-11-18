@@ -28,10 +28,15 @@ export const users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  // "admin" can see every Journal (logged in admin_views) and use the calibration tools.
+  // "admin" can see every Journal (logged in admin_log), manage accounts and use the calibration tools.
   role: text("role").notNull().default("user"),
+  // Set when an admin disables the account: it can't sign in by any method until re-enabled.
+  disabledAt: timestamp("disabled_at", { withTimezone: true }),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
+  // Settings (Phase 5). AI story help on or off, and when the first-use AI notice was seen.
+  aiStoryHelp: boolean("ai_story_help").notNull().default(true),
+  aiNoticeSeenAt: timestamp("ai_notice_seen_at", { withTimezone: true }),
   ...timestamps,
 });
 
@@ -219,9 +224,11 @@ export const reactionNotes = pgTable(
 
 // One AI Story Capture interview per entry (Phase 5). `turns` holds each question and answer in
 // order; `drafts` holds each written version, keyed by style, with the number of turns it was
-// written from so stale drafts can be spotted.
-export type StoryTurn = { question: string | null; answer: string; via: "typed" | "spoken" };
+// written from so stale drafts can be spotted. A spoken answer lists its recordings (story_clips).
+export type StoryTurn = { question: string | null; answer: string; via: "typed" | "spoken"; clipIds?: string[] };
 export type StoryDraft = { text: string; turns: number; edited: boolean };
+// "What you said": the cleaned-up transcript, with the number of turns it was made from.
+export type StorySaid = { text: string; turns: number };
 
 export const storySessions = pgTable("story_sessions", {
   entryId: text("entry_id")
@@ -242,8 +249,32 @@ export const storySessions = pgTable("story_sessions", {
   drafts: jsonb("drafts").$type<Record<string, StoryDraft>>().notNull().default({}),
   title: text("title"),
   caption: text("caption"),
+  said: jsonb("said").$type<StorySaid>(),
   ...timestamps,
 });
+
+// One voice recording: a clip per spoken answer, private in R2 at
+// entries/{userId}/{entryId}/clips/{id}.{ext}. The transcript is kept even if the user edits
+// their answer, and stays null when transcription failed so it can be retried.
+export const storyClips = pgTable(
+  "story_clips",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    r2Key: text("r2_key").notNull(),
+    contentType: text("content_type").notNull(),
+    durationMs: integer("duration_ms").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    transcript: text("transcript"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("story_clips_entry_idx").on(table.entryId, table.createdAt), index("story_clips_user_idx").on(table.userId)],
+);
 
 // One row per AI call, for the per-user daily limit.
 export const aiCalls = pgTable(
@@ -261,19 +292,28 @@ export const aiCalls = pgTable(
   (table) => [index("ai_calls_user_created_idx").on(table.userId, table.createdAt)],
 );
 
-// Every time an admin opens someone else's Journal or entry.
-export const adminViews = pgTable(
-  "admin_views",
+// The activity log: every admin action, and every time an admin opens someone else's Journal or
+// entry. No foreign keys, and the emails are copied in, so a row still reads correctly after the
+// admin or the target account has been deleted. `adminId` is null when the system acted (an
+// account promoted by ADMIN_EMAILS). Actions: view_journal, view_entry, set_role, disable, enable,
+// sign_out_everywhere, delete_account, rescore_all.
+export const adminLog = pgTable(
+  "admin_log",
   {
     id: text("id").primaryKey(),
-    adminId: text("admin_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    viewedUserId: text("viewed_user_id").notNull(),
+    adminId: text("admin_id"),
+    adminEmail: text("admin_email"),
+    action: text("action").notNull(),
+    targetUserId: text("target_user_id"),
+    targetEmail: text("target_email"),
     entryId: text("entry_id"),
+    details: jsonb("details").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("admin_views_viewed_idx").on(table.viewedUserId, table.createdAt)],
+  (table) => [
+    index("admin_log_target_idx").on(table.targetUserId, table.createdAt),
+    index("admin_log_created_idx").on(table.createdAt),
+  ],
 );
 
 // The reference photo set the founders rate to calibrate the scorer (concept doc, "Keeping Scores

@@ -16,6 +16,12 @@ describe("email", () => {
     expect(message.text.startsWith("Use this link to sign in to Sunset Soul.")).toBe(true);
   });
 
+  it("ends both versions with the copyright line", () => {
+    const line = `© ${new Date().getFullYear()} Sunset Soul. All rights reserved.`;
+    expect(message.text.endsWith(line)).toBe(true);
+    expect(message.html).toContain(line);
+  });
+
   it("logs instead of sending in development", async () => {
     const send = vi.fn();
     const log = vi.spyOn(console, "log").mockImplementation(() => {});

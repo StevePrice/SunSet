@@ -1,3 +1,4 @@
+import { copyrightLine } from "@/lib/copyright";
 import { colors, radius } from "@/lib/design-tokens.generated";
 
 export type EmailMessage = { to: string; subject: string; text: string; html: string };
@@ -19,7 +20,7 @@ export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<v
 export const EMAIL_LOGO_PATH = "/brand/sunset-soul-logo-horizontal-transparent-for-light-backgrounds.png";
 
 function linkEmail(to: string, subject: string, intro: string, action: string, url: string) {
-  const text = `${intro}\n\n${action}: ${url}\n\nIf you didn't ask for this, you can ignore this email.`;
+  const text = `${intro}\n\n${action}: ${url}\n\nIf you didn't ask for this, you can ignore this email.\n\n${copyrightLine()}`;
   return { to, subject, text, html: linkEmailHtml(intro, action, url) };
 }
 
@@ -39,7 +40,8 @@ function linkEmailHtml(intro: string, action: string, url: string): string {
 <tr><td style="padding-bottom:24px;"><img src="${logo}" alt="Sunset Soul" width="180" height="48" style="display:block;border:0;width:180px;height:auto;"></td></tr>
 <tr><td style="font-size:18px;line-height:26px;color:${c.ink};padding-bottom:24px;">${escapeHtml(intro)}</td></tr>
 <tr><td style="padding-bottom:24px;"><a href="${href}" style="display:inline-block;background:${c.action};color:${c.onAction};font-size:17px;font-weight:bold;line-height:22px;text-decoration:none;padding:15px 24px;border-radius:${radius.md}px;">${escapeHtml(action)}</a></td></tr>
-<tr><td style="font-size:15px;line-height:20px;color:${c.inkMuted};">If you didn't ask for this, you can ignore this email.</td></tr>
+<tr><td style="font-size:15px;line-height:20px;color:${c.inkMuted};padding-bottom:24px;">If you didn't ask for this, you can ignore this email.</td></tr>
+<tr><td style="font-size:13px;line-height:18px;color:${c.inkMuted};">${escapeHtml(copyrightLine())}</td></tr>
 </table>
 </td></tr>
 </table>

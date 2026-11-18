@@ -45,8 +45,9 @@ export function SignInForm({ providers, initialMode = "magic-link" }: { provider
             : await authClient.requestPasswordReset({ email, redirectTo: "/reset-password" });
     setBusy(false);
     if (result.error) {
+      // A disabled account is also refused with 403; say so rather than ask for a confirmation.
       setError(
-        result.error.status === 403
+        result.error.status === 403 && result.error.code !== "ACCOUNT_DISABLED"
           ? "Please confirm your email first. We've sent you a new confirmation link."
           : (result.error.message ?? "Something went wrong. Please try again."),
       );

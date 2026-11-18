@@ -72,7 +72,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Emails (magic links, verification, password reset) go through Cloudflare Email Service from `hello@sunsetsoul.app`; in local development they are logged instead
 - Auth rate limits stored in Postgres, keyed on Cloudflare's client IP header
 - Migrations for users, sessions, accounts, verifications and rate limits; the entries table comes in Phase 2
-- Staging deploys from pushes to the `Steve` branch (for example `staging.sunsetsoul.app`). `main` is not merged until Phase 3 or 4 is tested
+- Staging (`staging.sunsetsoul.app`) is deployed by hand from the `Steve` branch with `npm run deploy` in `apps/web`; pushing doesn't deploy. Migrations run first through `scripts/staging-db.sh`
 
 **Status:** sign-in built and tested locally (sign-up, email confirmation, password and magic-link sign-in, sign-out, breached-password rejection). Deployed to `https://staging.sunsetsoul.app` (Worker `sunset-staging`). **Done for email sign-in (2026-11-02):** a real sign-up received its confirmation email, verified, and signed in. Google and Apple switch on once their credentials are added.
 
@@ -158,7 +158,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Share Page photo at 1600–2000 px on the long side (it serves the 2560 px display photo today): a new photo size, filled in for existing entries
 - Email (PRD 6.9c), decided 2026-11-08 with Louise: email shares go through the phone's share sheet with the small JPEG; no app-sent share email
 
-**Status:** merged into Steve 2026-11-08, not yet deployed to staging; reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill. Card and photo byte sizes not measured yet (check on staging).
+**Status:** ✅ deployed to staging 2026-11-08 (with the copyright footer, PRD section 7). The link-preview card is now a 69 KB JPEG (it was about 1.2 MB as a PNG). The reaction icons are a proposal for Louise to approve. The 1800px Share Page photo is made on the Worker the first time it's requested, so existing entries need no backfill.
 
 ### Phase 4e: MVP flow fixes (Louise, 2026-11-08)
 **Goal:** the screens that exist flow simply for readers aged 50–65, with the photo and story first and the score a quiet detail. Full detail: [sunset-soul-build-spec-flow-fixes.md](sunset-soul-build-spec-flow-fixes.md); designs (dark and light): https://claude.ai/artifact/XCsz8MDaV7vdQPb6UM5Wd2.
@@ -191,7 +191,44 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Decisions (2026-11-03):** Whisper on Workers AI for speech-to-text; Claude Haiku 5.5 for questions and Claude Sonnet 5.5 for writing (on the guide's worked examples Haiku added details the user never said, Sonnet didn't); everything free during the beta, with a cap of 150 AI calls per user per day; the PRD's placeholders for its open questions (3 follow-ups, ~2-minute recordings, English only, one gentle extra question after a very short first answer, one length for Crafted story).
 
-**Status:** steps 1–2 of 4 built and on staging (2026-11-03): "Save and tell its story" on New Entry, the typed interview, My story (three lengths) and Crafted story (with or without photo details), suggested title and caption (the caption is what share cards show), "What you wrote", and "Add more to my story". A full session costs about 2 cents. Next: step 3 (voice: recording, Whisper, playback, "What you said") and step 4 (Settings: AI help off, delete recordings). Known issues: two server requests hung during testing (once locally for 227 s, once on staging) and couldn't be reproduced; "Ask me something else" sometimes asks a generic "How did you feel…" question. The crisis-line message shown for safety concerns needs review before launch.
+**Status:** steps 1–2 of 4 built and on staging (2026-11-03): "Save and tell its story" on New Entry, the typed interview, My story (three lengths) and Crafted story (with or without photo details), suggested title and caption (the caption is what share cards show), "What you wrote", and "Add more to my story". A full session costs about 2 cents. Steps 3–4 are reviewed, merged into `Steve` and deployed to staging (2026-11-09, migration 0008 applied): voice answers on the Interview screen (a big mic button, "Type instead", up to 2 minutes per answer), recordings kept privately in R2 next to the photo, Whisper on Workers AI, Retry or Type instead when transcription fails, playback and "What you said" on Entry Detail, and Settings on the Account page (AI story help on/off, delete all recordings, the privacy explanation) with a one-time notice. Not yet tried on a real iPhone or with real Whisper. Known issues: two server requests hung during testing (once locally for 227 s, once on staging) and couldn't be reproduced; "Ask me something else" sometimes asks a generic "How did you feel…" question. The crisis-line message shown for safety concerns needs review before launch.
+
+### Phase 5b: User administration
+**Goal:** admins manage accounts from `/admin` instead of the database, and every admin action is on record. Planned 2026-11-18, modelled on pmtcs phase 7.
+
+Today there are two roles (`admin`, `user`), set with `scripts/set-role.mjs` over a direct database connection. `/admin` lists users and their Journals read-only, and only Journal views are logged (`admin_views`).
+
+Built on one branch, `phase-5b-user-admin`, off `Steve` and merged back into `Steve` by pull request. Build in this order, each part usable on its own:
+
+a. **First admin from `ADMIN_EMAILS`:** a Worker secret listing admin emails; a matching account becomes admin when it signs in, so the deployment can never lock itself out. `set-role.mjs` stays as a fallback.
+b. **Users page actions:** on `/admin`, change a user's role, disable and enable an account, sign a user out everywhere, and delete an account (photos, recordings and shares included). At least one admin must always remain, and an admin can't demote or disable themself. Check first whether Better Auth's admin plugin (set role, ban, revoke sessions, remove user) fits the existing `role` column before building these by hand.
+c. **Disabling ends sessions at once:** disabling an account or lowering its role deletes its sessions in the same step, and a disabled account can't sign in by any method (password, magic link, Google, Apple).
+d. **Activity log:** `admin_views` widens into a log of every admin action (who, what, which account, when): role changes, disables, sign-outs, deletes, rescoring and Journal views. Admins can read it on `/admin`.
+e. **Tests:** data-access tests for each action and the last-admin rule, and a browser check on staging.
+
+**Done when:** on staging, an admin named only by `ADMIN_EMAILS` promotes, disables (the user is signed out at once), re-enables and deletes a test account, and each step shows in the activity log.
+
+**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` isn't set on staging yet; existing admins keep their role. The "Done when" check on staging is still to do.
+
+**Later, not in 5b:** invite-only sign-up for the beta (a decision for Phase 7), self-service data export and account deletion (Phase 7's user rights, reusing 5b's delete), and a moderator role when Phase 6 adds the hide switch.
+
+### Phase 5c: Test and deploy from CI
+**Goal:** every push is tested in a running copy of the app, and staging is deployed from GitHub instead of from a laptop. Planned 2026-11-18, modelled on pmtcs phase 6.
+
+Built on its own branch off `Steve`, merged by pull request.
+
+a. **The app running in CI, with browser smoke tests:** a CI job starts Postgres and the app (`wrangler dev` or `opennextjs-cloudflare preview`), runs migrations, and runs a Playwright smoke suite: sign up, sign in, save an entry, open the Journal, create and open a share link, and the 5b admin actions. There is no browser test suite in the repo yet, so this part adds one. Failures are reported on the commit.
+b. **"Deploy to staging" workflow:** started by hand in GitHub Actions from `Steve` (or a chosen commit) that passed CI. It runs migrations, deploys the `sunset-staging` Worker, runs the smoke suite against `staging.sunsetsoul.app`, and rolls back with `wrangler rollback` if it fails. A production workflow follows the same pattern once production exists.
+c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to editing Workers on this account, and migrates with a database user that can only change the schema, instead of the full-account token on the dev machine.
+
+**Done when:** a push to `Steve` runs the smoke suite in CI, and a staging deploy started from GitHub succeeds, plus one with a deliberately failing smoke test that rolls back.
+
+### Git workflow (set 2026-11-18)
+- One branch per phase or part, off `Steve` (e.g. `phase-5b-user-admin`), merged back into `Steve` by pull request so each part has a review record and a CI result. `Steve` → `main` stays a separate, deliberate step.
+- Commit messages name the part: "Add the activity log (phase 5b d)".
+- Migrations are numbered, so two branches can both create the same number. Generate a migration only on a branch that has just merged `Steve`, and regenerate it if `Steve` gains a migration before the branch merges.
+- When a partner's branch and ours touch the same screens, test them together on an `integrate/...` branch before merging into `Steve`.
+- Delete a branch once its pull request merges.
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
@@ -229,8 +266,9 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 ### Order and dependencies
 - **0 → 1 → 2 → 3** is the critical path. Phase 2 alone tests the core hypothesis.
-- **Next (set 2026-11-08):** 4b → 4c → 4d, then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
+- **Next (set 2026-11-08):** 4b → 4c → 4d (all done), then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
+- **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)
@@ -242,10 +280,12 @@ Rough planning numbers. "Human" is one developer who knows the codebase (±30%).
 | 4c Adopt the design system (with logo) | 3–3.5 days | 2.5–4 hours | about 1 day |
 | 4d Design updates | 1–1.5 days | 1–1.5 hours | half a day to a day |
 | 5 Story Capture, the rest | 4–5 days | 3–5 hours | 1.5–2 days |
+| 5b User administration (added 2026-11-18) | 3–4 days | 2–4 hours | about 1 day |
+| 5c Test and deploy from CI (added 2026-11-18) | 3–4 days | 2–4 hours | 1–1.5 days |
 | 6 Live Global Map | 6–8 days | 5–8 hours | 2–3 days |
 | 7 Hardening and beta | 6–8 days | 5–8 hours | 2–3 days |
 | 8 Daily Ritual | 2–3 days | 2–3 hours | about a day |
-| **Total** | **26–35 days** | **21–35 hours** | **9.5–13.5 days** |
+| **Total** | **32–43 days** | **25–43 hours** | **11.5–16 days** |
 
 Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
 

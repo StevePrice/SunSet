@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { CopyrightFooter } from "@/components/copyright-footer";
 import "./globals.css";
 
 // The brand fonts, self-hosted from the design system (design-system/fonts, SIL OFL).
@@ -37,7 +38,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fraunces.variable} ${atkinson.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <CopyrightFooter />
+      </body>
     </html>
   );
 }

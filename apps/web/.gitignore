@@ -47,3 +47,8 @@ next-env.d.ts
 # Regenerated from wrangler.jsonc by `npm run cf-typegen` (runs before build and typecheck).
 cloudflare-env.d.ts
 worker-configuration.d.ts
+
+# Playwright smoke tests
+/test-results/
+/playwright-report/
+/e2e/server.log

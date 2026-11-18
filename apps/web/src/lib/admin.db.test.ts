@@ -49,8 +49,8 @@ describe.skipIf(!url)("admin and calibration", () => {
   it("logs views of other people's journals, not your own", async () => {
     await logAdminView(db, admin, user);
     await logAdminView(db, admin, admin);
-    const { rows } = await pool.query("select viewed_user_id from admin_views where admin_id = $1", [admin]);
-    expect(rows.map((r) => r.viewed_user_id)).toEqual([user]);
+    const { rows } = await pool.query("select target_user_id, action from admin_log where admin_id = $1", [admin]);
+    expect(rows).toEqual([{ target_user_id: user, action: "view_journal" }]);
   });
 
   it("queues only entries without a current score", async () => {
