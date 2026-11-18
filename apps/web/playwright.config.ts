@@ -14,5 +14,5 @@ export default defineConfig({
   use: { baseURL, trace: "retain-on-failure" },
   webServer: process.env.E2E_BASE_URL
     ? undefined
-    : { command: "node e2e/start-server.mjs", url: `${baseURL}/api/health`, timeout: 180_000, reuseExistingServer: !process.env.CI },
+    : { command: "node e2e/start-server.mjs", url: `${baseURL}/api/health`, timeout: 180_000, stdout: "pipe", stderr: "pipe", reuseExistingServer: !process.env.CI },
 });
