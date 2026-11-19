@@ -21,7 +21,7 @@ name: Deploy to staging
 #   STAGING_DB_SSH_KEY         Private key of a forward-only SSH user on the Droplet (see the doc).
 #   STAGING_DB_SSH_KNOWN_HOSTS The Droplet's host key line (`ssh-keyscan -t ed25519 165.232.151.187`).
 #   STAGING_DB_SSH_USER        The forward-only user's name on the Droplet.
-#   STAGING_DB_MIGRATOR_URL    Connection string for the schema-only database role, as seen from the
+#   STAGING_DB_MIGRATOR_URL    Connection string for the sunset_migrator role (see the doc), as seen from the
 #                              Droplet's network but with host 127.0.0.1 and port 15432, for example
 #                              postgres://sunset_migrator:PASSWORD@127.0.0.1:15432/sunset
 #                              ?uselibpqcompat=true&sslmode=verify-ca&sslrootcert=/tmp/origin_ca.pem
