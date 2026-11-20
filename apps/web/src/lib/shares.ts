@@ -1,10 +1,9 @@
 // Public share links. Creating, changing and stopping a share is scoped to the entry's owner,
 // like entries.ts. getPublicShare is the one deliberately public read: it returns only what
-// the share page shows, never the exact location or the owner's email.
+// the share page shows, never the exact location, the score or the owner's email.
 import { and, eq } from "drizzle-orm";
 import { entries, shares, users } from "@/db/schema";
 import type { Db } from "@/lib/db";
-import { getSharedScore, type EntryScore } from "@/lib/scores";
 
 export const MAX_PLACE_LENGTH = 80;
 
@@ -23,7 +22,6 @@ export type PublicShare = {
   photoHeight: number;
   place: string | null;
   timeZone: string;
-  score: EntryScore | null;
 };
 
 const shareColumns = { id: shares.id, entryId: shares.entryId, place: shares.place, timeZone: shares.timeZone };
@@ -113,7 +111,7 @@ export async function getPublicShare(db: Db, id: string): Promise<PublicShare | 
     .innerJoin(users, eq(users.id, entries.userId))
     .where(eq(shares.id, id));
   if (!row) return null;
-  return { ...row, ownerName: row.ownerName.trim() || null, score: await getSharedScore(db, row.entryId) };
+  return { ...row, ownerName: row.ownerName.trim() || null };
 }
 
 /** R2 prefix for a share's generated card images. */

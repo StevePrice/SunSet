@@ -174,6 +174,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
+**Status (2026-11-19):** the score part (Build Spec 2.4, user feedback: the story matters more than the score) is built on `phase-4e-score`: no score on Journal photos (both views), the Share Page or share images; on Entry Detail the Wow line sits under the date and the score is in a Score details row, closed by default, below Share. Share images are redrawn automatically (new layout version). The rest of 4e (navigation, Share button, Afterglow link settings, story flow) is still to check against section 8.
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
@@ -208,7 +210,7 @@ e. **Tests:** data-access tests for each action and the last-admin rule, and a b
 
 **Done when:** on staging, an admin named only by `ADMIN_EMAILS` promotes, disables (the user is signed out at once), re-enables and deletes a test account, and each step shows in the activity log.
 
-**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` isn't set on staging yet; existing admins keep their role. The "Done when" check on staging is still to do.
+**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` is set on staging (2026-11-20). ✅ **Done when passed (2026-11-20):** a new account named only by `ADMIN_EMAILS` became admin on sign-in, then promoted, demoted, disabled (the test user was signed out at once and couldn't sign back in), re-enabled and deleted a test account, each step in the activity log; the admin's own role, disable and delete buttons were blocked.
 
 **Later, not in 5b:** invite-only sign-up for the beta (a decision for Phase 7), self-service data export and account deletion (Phase 7's user rights, reusing 5b's delete), and a moderator role when Phase 6 adds the hide switch.
 
@@ -222,6 +224,8 @@ b. **"Deploy to staging" workflow:** started by hand in GitHub Actions from `Ste
 c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to editing Workers on this account, and migrates with a database user that can only change the schema, instead of the full-account token on the dev machine.
 
 **Done when:** a push to `Steve` runs the smoke suite in CI, and a staging deploy started from GitHub succeeds, plus one with a deliberately failing smoke test that rolls back.
+
+**Status:** ✅ done (2026-11-20). Pushes and pull requests run the smoke suite in CI (PRs #11, #13). Deploy to staging has run from GitHub several times since 2026-11-18. The rollback drill (PR #16: the workflow's "Fail the smoke tests on purpose" option) failed only its drill test and `wrangler rollback` restored the previous Worker version; a normal deploy of `Steve` (`21261a1`) then passed. CI deploys with an account-owned Cloudflare token limited to Workers Scripts: Edit and Account Settings: Read, and migrates as `sunset_migrator`; the app (Hyperdrive) connects as `sunset_app`, and `sunset` is left for people only (docs/ci-credentials.md).
 
 ### Git workflow (set 2026-11-18)
 - One branch per phase or part, off `Steve` (e.g. `phase-5b-user-admin`), merged back into `Steve` by pull request so each part has a review record and a CI result. `Steve` → `main` stays a separate, deliberate step.
@@ -269,6 +273,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Next (set 2026-11-08):** 4b → 4c → 4d (all done), then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
+- **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)

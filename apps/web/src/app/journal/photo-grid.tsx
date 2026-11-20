@@ -5,13 +5,13 @@ import { useSyncExternalStore } from "react";
 import { PhotoCard } from "@/components/photo-card";
 import { groupByMonth } from "@/lib/journal-view";
 
-export type GridPhoto = { id: string; takenAt: string; score: number | null; alt: string };
+export type GridPhoto = { id: string; takenAt: string; alt: string };
 
 const noSubscribe = () => () => {};
 const browserTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 // The All photos view: square photos two to a row (never three), 8pt apart with 10pt corners,
-// under month headings, and nothing but the score badge on them. Months are worked out in the
+// under month headings, and nothing drawn on them. Months are worked out in the
 // viewer's time zone, like the dates shown elsewhere (LocalDate). The server and hydration render
 // use UTC, then the browser's time zone takes over, so there's no hydration mismatch.
 export function PhotoGrid({ photos }: { photos: GridPhoto[] }) {
@@ -30,7 +30,6 @@ export function PhotoGrid({ photos }: { photos: GridPhoto[] }) {
                   <PhotoCard
                     src={`/api/photos/${photo.id}/thumb`}
                     alt={photo.alt}
-                    score={photo.score}
                     square
                     corners="sm"
                     loading="lazy"

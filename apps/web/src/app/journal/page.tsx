@@ -43,7 +43,6 @@ export default async function JournalPage(props: PageProps<"/journal">) {
           photos={entries.map((entry) => ({
             id: entry.id,
             takenAt: entry.takenAt.toISOString(),
-            score: entry.displayScore,
             alt: alt(entry),
           }))}
         />
@@ -60,7 +59,6 @@ export default async function JournalPage(props: PageProps<"/journal">) {
                     alt={alt(entry)}
                     width={entry.photoWidth}
                     height={entry.photoHeight}
-                    score={entry.displayScore}
                     loading="lazy"
                     className="group-hover:opacity-90"
                   />

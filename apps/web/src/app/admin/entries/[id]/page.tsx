@@ -54,7 +54,9 @@ export default async function AdminEntryPage(props: PageProps<"/admin/entries/[i
       {entry.story ? <p className="ss-story whitespace-pre-wrap text-ink-story">{entry.story}</p> : <p className="text-ink-muted">No story.</p>}
       {entry.caption && <p className="text-caption text-ink-muted">Caption: {entry.caption}</p>}
       {score?.status === "done" ? (
-        <ScoreBreakdown score={score} whose="the" />
+        <div className="rounded-ss-lg bg-surface-raised p-5">
+          <ScoreBreakdown score={score} forAdmin />
+        </div>
       ) : (
         <p className="text-caption text-ink-muted">Score: {score?.status ?? "not scored with the current scorer"}</p>
       )}
