@@ -57,4 +57,11 @@ describe("groupByMonth", () => {
   it("returns no groups for no items", () => {
     expect(groupByMonth([], "UTC")).toEqual([]);
   });
+
+  it("groups each entry by its own time zone when it has one", () => {
+    // 05:30 UTC on 1 November is still 31 October in Los Angeles.
+    const items = [{ takenAt: "2026-11-01T05:30:00Z", timeZone: "America/Los_Angeles" }, { takenAt: "2026-11-01T05:30:00Z", timeZone: null }];
+    const groups = groupByMonth(items, "UTC");
+    expect(groups.map((g) => g.label)).toEqual(["October 2026", "November 2026"]);
+  });
 });
