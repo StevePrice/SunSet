@@ -64,6 +64,16 @@ export function NewSunsetButton() {
   );
 }
 
+/** A Back link (chevron and word), for headers and for task screens without the header. */
+export function BackLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} className="-ml-1 inline-flex min-h-12 items-center gap-1 self-start text-label font-bold">
+      <Icon>{chevronLeft}</Icon>
+      {label}
+    </Link>
+  );
+}
+
 /**
  * The header on signed-in screens: the horizontal logo (36px tall, linking to the Journal), or a
  * Back link on Entry Detail and Afterglow; New sunset on the right.
@@ -72,10 +82,7 @@ export function AppHeader({ back }: { back?: { href: string; label: string } }) 
   return (
     <header className="flex items-center justify-between gap-3">
       {back ? (
-        <Link href={back.href} className="-ml-1 inline-flex min-h-12 items-center gap-1 text-label font-bold">
-          <Icon>{chevronLeft}</Icon>
-          {back.label}
-        </Link>
+        <BackLink {...back} />
       ) : (
         <Link href="/journal" className="inline-flex min-h-12 items-center" aria-label="Sunset Soul, your Journal">
           {/* 135px wide is 36px tall for the horizontal logo. */}

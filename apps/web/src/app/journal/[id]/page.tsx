@@ -4,26 +4,28 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { formatLocation } from "@/lib/format";
 import { reactionTotals } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
 import { getStorySettings } from "@/lib/settings";
 import { listClips } from "@/lib/story/clips";
-import { assembleSaid, originalWords } from "@/lib/story/prompts";
-import { getSession } from "@/lib/story/sessions";
 import { formatDuration } from "@/lib/story/voice";
-import { buttonClass } from "@/components/button";
 import { AppHeader, BottomBar } from "@/components/app-nav";
+import { buttonClass } from "@/components/button";
+import { LocalDate } from "@/components/local-date";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
-import { LocalDate } from "@/components/local-date";
-import { formatLocation } from "@/lib/format";
-import { DeleteEntryButton, EditStoryForm } from "./entry-controls";
-import { DeleteRecordingButton, WhatYouSaid } from "./recording";
-import { SharePanel } from "./share-panel";
+import { DeleteEntryButton } from "./entry-controls";
+import { HearYourVoice } from "./recording";
+import { ShareButton } from "./share-button";
 
 export const metadata = { title: "Sunset · Sunset Soul" };
 
+// Entry Detail (Phase 4e, Build Spec 3.6), top to bottom: photo, title, date and place, Wow line,
+// story (or Add your story), "Hear it in your own voice", Edit, Share, the Afterglow row, Score
+// details, Delete. Editing the story, recordings and "What you said" are on the Edit page; the
+// link settings are in Afterglow.
 export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const { id } = await props.params;
   const user = await getCurrentUser();
@@ -31,31 +33,33 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [score, share, session, totals, clips, settings] = await Promise.all([
+    const [score, share, totals, clips, settings] = await Promise.all([
       getScore(db, user.id, id),
       getShareForEntry(db, user.id, id),
-      getSession(db, user.id, id),
       reactionTotals(db, user.id),
       listClips(db, user.id, id),
       getStorySettings(db, user.id),
     ]);
-    const turns = session?.turns ?? [];
-    const spoken = turns.some((t) => t.via === "spoken");
     return {
       entry,
       score,
       share,
       reactionCount: totals.get(id) ?? 0,
-      words: turns.length ? originalWords(turns) : null,
-      // "What you said" for stories with any spoken answer: the saved clean-up if it's up to date.
-      said: spoken ? { saved: session?.said?.turns === turns.length ? session.said.text : null, raw: assembleSaid(turns, null) } : null,
       clips: clips.map((c) => ({ id: c.id, durationMs: c.durationMs })),
       aiHelp: settings?.aiStoryHelp ?? true,
     };
   });
   if (!found) notFound();
-  const { entry, score, share, reactionCount, words, said, clips, aiHelp } = found;
+  const { entry, score, share, reactionCount, clips, aiHelp } = found;
   const { env } = await getCloudflareContext({ async: true });
+  const place = entry.location && formatLocation(entry.location);
+  // Add your story opens the story screen, or the Edit page when AI story help is off.
+  const storyHref = aiHelp ? `/journal/${entry.id}/story` : `/journal/${entry.id}/edit`;
+  const afterglowStatus = !share
+    ? "Not shared"
+    : reactionCount === 0
+      ? "No reactions yet"
+      : `Shared · ${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"}`;
 
   return (
     <main className="flex w-full flex-1 flex-col pb-8">
@@ -71,86 +75,67 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
         bleed
       />
       {/* The photo and story lead; the score is a quiet detail: the Wow line under the date and the
-          Score details row near the bottom (Phase 4e). */}
+          Score details row near the bottom. */}
       <ScoreProvider entryId={entry.id} initial={score ?? { status: "none" }}>
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 pt-5">
           <div className="flex flex-col gap-1">
-            {entry.title && <h1 className="font-serif text-title-2">{entry.title}</h1>}
-            <p className={entry.title ? "text-ink-muted" : "text-title-2 font-semibold"}>
-              <LocalDate iso={entry.takenAt.toISOString()} />
-            </p>
-            {entry.location && <p className="text-caption text-ink-muted">{formatLocation(entry.location)}</p>}
+            {entry.title ? (
+              <>
+                <h1 className="font-serif text-title-2">{entry.title}</h1>
+                <p className="text-caption text-ink-muted">
+                  <LocalDate iso={entry.takenAt.toISOString()} />
+                  {place && ` · ${place}`}
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-serif text-title-2">
+                  <LocalDate iso={entry.takenAt.toISOString()} />
+                </h1>
+                {place && <p className="text-caption text-ink-muted">{place}</p>}
+              </>
+            )}
             <WowLine />
           </div>
-          <EditStoryForm id={entry.id} story={entry.story} hasLocation={entry.location !== null} />
-          {aiHelp && (
-            <Link
-              href={`/journal/${entry.id}/story`}
-              className={
-                words
-                  ? "inline-flex min-h-12 items-center self-start text-label underline"
-                  : buttonClass("secondary", "self-start")
-              }
-            >
-              {words ? "Add more to my story" : "Tell its story"}
+
+          {entry.story ? (
+            <p className="ss-story whitespace-pre-wrap text-ink-story">{entry.story}</p>
+          ) : (
+            <Link href={storyHref} className={buttonClass("secondary", "self-start")}>
+              Add your story
             </Link>
           )}
-          {/* Original words and recordings: private, never on the Share Page or share cards. */}
-          {(said || clips.length > 0) && (
-            <section className="flex flex-col gap-3 rounded-ss-lg bg-surface-raised p-4" aria-label="Your recording and words">
-              {clips.length > 0 && (
-                <>
-                  <h2 className="text-label font-bold">{clips.length === 1 ? "Your recording" : "Your recordings"}</h2>
-                  <ol className="flex flex-col gap-2">
-                    {clips.map((clip, i) => (
-                      <li key={clip.id} className="flex flex-col gap-1">
-                        {clips.length > 1 && (
-                          <span className="text-caption text-ink-muted">
-                            Part {i + 1} · {formatDuration(clip.durationMs)}
-                          </span>
-                        )}
-                        <audio controls preload="metadata" src={`/api/clips/${clip.id}`} className="w-full">
-                          Your browser can&apos;t play this recording.
-                        </audio>
-                      </li>
-                    ))}
-                  </ol>
-                  <DeleteRecordingButton entryId={entry.id} count={clips.length} />
-                </>
-              )}
-              {said ? (
-                <>
-                  <h2 className="text-label font-bold">What you said</h2>
-                  <WhatYouSaid entryId={entry.id} initial={said.saved} fallback={said.raw} />
-                </>
-              ) : (
-                words && (
-                  <details>
-                    <summary className="cursor-pointer text-label font-bold">What you wrote</summary>
-                    <p className="mt-3 whitespace-pre-wrap text-ink-story">{words}</p>
-                  </details>
-                )
-              )}
-            </section>
+
+          {clips.length > 0 && (
+            <HearYourVoice
+              clips={clips.map((c) => `/api/clips/${c.id}`)}
+              duration={formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))}
+            />
           )}
-          {!said && clips.length === 0 && words && (
-            <details className="rounded-ss-lg bg-surface-raised p-4">
-              <summary className="cursor-pointer text-label font-bold">What you wrote</summary>
-              <p className="mt-3 whitespace-pre-wrap text-ink-story">{words}</p>
-            </details>
-          )}
-          {(share || reactionCount > 0) && (
-            <Link
-              href={`/journal/${entry.id}/afterglow`}
-              className="flex min-h-12 flex-wrap items-center justify-between gap-2 rounded-ss-lg bg-surface-raised px-5 py-3"
-            >
+
+          <Link href={`/journal/${entry.id}/edit`} className="inline-flex min-h-12 items-center gap-2 self-start text-label underline">
+            <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            Edit
+          </Link>
+
+          <ShareButton entryId={entry.id} initialUrl={share && `${env.BETTER_AUTH_URL}/s/${share.id}`} />
+
+          <Link
+            href={`/journal/${entry.id}/afterglow`}
+            className="flex min-h-12 items-center justify-between gap-3 rounded-ss-lg bg-surface-raised px-5 py-3"
+          >
+            <span className="flex flex-col">
               <span className="font-serif text-title-3">Afterglow</span>
-              <span className="text-label text-ink-muted">
-                {reactionCount === 0 ? "No reactions yet" : `${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"} from friends`} →
-              </span>
-            </Link>
-          )}
-          <SharePanel entryId={entry.id} initial={share && { url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+              <span className="text-caption text-ink-muted">{afterglowStatus}</span>
+            </span>
+            <span aria-hidden className="text-ink-muted">
+              ›
+            </span>
+          </Link>
+
           <ScoreDetails />
           <DeleteEntryButton id={entry.id} />
         </div>
