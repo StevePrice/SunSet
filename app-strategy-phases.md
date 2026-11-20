@@ -174,9 +174,9 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
-**Status (2026-11-20):** in progress, 4 of 7 pieces merged into `Steve`: the score change and parts 1–3. Score and parts 1–4 are on staging; part 5 is merged; part 6 is in review. All parts are built. Phone checks for all parts happen once, at the end of 4e (list below).
+**Status:** ✅ done (2026-11-20). All seven pieces (the score change and parts 1–6) are merged and on staging (`3c0a109`), and the end-of-phase phone checks passed. GeoNames is loaded on staging (162,265 towns): the 3 sunsets with a location got a town name, and 10 more got a time zone from their share link; sunsets with neither still show dates in the viewer's time zone.
 
-**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, on staging 2026-11-20); part 4 story flow (PR #21, on staging 2026-11-20); part 5 Journal and New sunset (PR #22, merged 2026-11-20); part 6 fixes (built, in review).
+**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, on staging 2026-11-20); part 4 story flow (PR #21, on staging 2026-11-20); part 5 Journal and New sunset (PR #22, on staging 2026-11-20); part 6 fixes (PR #23, on staging 2026-11-20).
 
 **Part 4 (story flow) starts from Phase 5's work, on staging since 2026-11-09:** voice recording in the browser (up to 2 minutes per answer), recordings kept privately in R2, Whisper transcription with Retry and Type instead, playback and "What you said", the opening questions with "Ask me something else" (they become Story ideas), My story in three lengths and Crafted story (they become Help me polish it), the suggested title, and the AI settings with the first-use notice. What part 4 changes is the screens around them (Build Spec 3.7–3.9): the typing box first, Need ideas?, the Rather talk than type? panel, the microphone note, the recording screen and the review / edit screen, which also replaces the temporary Edit page from part 2. It also removes the interview-first path and the caption field.
 
@@ -186,7 +186,7 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Part 6 on staging, once, after the deploy that runs migration 0010:** `scripts/staging-db.sh node scripts/load-places.mjs` (downloads GeoNames, loads about 150,000 towns, then names existing sunsets and sets their time zones), then **Fill in missing titles** on `/admin` until it says all done.
 
-**Phone checks for the end of 4e** (dark and light mode; added to as each part merges):
+**Phone checks for the end of 4e** (dark and light mode), all passed 2026-11-20:
 - Part 1: header and bottom bar on Journal, a sunset, Afterglow and You; the bar never covers the copyright line; a new account made by email link sees Welcome once; changing the name on You changes "[Name] shared a sunset with you" on an existing link.
 - Part 2: Entry Detail order (photo, title, date, Wow line, story or Add your story, Hear it in your own voice, Edit, Share, Afterglow row, Score details, Delete); **Share opens the share menu with the Stories image in one tap**, including the first time (when the link is made; if iOS refuses, "Tap again to share" works); the Afterglow row reads Not shared / No reactions yet / Shared · n reactions; Afterglow's Share again, Copy link, Place name friends see and Stop sharing (the old link stops working); the Edit page saves the story and plays and deletes recordings.
 - Part 3: on the Share Page (as a friend, signed out): **[Name]** in bold, title, date and place, story, divider, "Let [Name] know you saw it"; four reactions in two rows of two, each with its new icon; a tapped reaction fills peach with a checkmark beside the count and its icon animates once (not with Reduce Motion on); tap again to undo; "Your note to [Name]", Send, "Reacting as [friend]…", "Sent!"; the new footer line. Afterglow shows four totals in two rows, including Sending hugs.
@@ -322,6 +322,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
 - **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
+- **Update (2026-11-20, later):** 4e done. Next: Phase 6 (Live Global Map). Open before the beta: the crisis-line message has no trigger since part 4.
 - **7** follows Phase 6, and **8** comes last.
 - **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 
