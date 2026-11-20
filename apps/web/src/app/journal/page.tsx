@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries } from "@/lib/entries";
-import { formatLocation } from "@/lib/format";
 import { JOURNAL_VIEW_COOKIE, journalViewHref, parseJournalView, type JournalView } from "@/lib/journal-view";
 import { reactionTotals } from "@/lib/reactions";
 import { listSharedEntryIds } from "@/lib/shares";
@@ -66,6 +65,7 @@ export default async function JournalPage(props: PageProps<"/journal">) {
           photos={entries.map((entry) => ({
             id: entry.id,
             takenAt: entry.takenAt.toISOString(),
+            timeZone: entry.timeZone,
             alt: alt(entry),
           }))}
         />
@@ -74,7 +74,7 @@ export default async function JournalPage(props: PageProps<"/journal">) {
         <ul className="flex flex-col gap-8">
           {entries.map((entry) => {
             const count = reactions.get(entry.id) ?? 0;
-            const place = entry.location && formatLocation(entry.location);
+            const place = entry.placeName;
             const reactionText = count ? `${count} ${count === 1 ? "reaction" : "reactions"}` : null;
             const status = shared.has(entry.id) ? ["Shared", reactionText].filter(Boolean).join(" · ") : reactionText;
             return (
@@ -89,7 +89,7 @@ export default async function JournalPage(props: PageProps<"/journal">) {
                     className="group-hover:opacity-90"
                   />
                   <span className="mt-1 text-caption text-ink-muted">
-                    <LocalDate iso={entry.takenAt.toISOString()} />
+                    <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />
                     {place && ` · ${place}`}
                   </span>
                   {entry.title && <span className="font-serif text-title-3">{entry.title}</span>}

@@ -47,6 +47,7 @@ export default async function AdminEntryPage(props: PageProps<"/admin/entries/[i
         {entry.title && <h1 className="text-title-2 font-semibold">{entry.title}</h1>}
         <p className="text-caption text-ink-muted">
           <LocalDate iso={entry.takenAt.toISOString()} />
+          {entry.placeName && ` · ${entry.placeName}`}
           {entry.location && ` · ${formatLocation(entry.location)}`}
           {share && " · shared publicly"}
         </p>

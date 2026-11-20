@@ -3,7 +3,6 @@ import { LocalDate } from "@/components/local-date";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
-import { formatLocation } from "@/lib/format";
 import { getStorySettings } from "@/lib/settings";
 import { listClips } from "@/lib/story/clips";
 import { assembleSaid, originalWords } from "@/lib/story/prompts";
@@ -35,7 +34,7 @@ export async function StoryScreenPage({ id, mode }: { id: string; mode: "new" | 
         ? session.said.text
         : assembleSaid(turns, null)
       : originalWords(turns);
-  const place = entry.location && formatLocation(entry.location);
+  const place = entry.placeName;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 pt-2 pb-8">
@@ -44,7 +43,7 @@ export async function StoryScreenPage({ id, mode }: { id: string; mode: "new" | 
         mode={mode}
         dateLine={
           <>
-            <LocalDate iso={entry.takenAt.toISOString()} />
+            <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />
             {place && ` · ${place}`}
           </>
         }
