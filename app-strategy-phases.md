@@ -260,12 +260,41 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - A notification shortly before local sunset, timed by a sunset-time calculation on the device. On iOS this only works once the PWA is installed
 - Notification settings in the Settings screen
 
+### Phase 9: Native apps, a native shell around the web app (added 2026-11-20)
+**Goal:** Sunset Soul in the App Store and Google Play, from the same code as the website, with native features where they're worth it. The web version stays as it is.
+
+**Approach:** Capacitor apps for iOS and Android that load the live site (`sunsetsoul.app`) inside the app, plus native plugins. A web change reaches the apps without a store release; only native changes need one. Starts after the beta (Phase 7), once beta users show which native features matter.
+- **App shells:** iOS (Xcode) and Android (Android Studio) projects in the repo, the app icon and splash screen from the design system, and links to `sunsetsoul.app` opening in the app (Universal Links and App Links)
+- **Native sharing:** share straight to Instagram Stories (and Facebook and Snapchat where their SDKs allow it) with the Stories card, alongside the phone's share sheet. This is the main reason for a native app
+- **Push notifications:** the Phase 8 sunset reminder and "a friend reacted" through APNs and Firebase Cloud Messaging, without installing the PWA
+- **Camera, microphone and photos:** native camera and photo-library pickers that keep the photo's date and place, and the microphone for voice stories
+- **Sign-in:** native Sign in with Apple and Google sign-in (Google blocks sign-in inside embedded web views); the session is shared with the web view
+- **Store rules:** Sign in with Apple wherever Google sign-in is offered, account deletion inside the app (from Phase 7), privacy details for both stores (photos, recordings and words go to an AI service), and enough native features that Apple doesn't treat it as "just a website"
+- **Release:** TestFlight and a Google Play internal test with the beta group, then store review. A release checklist in the repo; CI builds the apps
+
+**Owner tasks:** Apple Developer Program ($99 a year), Google Play Console ($25 once), store listings (screenshots, description, privacy answers), and Meta and Snapchat developer accounts for direct sharing.
+
+**Done when:** both apps are live in the stores; on a phone a user signs in with Apple or Google, saves a sunset with the native camera, tells its story by voice, shares straight to Instagram Stories, and gets a sunset reminder; and the website still works unchanged.
+
+### Phase 10: Fully native apps (added 2026-11-20)
+**Goal:** the most polished feel on each phone, if the Phase 9 shell isn't good enough. Decide after Phase 9 has been in use, based on what users say and how the app performs.
+
+**Approach:** React Native apps built with Expo, replacing the Phase 9 shell's web view screen by screen, with the same database, storage and AI services behind them. The website stays and is still built separately, so new screens are built twice from here on.
+- **An API first:** today's screens talk to the server through Next.js server actions, which native apps can't call. Add a versioned JSON API (entries, photos, stories, shares, reactions, account), used by the native apps and gradually by the web too, with tests
+- **Sign-in:** Better Auth's Expo support, with Apple, Google, email and magic links, and tokens kept in the phone's secure storage
+- **Screens:** the Phase 4e screens rebuilt natively, from the same design tokens (generated for React Native from `design-tokens.json`), in dark and light mode
+- **Native features:** carry over Phase 9's sharing, notifications, camera and microphone; add offline drafts, so a sunset saved without signal uploads later
+- **Shared code:** validation, scoring display and copy in a shared package used by web and native
+- **Release:** Expo EAS builds and over-the-air updates for JavaScript changes; store releases for native changes
+
+**Done when:** every Phase 4e screen works natively on iOS and Android with the Phase 9 features, the JSON API has tests, and the store apps are updated from the shell to the native version without users losing their sign-in or data.
+
 ### After the MVP (v2+)
 - Public story feed
 - In-app friend circles
 - Community voting that affects map retention
 - A weighted, trained scoring model
-- Native iOS and Android apps (possibly React Native with Expo). Revisit after the beta: direct Instagram, Snapchat, TikTok and Facebook share buttons need a native app
+- Native iOS and Android apps: now Phases 9 (native shell) and 10 (fully native)
 - Monetization: printed photo books, a premium tier
 
 ### Order and dependencies
@@ -275,6 +304,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
 - **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
 - **7** follows Phase 6, and **8** comes last.
+- **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 
 ### Remaining estimates (2026-11-08)
 Rough planning numbers. "Human" is one developer who knows the codebase (±30%). "With Claude, total" includes review, phone testing and fixes.
@@ -291,8 +321,10 @@ Rough planning numbers. "Human" is one developer who knows the codebase (±30%).
 | 7 Hardening and beta | 6–8 days | 5–8 hours | 2–3 days |
 | 8 Daily Ritual | 2–3 days | 2–3 hours | about a day |
 | **Total** | **32–43 days** | **25–43 hours** | **11.5–16 days** |
+| 9 Native apps, shell (added 2026-11-20) | 8–12 days | 6–10 hours | 5–8 days, plus store review |
+| 10 Fully native apps (added 2026-11-20) | 30–45 days | 25–45 hours | 4–8 weeks |
 
-Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
+The total covers the MVP (Phases 4b to 8); Phases 9 and 10 come after it. Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
 
 ---
 
