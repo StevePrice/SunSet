@@ -10,8 +10,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { fieldClass, noticeClass } from "@/components/styles";
-import type { Location } from "@/lib/entry-input";
-import { formatLocation, formatTakenAt } from "@/lib/format";
+import { MAX_PLACE_NAME_LENGTH, type Location } from "@/lib/entry-input";
+import { formatTakenAt } from "@/lib/format";
 import { preparePhoto, UnsupportedPhotoError, type PreparedPhoto } from "@/lib/photo-processing";
 
 type LocationChoice = "photo" | "device" | "none";
@@ -32,6 +32,9 @@ export function NewEntryForm() {
   const [editing, setEditing] = useState<"date" | "place" | null>(null);
   const [choice, setChoice] = useState<LocationChoice>("none");
   const [deviceLocation, setDeviceLocation] = useState<Location | null>(null);
+  // The nearest town for the chosen location (undefined while looking), and a name typed instead.
+  const [town, setTown] = useState<{ key: string; name: string | null } | null>(null);
+  const [typedPlace, setTypedPlace] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -90,6 +93,21 @@ export function NewEntryForm() {
   }
 
   const location = choice === "photo" ? prepared?.location : choice === "device" ? deviceLocation : null;
+  const locationKey = location ? `${location.latitude},${location.longitude}` : null;
+
+  // Look up the town in words for the chosen location (our own database; nothing leaves it).
+  useEffect(() => {
+    if (!locationKey || town?.key === locationKey) return;
+    let live = true;
+    const [lat, lng] = locationKey.split(",");
+    fetch(`/api/places?lat=${lat}&lng=${lng}`)
+      .then((r) => (r.ok ? (r.json() as Promise<{ name: string | null }>) : { name: null }))
+      .catch(() => ({ name: null }))
+      .then((result) => live && setTown({ key: locationKey, name: result.name }));
+    return () => {
+      live = false;
+    };
+  }, [locationKey, town?.key]);
 
   // Add your story saves first, so the photo is safe whatever happens on the story screen.
   async function save(tellStory: boolean) {
@@ -102,6 +120,8 @@ export function NewEntryForm() {
     body.set("photoWidth", String(prepared.width));
     body.set("photoHeight", String(prepared.height));
     body.set("story", "");
+    body.set("timeZone", Intl.DateTimeFormat().resolvedOptions().timeZone);
+    if (typedPlace.trim()) body.set("placeName", typedPlace.trim());
     if (takenAt) body.set("takenAt", takenAt.toISOString());
     if (location) {
       body.set("latitude", String(location.latitude));
@@ -158,7 +178,14 @@ export function NewEntryForm() {
     );
   }
 
-  const placeText = location ? formatLocation(location) : "No place";
+  const lookedUp = locationKey && town?.key === locationKey ? town.name : undefined;
+  const placeText = typedPlace.trim()
+    ? typedPlace.trim()
+    : !location
+      ? "No place"
+      : lookedUp === undefined
+        ? "Finding the town…"
+        : (lookedUp ?? "No town nearby");
   return (
     <div className="flex flex-col gap-5">
       {cancelButton}
@@ -221,6 +248,16 @@ export function NewEntryForm() {
             <label className="flex min-h-12 items-center gap-3">
               <input type="radio" name="location" className="size-5" checked={choice === "none"} onChange={() => setChoice("none")} />
               No place
+            </label>
+            <label className="mt-2 flex flex-col gap-1 text-caption">
+              Or name it yourself
+              <input
+                className={fieldClass}
+                value={typedPlace}
+                onChange={(e) => setTypedPlace(e.target.value)}
+                maxLength={MAX_PLACE_NAME_LENGTH}
+                placeholder="e.g. Sequoia National Park"
+              />
             </label>
             <p className="text-caption text-ink-muted">Your Journal is private, including its places. The exact place is never shared.</p>
           </fieldset>

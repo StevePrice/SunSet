@@ -42,6 +42,14 @@ async function AccountDetails() {
       </div>
       <SettingsPanel aiStoryHelp={settings?.aiStoryHelp ?? true} recordings={recordings} />
       <SignOutButton />
+      {/* Attribution required by the GeoNames licence (CC BY 4.0) for the town names. */}
+      <p className="text-caption text-ink-muted">
+        Place names from{" "}
+        <a href="https://www.geonames.org" className="underline" target="_blank" rel="noreferrer">
+          GeoNames
+        </a>
+        , licensed CC BY 4.0.
+      </p>
     </div>
   );
 }
