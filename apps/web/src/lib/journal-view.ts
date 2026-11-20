@@ -1,15 +1,24 @@
 // The Journal's two views (design system): Stories (photo cards with their stories) and All photos
-// (a two-column grid grouped by month). The view lives in the URL (?view=photos) so it survives
-// reloads and back navigation; Stories is the default.
+// (a two-column grid grouped by month). The view lives in the URL (?view=stories or ?view=photos)
+// so it survives reloads and back navigation. Plain /journal opens the view the person used last
+// (Build Spec 3.2), remembered in a cookie on the device; Stories the first time.
 
 export type JournalView = "stories" | "photos";
 
-export function parseJournalView(value: string | string[] | undefined): JournalView {
-  return value === "photos" ? "photos" : "stories";
+export const JOURNAL_VIEW_COOKIE = "ss_journal_view";
+
+function isView(value: unknown): value is JournalView {
+  return value === "stories" || value === "photos";
+}
+
+/** The view from the URL, else the last one used, else Stories. */
+export function parseJournalView(value: string | string[] | undefined, remembered?: string): JournalView {
+  if (isView(value)) return value;
+  return isView(remembered) ? remembered : "stories";
 }
 
 export function journalViewHref(view: JournalView): string {
-  return view === "photos" ? "/journal?view=photos" : "/journal";
+  return `/journal?view=${view}`;
 }
 
 export type MonthGroup<T> = { key: string; label: string; items: T[] };

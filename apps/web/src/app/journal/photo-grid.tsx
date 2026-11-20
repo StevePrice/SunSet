@@ -20,7 +20,7 @@ export function PhotoGrid({ photos }: { photos: GridPhoto[] }) {
     <div className="flex flex-col gap-6">
       {groupByMonth(photos, timeZone).map((month) => (
         <section key={month.key} className="flex flex-col gap-3" aria-labelledby={`month-${month.key}`}>
-          <h2 id={`month-${month.key}`} className="font-serif text-title-3">
+          <h2 id={`month-${month.key}`} className="font-sans text-caption font-bold tracking-widest text-ink-muted uppercase">
             {month.label}
           </h2>
           <ul className="grid grid-cols-2 gap-2">

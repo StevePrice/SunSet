@@ -10,9 +10,17 @@ describe("parseJournalView", () => {
     expect(parseJournalView(["photos", "stories"])).toBe("stories");
   });
 
+  it("opens the last view used when the URL doesn't name one", () => {
+    expect(parseJournalView(undefined, "photos")).toBe("photos");
+    expect(parseJournalView(undefined, "stories")).toBe("stories");
+    expect(parseJournalView(undefined, "nonsense")).toBe("stories");
+    // The URL wins over the remembered view.
+    expect(parseJournalView("stories", "photos")).toBe("stories");
+  });
+
   it("round-trips through the URL", () => {
     expect(journalViewHref("photos")).toBe("/journal?view=photos");
-    expect(journalViewHref("stories")).toBe("/journal");
+    expect(journalViewHref("stories")).toBe("/journal?view=stories");
     expect(parseJournalView(new URL(journalViewHref("photos"), "https://x").searchParams.get("view") ?? undefined)).toBe("photos");
   });
 });

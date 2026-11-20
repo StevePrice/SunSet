@@ -38,12 +38,20 @@ test("save an entry and see it in the Journal", async ({ page, context }) => {
   await context.addCookies(session);
   await page.goto("/journal/new");
   await page.locator('input[type="file"]').last().setInputFiles("e2e/fixtures/sunset.jpg");
-  await page.getByRole("button", { name: "Save without a story" }).click();
+  await page.getByRole("button", { name: "Save for now" }).click();
   await expect(page).toHaveURL(/\/journal\/(?!new$)[\w-]+$/);
   entryUrl = new URL(page.url()).pathname;
 
   await page.goto("/journal");
   await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
+
+  // All photos shows the count, and plain /journal opens the view used last.
+  await page.goto("/journal?view=photos");
+  await expect(page.getByText(/^\d+ sunsets?$/)).toBeVisible();
+  await page.goto("/journal");
+  await expect(page.getByRole("link", { name: "All photos" })).toHaveAttribute("aria-current", "page");
+  await page.goto("/journal?view=stories");
+  await expect(page.getByText(/^\d+ sunsets?$/)).toHaveCount(0);
 });
 
 test("add a story by typing, then change it with Edit", async ({ page, context }) => {
