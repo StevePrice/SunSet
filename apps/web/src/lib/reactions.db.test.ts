@@ -129,7 +129,7 @@ describe.skipIf(!url)("reactions data access", () => {
 
     expect(await deleteReaction(db, alice, love.id)).toBe(true);
     expect(await deleteReactionNote(db, alice, person.note!.id)).toBe(true);
-    expect((await getPublicReactions(db, shareId, null))?.counts).toEqual({ wow: 0, wish: 1, love: 0 });
+    expect((await getPublicReactions(db, shareId, null))?.counts).toEqual({ wow: 0, wish: 1, love: 0, hugs: 0 });
     expect((await getAfterglow(db, alice, entryId))?.people).toMatchObject([{ reactions: [{ kind: "wish" }], note: null }]);
   });
 
@@ -158,7 +158,7 @@ describe.skipIf(!url)("reactions data access", () => {
 
     // A new link starts with no public reactions, while Afterglow still has the old ones.
     const next = (await createShare(db, alice, entryId, "UTC"))!;
-    expect((await getPublicReactions(db, next.id, steve))?.counts).toEqual({ wow: 0, wish: 0, love: 0 });
+    expect((await getPublicReactions(db, next.id, steve))?.counts).toEqual({ wow: 0, wish: 0, love: 0, hugs: 0 });
     expect((await getAfterglow(db, alice, entryId))?.people).toMatchObject([
       { name: "Steve", reactions: [{ kind: "wow" }], note: { body: "Lovely" } },
     ]);
