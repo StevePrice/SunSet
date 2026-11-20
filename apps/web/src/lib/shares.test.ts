@@ -41,7 +41,6 @@ describe("share card content", () => {
     photoHeight: 1440,
     place: null,
     timeZone: "America/Los_Angeles",
-    score: null,
   };
 
   it("dates the card in the owner's time zone and shortens long stories", () => {
@@ -49,7 +48,8 @@ describe("share card content", () => {
     expect(content.byline).toBe("Steve · November 2, 2026");
     expect(content.story!.length).toBeLessThanOrEqual(140);
     expect(content.story!.endsWith("…")).toBe(true);
-    expect(content.score).toBeNull();
+    // Phase 4e: no score on share images.
+    expect(content).not.toHaveProperty("score");
   });
 
   it("uses the caption, written for strangers, over the story", () => {
@@ -67,14 +67,10 @@ describe("share card content", () => {
     expect(await cardVersion(cardContent({ ...share, place: "Ocean Beach" }))).not.toBe(a);
   });
 
-  it("gives the Stories card the title, a longer story and the score", () => {
-    const done = {
-      status: "done",
-      displayScore: 87,
-    } as unknown as NonNullable<PublicShare["score"]>;
-    const content = storiesCardContent({ ...share, story: "A long story. ".repeat(30), title: "  Last light at Ocean Beach ", score: done });
+  it("gives the Stories card the title and a longer story, but no score", () => {
+    const content = storiesCardContent({ ...share, story: "A long story. ".repeat(30), title: "  Last light at Ocean Beach " });
     expect(content.title).toBe("Last light at Ocean Beach");
-    expect(content.score).toBe(87);
+    expect(content).not.toHaveProperty("score");
     expect(content.byline).toBe("Steve · November 2, 2026");
     expect(content.story!.length).toBeLessThanOrEqual(280);
     expect(content.story!.length).toBeGreaterThan(140);

@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Logo } from "@/components/logo";
 import { PhotoCard } from "@/components/photo-card";
-import { ScoreBreakdown } from "@/components/score-card";
 import { withDrizzle } from "@/lib/db";
 import { CARD_HEIGHT, CARD_WIDTH, cardContent, cardVersion, shareByline } from "@/lib/share-card";
 import { parseVisitorId, VISITOR_COOKIE } from "@/lib/reaction-input";
@@ -56,7 +55,6 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
       <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={photo.width} height={photo.height} />
       {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
       <p className="text-label text-ink-muted">{shareByline(share)}</p>
-      {share.score?.status === "done" && <ScoreBreakdown score={share.score} whose="the" />}
       {share.story && <p className="ss-story whitespace-pre-wrap text-ink-story">{share.story}</p>}
       <Reactions shareId={id} initial={reactions} ownerName={share.ownerName} />
       <footer className="mt-4 flex flex-col items-start gap-3 border-t border-divider pt-5">
