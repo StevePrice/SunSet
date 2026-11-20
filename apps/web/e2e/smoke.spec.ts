@@ -53,7 +53,7 @@ test("add a story by typing, then change it with Edit", async ({ page, context }
   await expect(page).toHaveURL(/\/story$/);
   await expect(page.getByRole("heading", { name: "The story behind this moment" })).toBeVisible();
   await expect(page.getByText("Rather talk than type?")).toBeVisible();
-  await page.getByLabel("Your story").fill("The sky went gold over the water.");
+  await page.getByLabel("Your story", { exact: true }).fill("The sky went gold over the water.");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`${entryUrl}$`));
   await expect(page.getByText("The sky went gold over the water.")).toBeVisible();
@@ -63,7 +63,7 @@ test("add a story by typing, then change it with Edit", async ({ page, context }
   await expect(page).toHaveURL(/\/edit$/);
   const words = page.getByLabel("Here are your words. Change anything you like.");
   await expect(words).toHaveValue("The sky went gold over the water.");
-  await expect(page.getByLabel("Title")).toBeVisible();
+  await expect(page.getByLabel("Title", { exact: true })).toBeVisible();
   await words.fill("The sky went gold, then pink, over the water.");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`${entryUrl}$`));
