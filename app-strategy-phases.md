@@ -174,9 +174,13 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
-**Status (2026-11-19):** the score part (Build Spec 2.4, user feedback: the story matters more than the score) is built on `phase-4e-score`: no score on Journal photos (both views), the Share Page or share images; on Entry Detail the Wow line sits under the date and the score is in a Score details row, closed by default, below Share. Share images are redrawn automatically (new layout version). The rest of 4e (navigation, Share button, Afterglow link settings, story flow) is still to check against section 8.
+**Status (2026-11-20):** in progress, 4 of 7 pieces merged into `Steve`: the score change and parts 1–3. Score and parts 1–2 are on staging; part 3 is merged but not yet deployed. Parts 4–6 are still to do. Phone checks for all parts happen once, at the end of 4e (list below).
 
-**Parts done:** score (PR #15, checked on a phone), part 1 navigation and first name (PR #18, on staging 2026-11-20), part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20), part 3 Share Page and reactions.
+**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, merged 2026-11-20, not yet on staging).
+
+**Part 4 (story flow) starts from Phase 5's work, on staging since 2026-11-09:** voice recording in the browser (up to 2 minutes per answer), recordings kept privately in R2, Whisper transcription with Retry and Type instead, playback and "What you said", the opening questions with "Ask me something else" (they become Story ideas), My story in three lengths and Crafted story (they become Help me polish it), the suggested title, and the AI settings with the first-use notice. What part 4 changes is the screens around them (Build Spec 3.7–3.9): the typing box first, Need ideas?, the Rather talk than type? panel, the microphone note, the recording screen and the review / edit screen, which also replaces the temporary Edit page from part 2. It also removes the interview-first path and the caption field.
+
+**Still to do after part 4:** part 5, the Journal (shared and reaction counts on cards, remember the last view, the sunset count, the new empty state) and New sunset in two steps; part 6, fixes (one date rule in the owner's time zone, place names instead of coordinates, AI titles for entries without one, a light-mode pass).
 
 **Phone checks for the end of 4e** (dark and light mode; added to as each part merges):
 - Part 1: header and bottom bar on Journal, a sunset, Afterglow and You; the bar never covers the copyright line; a new account made by email link sees Welcome once; changing the name on You changes "[Name] shared a sunset with you" on an existing link.
