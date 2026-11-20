@@ -176,11 +176,12 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Status (2026-11-19):** the score part (Build Spec 2.4, user feedback: the story matters more than the score) is built on `phase-4e-score`: no score on Journal photos (both views), the Share Page or share images; on Entry Detail the Wow line sits under the date and the score is in a Score details row, closed by default, below Share. Share images are redrawn automatically (new layout version). The rest of 4e (navigation, Share button, Afterglow link settings, story flow) is still to check against section 8.
 
-**Parts done:** score (PR #15, checked on a phone), part 1 navigation and first name (PR #18, on staging 2026-11-20), part 2 Entry Detail, Share and Afterglow (PR #19).
+**Parts done:** score (PR #15, checked on a phone), part 1 navigation and first name (PR #18, on staging 2026-11-20), part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20), part 3 Share Page and reactions.
 
 **Phone checks for the end of 4e** (dark and light mode; added to as each part merges):
 - Part 1: header and bottom bar on Journal, a sunset, Afterglow and You; the bar never covers the copyright line; a new account made by email link sees Welcome once; changing the name on You changes "[Name] shared a sunset with you" on an existing link.
 - Part 2: Entry Detail order (photo, title, date, Wow line, story or Add your story, Hear it in your own voice, Edit, Share, Afterglow row, Score details, Delete); **Share opens the share menu with the Stories image in one tap**, including the first time (when the link is made; if iOS refuses, "Tap again to share" works); the Afterglow row reads Not shared / No reactions yet / Shared · n reactions; Afterglow's Share again, Copy link, Place name friends see and Stop sharing (the old link stops working); the Edit page saves the story and plays and deletes recordings.
+- Part 3: on the Share Page (as a friend, signed out): **[Name]** in bold, title, date and place, story, divider, "Let [Name] know you saw it"; four reactions in two rows of two, each with its new icon; a tapped reaction fills peach with a checkmark beside the count and its icon animates once (not with Reduce Motion on); tap again to undo; "Your note to [Name]", Send, "Reacting as [friend]…", "Sent!"; the new footer line. Afterglow shows four totals in two rows, including Sending hugs.
 
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).

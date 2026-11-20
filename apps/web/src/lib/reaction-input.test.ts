@@ -3,8 +3,8 @@ import { MAX_NOTE_LENGTH, parseReactionRequest, parseVisitorId } from "./reactio
 import { newShareId } from "./shares";
 
 describe("parseReactionRequest", () => {
-  it("accepts the three positive reactions only", () => {
-    for (const kind of ["wow", "wish", "love"]) {
+  it("accepts the four positive reactions only", () => {
+    for (const kind of ["wow", "wish", "love", "hugs"]) {
       expect(parseReactionRequest({ action: "toggle", kind })).toEqual({ ok: true, value: { action: "toggle", kind } });
     }
     expect(parseReactionRequest({ action: "toggle", kind: "meh" }).ok).toBe(false);
