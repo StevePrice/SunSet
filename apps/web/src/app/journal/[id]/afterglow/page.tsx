@@ -10,7 +10,8 @@ import { LocalDate } from "@/components/local-date";
 import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
 import { ReactionIcon } from "@/components/reaction-icons";
-import { SharePanel } from "../share-panel";
+import { LinkSettings } from "../link-settings";
+import { ShareButton } from "../share-button";
 import { RemoveButton } from "./remove-button";
 
 export const metadata = { title: "Afterglow · Sunset Soul" };
@@ -43,7 +44,7 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
         <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} />}</p>
       </div>
 
-      <dl className="grid grid-cols-3 gap-2">
+      <dl className="grid grid-cols-2 gap-2">
         {REACTION_KINDS.map((kind) => (
           <div key={kind} className="flex flex-col-reverse items-center gap-1 rounded-ss-lg bg-surface-raised p-3 text-center">
             <dt className="flex flex-col items-center gap-1 text-label">
@@ -89,7 +90,17 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
         </ul>
       )}
 
-      <SharePanel entryId={entry.id} initial={share && { url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+      {share ? (
+        <>
+          <ShareButton entryId={entry.id} initialUrl={`${env.BETTER_AUTH_URL}/s/${share.id}`} label="Share again" />
+          <LinkSettings entryId={entry.id} share={{ url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+        </>
+      ) : (
+        <section className="flex flex-col gap-3">
+          <p className="text-ink-muted">Not shared. Share it to get a new link friends can open and react to.</p>
+          <ShareButton entryId={entry.id} initialUrl={null} />
+        </section>
+      )}
       <BottomBar current="journal" />
     </main>
   );

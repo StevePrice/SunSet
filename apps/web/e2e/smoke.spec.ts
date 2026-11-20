@@ -46,19 +46,40 @@ test("save an entry and see it in the Journal", async ({ page, context }) => {
   await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
 });
 
-test("create a share link and open it signed out", async ({ page, context, browser }) => {
+test("share in one tap, open the link signed out, then stop sharing in Afterglow", async ({ page, context, browser }) => {
   await context.addCookies(session);
+  // Test browsers have no share menu: stand in for it and keep what the page shared.
+  await page.addInitScript(() => {
+    const w = window as unknown as { shared?: ShareData };
+    navigator.share = async (data?: ShareData) => {
+      w.shared = data;
+    };
+    navigator.canShare = () => false;
+  });
   await page.goto(entryUrl);
-  await page.getByRole("button", { name: "Create a share link" }).click();
-  const link = await page.getByLabel("Share link").inputValue();
+  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("Not shared");
+  await page.getByRole("button", { name: "Share", exact: true }).click();
+  const shared = await page.waitForFunction(() => (window as unknown as { shared?: ShareData }).shared);
+  const link = (await shared.jsonValue())!.url!;
   expect(link).toMatch(/\/s\/[\w-]+$/);
+  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("No reactions yet");
 
   // A fresh browser context has no session: this is what a friend sees.
   const friend = await browser.newContext();
   const friendPage = await friend.newPage();
-  const response = await friendPage.goto(link);
+  const path = new URL(link).pathname;
+  const response = await friendPage.goto(path);
   expect(response?.status()).toBe(200);
   await expect(friendPage.getByRole("main")).toBeVisible();
+
+  // Afterglow has Share again and the link settings; Stop sharing kills the link.
+  await page.getByRole("link", { name: /Afterglow/ }).click();
+  await expect(page.getByRole("button", { name: "Share again" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Link settings" })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Stop sharing" }).click();
+  await expect(page.getByText(/^Not shared/)).toBeVisible();
+  expect((await friendPage.goto(path))?.status()).toBe(404);
   await friend.close();
 });
 
