@@ -114,11 +114,37 @@ export const entries = pgTable(
     takenAt: timestamp("taken_at", { withTimezone: true }).notNull().defaultNow(),
     // Exact point, never shown publicly; the Live Map (Phase 6) uses a rounded copy.
     location: point4326("location"),
+    // The place in words, e.g. "Carlsbad, California": typed by the owner, or the nearest town
+    // from `places` (GeoNames). Shown in the Journal and offered for share links.
+    placeName: text("place_name"),
+    // The IANA time zone the date is shown in everywhere (Phase 4e, one date rule): the time zone
+    // of the place, or of the owner's phone when saved. Null for old entries without either.
+    timeZone: text("time_zone"),
     photoWidth: integer("photo_width").notNull(),
     photoHeight: integer("photo_height").notNull(),
     ...timestamps,
   },
   (table) => [index("entries_user_taken_at_idx").on(table.userId, table.takenAt.desc())],
+);
+
+// Towns and cities from GeoNames (cities with 1,000+ people, CC BY 4.0), for turning a photo's
+// location into words ("Carlsbad, California") without sending it to anyone. Loaded by
+// scripts/load-places.mjs, not by migrations: the data is large and comes from geonames.org.
+export const places = pgTable(
+  "places",
+  {
+    // The GeoNames id.
+    id: integer("id").primaryKey(),
+    name: text("name").notNull(),
+    // State, province or region (GeoNames admin1), e.g. "California".
+    region: text("region"),
+    countryCode: text("country_code").notNull(),
+    country: text("country"),
+    population: integer("population").notNull().default(0),
+    timeZone: text("time_zone"),
+    location: point4326("location").notNull(),
+  },
+  (table) => [index("places_location_idx").using("gist", table.location)],
 );
 
 // An entry's score, one row per scorer version so re-scoring keeps history. Written by the
