@@ -225,6 +225,8 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 
 **Done when:** a push to `Steve` runs the smoke suite in CI, and a staging deploy started from GitHub succeeds, plus one with a deliberately failing smoke test that rolls back.
 
+**Status:** ✅ done (2026-11-20). Pushes and pull requests run the smoke suite in CI (PRs #11, #13). Deploy to staging has run from GitHub several times since 2026-11-18. The rollback drill (PR #16: the workflow's "Fail the smoke tests on purpose" option) failed only its drill test and `wrangler rollback` restored the previous Worker version; a normal deploy of `Steve` (`21261a1`) then passed. CI deploys with an account-owned Cloudflare token limited to Workers Scripts: Edit and Account Settings: Read, and migrates as `sunset_migrator`; the app (Hyperdrive) connects as `sunset_app`, and `sunset` is left for people only (docs/ci-credentials.md).
+
 ### Git workflow (set 2026-11-18)
 - One branch per phase or part, off `Steve` (e.g. `phase-5b-user-admin`), merged back into `Steve` by pull request so each part has a review record and a CI result. `Steve` → `main` stays a separate, deliberate step.
 - Commit messages name the part: "Add the activity log (phase 5b d)".
@@ -271,6 +273,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Next (set 2026-11-08):** 4b → 4c → 4d (all done), then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
+- **Update (2026-11-20):** 5c done. Before 6: the 5b staging check (set `ADMIN_EMAILS`) and the rest of 4e.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)
