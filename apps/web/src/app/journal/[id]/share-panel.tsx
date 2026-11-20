@@ -97,7 +97,7 @@ export function SharePanel({ entryId, initial }: { entryId: string; initial: Sha
 
   return (
     <section className={box} aria-label="Share">
-      <p>Anyone with this link can see the photo, story, score and date, and react to it. The exact location is never shared.</p>
+      <p>Anyone with this link can see the photo, story and date, and react to it. The exact location is never shared.</p>
       <input readOnly value={share.url} aria-label="Share link" onFocus={(e) => e.target.select()} className={`${fieldClass} text-caption`} />
       <div className="flex flex-wrap gap-3">
         {isPhone && (

@@ -174,6 +174,8 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
+**Status (2026-11-19):** the score part (Build Spec 2.4, user feedback: the story matters more than the score) is built on `phase-4e-score`: no score on Journal photos (both views), the Share Page or share images; on Entry Detail the Wow line sits under the date and the score is in a Score details row, closed by default, below Share. Share images are redrawn automatically (new layout version). The rest of 4e (navigation, Share button, Afterglow link settings, story flow) is still to check against section 8.
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed

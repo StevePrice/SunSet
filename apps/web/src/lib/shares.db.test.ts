@@ -51,7 +51,8 @@ describe.skipIf(!url)("shares data access", () => {
     const entryId = await newEntry(alice);
     const share = (await createShare(db, alice, entryId, "UTC"))!;
     const view = await getPublicShare(db, share.id);
-    expect(view).toMatchObject({ entryId, ownerName: "Alice", story: "Gold over the bay", score: null });
+    expect(view).toMatchObject({ entryId, ownerName: "Alice", story: "Gold over the bay" });
+    expect(view).not.toHaveProperty("score");
     expect(JSON.stringify(view)).not.toContain("example.com");
     expect(view).not.toHaveProperty("location");
   });

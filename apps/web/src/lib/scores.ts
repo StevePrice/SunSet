@@ -54,15 +54,6 @@ export async function getScore(db: Db, userId: string, entryId: string): Promise
   return row ? toEntryScore(row) : null;
 }
 
-/** An entry's current score with no owner check. Only for entries the owner has chosen to share. */
-export async function getSharedScore(db: Db, entryId: string): Promise<EntryScore | null> {
-  const [row] = await db
-    .select(scoreColumns)
-    .from(entryScores)
-    .where(and(eq(entryScores.entryId, entryId), eq(entryScores.scorerVersion, SCORER_VERSION)));
-  return row ? toEntryScore(row) : null;
-}
-
 function toEntryScore(row: {
   status: string;
   palette: number | null;
