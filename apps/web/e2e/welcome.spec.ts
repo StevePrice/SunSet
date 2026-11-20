@@ -28,6 +28,9 @@ test("a new account by email link gives its first name once, then can change it 
   await expect(page.getByRole("link", { name: "New sunset" })).toBeVisible();
   const bar = page.getByRole("navigation", { name: "Main" });
   await expect(bar.getByRole("link", { name: "Journal" })).toHaveAttribute("aria-current", "page");
+  // A new account's Journal is empty: the invitation to save the first sunset.
+  await expect(page.getByRole("heading", { name: "No sunsets yet" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Save your first sunset" })).toHaveAttribute("href", "/journal/new");
 
   // Welcome is shown once: with a name it goes straight back to the Journal.
   await page.goto("/welcome");

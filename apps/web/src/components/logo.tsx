@@ -4,6 +4,8 @@
 const FILES = {
   horizontal: { name: "sunset-soul-logo-horizontal-transparent", ratio: 826 / 221 },
   stacked: { name: "sunset-soul-logo-stacked-transparent", ratio: 671 / 428 },
+  // The sun mark on its own (empty Journal), 1000 × 655.
+  mark: { name: "sunset-soul-mark", ratio: 1000 / 655 },
 };
 
 export function Logo({ layout = "horizontal", width }: { layout?: keyof typeof FILES; width: number }) {

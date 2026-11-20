@@ -62,6 +62,12 @@ export async function getShareForEntry(db: Db, userId: string, entryId: string):
 }
 
 /** Returns the entry's share, creating it if needed; null if the user doesn't own the entry. */
+/** Which of the owner's entries are shared right now (the Journal's "Shared" line). */
+export async function listSharedEntryIds(db: Db, userId: string): Promise<Set<string>> {
+  const rows = await db.select({ entryId: shares.entryId }).from(shares).where(eq(shares.userId, userId));
+  return new Set(rows.map((r) => r.entryId));
+}
+
 export async function createShare(db: Db, userId: string, entryId: string, timeZone: string): Promise<Share | null> {
   const [owned] = await db
     .select({ id: entries.id })
