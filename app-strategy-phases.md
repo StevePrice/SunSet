@@ -233,6 +233,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - Migrations are numbered, so two branches can both create the same number. Generate a migration only on a branch that has just merged `Steve`, and regenerate it if `Steve` gains a migration before the branch merges.
 - When a partner's branch and ours touch the same screens, test them together on an `integrate/...` branch before merging into `Steve`.
 - Delete a branch once its pull request merges.
+- **Phone checks at the end of each phase (set 2026-11-20):** each part is merged and deployed to staging as it's done, but the phone check is done once, at the end of the phase, against its "Done when" and a list of what each part changed.
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
