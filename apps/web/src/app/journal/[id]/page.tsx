@@ -13,7 +13,7 @@ import { assembleSaid, originalWords } from "@/lib/story/prompts";
 import { getSession } from "@/lib/story/sessions";
 import { formatDuration } from "@/lib/story/voice";
 import { buttonClass } from "@/components/button";
-import { AppHeader } from "@/components/logo";
+import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
 import { LocalDate } from "@/components/local-date";
@@ -59,12 +59,9 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
 
   return (
     <main className="flex w-full flex-1 flex-col pb-8">
-      {/* A compact header, then the photo edge to edge: the only full-bleed photo in the app. */}
-      <div className="mx-auto flex w-full max-w-2xl flex-wrap items-center justify-between gap-x-4 px-4 pt-2 pb-1">
-        <AppHeader />
-        <Link href="/journal" className="inline-flex min-h-12 items-center text-label underline">
-          ← Your Journal
-        </Link>
+      {/* The header, then the photo edge to edge: the only full-bleed photo in the app. */}
+      <div className="mx-auto w-full max-w-2xl px-4 pt-2 pb-2">
+        <AppHeader back={{ href: "/journal", label: "Journal" }} />
       </div>
       <PhotoCard
         src={`/api/photos/${entry.id}/display`}
@@ -158,6 +155,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           <DeleteEntryButton id={entry.id} />
         </div>
       </ScoreProvider>
+      <BottomBar current="journal" />
     </main>
   );
 }

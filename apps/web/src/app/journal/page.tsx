@@ -5,9 +5,8 @@ import { withDrizzle } from "@/lib/db";
 import { listEntries } from "@/lib/entries";
 import { journalViewHref, parseJournalView, type JournalView } from "@/lib/journal-view";
 import { reactionTotals } from "@/lib/reactions";
-import { ButtonLink } from "@/components/button";
 import { LocalDate } from "@/components/local-date";
-import { AppHeader } from "@/components/logo";
+import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
 import { PhotoGrid } from "./photo-grid";
 
@@ -16,20 +15,18 @@ export const metadata = { title: "Your Journal · Sunset Soul" };
 export default async function JournalPage(props: PageProps<"/journal">) {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
+  // First sign-in without a first name (accounts made by email link or a social sign-in with no
+  // name): ask for it once, so the Share Page can say "[Name] shared a sunset with you".
+  if (!user.name.trim()) redirect("/welcome");
   const view = parseJournalView((await props.searchParams).view);
   const [entries, reactions] = await withDrizzle((db) => Promise.all([listEntries(db, user.id), reactionTotals(db, user.id)]));
   const alt = (entry: (typeof entries)[number]) => entry.title ?? entry.story ?? "A sunset from your Journal";
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 pt-4 pb-8">
       <AppHeader />
       <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-serif text-title-1">Your Journal</h1>
-          <ButtonLink href="/journal/new" variant="action">
-            New sunset
-          </ButtonLink>
-        </div>
+        <h1 className="font-serif text-title-1">Your Journal</h1>
         {entries.length > 0 && <ViewToggle view={view} />}
       </div>
 
@@ -79,11 +76,7 @@ export default async function JournalPage(props: PageProps<"/journal">) {
         </ul>
       )}
 
-      <nav className="text-label">
-        <Link href="/account" className="underline">
-          Account
-        </Link>
-      </nav>
+      <BottomBar current="journal" />
     </main>
   );
 }

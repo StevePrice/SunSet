@@ -87,3 +87,9 @@ h3 {
   outline: 3px solid var(--ss-focus-ring);
   outline-offset: 2px;
 }
+
+/* Screens with the bottom bar (components/app-nav.tsx): room under the content and the copyright
+   line, so the fixed bar never covers them. 4rem tabs plus the phone's safe area. */
+body:has([data-bottom-bar]) {
+  padding-bottom: calc(4rem + 1px + env(safe-area-inset-bottom));
+}
