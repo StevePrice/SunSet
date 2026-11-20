@@ -8,7 +8,6 @@ import { formatLocation } from "@/lib/format";
 import { reactionTotals } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
-import { getStorySettings } from "@/lib/settings";
 import { listClips } from "@/lib/story/clips";
 import { formatDuration } from "@/lib/story/voice";
 import { AppHeader, BottomBar } from "@/components/app-nav";
@@ -33,12 +32,11 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [score, share, totals, clips, settings] = await Promise.all([
+    const [score, share, totals, clips] = await Promise.all([
       getScore(db, user.id, id),
       getShareForEntry(db, user.id, id),
       reactionTotals(db, user.id),
       listClips(db, user.id, id),
-      getStorySettings(db, user.id),
     ]);
     return {
       entry,
@@ -46,15 +44,12 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
       share,
       reactionCount: totals.get(id) ?? 0,
       clips: clips.map((c) => ({ id: c.id, durationMs: c.durationMs })),
-      aiHelp: settings?.aiStoryHelp ?? true,
     };
   });
   if (!found) notFound();
-  const { entry, score, share, reactionCount, clips, aiHelp } = found;
+  const { entry, score, share, reactionCount, clips } = found;
   const { env } = await getCloudflareContext({ async: true });
   const place = entry.location && formatLocation(entry.location);
-  // Add your story opens the story screen, or the Edit page when AI story help is off.
-  const storyHref = aiHelp ? `/journal/${entry.id}/story` : `/journal/${entry.id}/edit`;
   const afterglowStatus = !share
     ? "Not shared"
     : reactionCount === 0
@@ -101,7 +96,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           {entry.story ? (
             <p className="ss-story whitespace-pre-wrap text-ink-story">{entry.story}</p>
           ) : (
-            <Link href={storyHref} className={buttonClass("secondary", "self-start")}>
+            <Link href={`/journal/${entry.id}/story`} className={buttonClass("secondary", "self-start")}>
               Add your story
             </Link>
           )}
@@ -109,7 +104,8 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           {clips.length > 0 && (
             <HearYourVoice
               clips={clips.map((c) => `/api/clips/${c.id}`)}
-              duration={formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))}
+              title={`Hear it in your own voice · ${formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))}`}
+              subtitle="Only you can hear it"
             />
           )}
 

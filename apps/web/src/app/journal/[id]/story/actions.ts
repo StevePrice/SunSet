@@ -7,30 +7,23 @@ import { transcribe } from "@/lib/story/transcribe";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { withDrizzle, type Db } from "@/lib/db";
-import { photoKey } from "@/lib/entries";
+import { withDrizzle } from "@/lib/db";
+import { getEntry, photoKey, updateEntry } from "@/lib/entries";
+import { parseStory } from "@/lib/entry-input";
 import { getScore } from "@/lib/scores";
-import { AI_OFF_MESSAGE, markAiNoticeSeen, setAiStoryHelp } from "@/lib/settings";
-import { cleanTranscripts, followUp, openingQuestions, writeStory } from "@/lib/story/ai";
+import { AI_OFF_MESSAGE, getStorySettings, markAiNoticeSeen, setAiStoryHelp } from "@/lib/settings";
+import { cleanTranscripts, openingQuestions, suggestTitle, writeStory } from "@/lib/story/ai";
 import { withAi } from "@/lib/story/ai-guard";
 import { clipsForAnswer, getClip, setClipTranscript } from "@/lib/story/clips";
-import { assembleSaid, FALLBACK_OPENERS, MAX_FOLLOW_UPS, STORY_STYLES, originalWords, type StoryStyle } from "@/lib/story/prompts";
+import { acceptCleaned, FALLBACK_OPENERS, STORY_STYLES, type StoryStyle } from "@/lib/story/prompts";
 import {
   addTurn,
   ensureSession,
-  getSession,
-  finishStory,
   MAX_ANSWER_LENGTH,
-  MAX_CAPTION_LENGTH,
   MAX_TITLE_LENGTH,
-  parseFinalStory,
   parseStoryText,
-  saveDraft,
-  saveSaid,
-  setNextQuestion,
   setOpeners,
   toView,
-  type StorySession,
   type StoryView,
 } from "@/lib/story/sessions";
 
@@ -62,28 +55,6 @@ async function aiEnv() {
   return { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY, STORY_MODEL: env.STORY_MODEL };
 }
 
-async function nextFollowUp(db: Db, userId: string, session: StorySession): Promise<{ session: StorySession; error?: string }> {
-  if (session.turns.length - 1 >= MAX_FOLLOW_UPS) {
-    return { session: await setNextQuestion(db, session, { question: null, wrapUp: true, sensitive: false, safetyConcern: false }) };
-  }
-  const env = await aiEnv();
-  const result = await withAi(db, userId, "follow_up", () => followUp(env, session.turns, session.asked));
-  if (!result || result === "off" || result === "limited") {
-    return {
-      session: await setNextQuestion(db, session, { question: null, wrapUp: true, sensitive: false, safetyConcern: false }),
-      error: aiMessage(result, "I couldn't think of another question just now. You can add more yourself, or see your story."),
-    };
-  }
-  return {
-    session: await setNextQuestion(db, session, {
-      question: result.question,
-      wrapUp: result.story_feels_complete,
-      sensitive: result.sensitive,
-      safetyConcern: result.safety_concern,
-    }),
-  };
-}
-
 /** Three opening questions for the photo; `more` replaces them with three new ones. */
 export async function openersAction(entryId: string, more: boolean): Promise<StoryResult> {
   const user = await signedIn();
@@ -105,16 +76,10 @@ export async function openersAction(entryId: string, more: boolean): Promise<Sto
 }
 
 /**
- * Saves an answer, then asks the next follow-up (unless `askNext` is false, e.g. "Add more").
- * `clipIds` are the recordings made for this answer; it counts as spoken if one was transcribed.
+ * Keeps one answer: a spoken one with its recordings, for "What you said" and playback. `question`
+ * is the story idea shown above the box, if any. It counts as spoken if a clip was transcribed.
  */
-export async function answerAction(
-  entryId: string,
-  question: string | null,
-  answer: string,
-  askNext = true,
-  clipIds: string[] = [],
-): Promise<StoryResult> {
+export async function answerAction(entryId: string, question: string | null, answer: string, clipIds: string[] = []): Promise<StoryResult> {
   const user = await signedIn();
   const text = parseStoryText(answer, MAX_ANSWER_LENGTH);
   return withDrizzle(async (db) => {
@@ -129,80 +94,8 @@ export async function answerAction(
       via: spoken ? "spoken" : "typed",
       ...(clips.length && { clipIds: clips.map((c) => c.id) }),
     });
-    if (!askNext) return { view: toView(session) };
-    const next = await nextFollowUp(db, user.id, session);
-    return { view: toView(next.session), error: next.error };
+    return { view: toView(session) };
   });
-}
-
-/** "Ask me something else" for the current follow-up. */
-export async function otherQuestionAction(entryId: string): Promise<StoryResult> {
-  const user = await signedIn();
-  return withDrizzle(async (db) => {
-    const session = await ensureSession(db, user.id, entryId);
-    if (!session) redirect("/journal");
-    if (!session.turns.length) return openersAction(entryId, true);
-    const next = await nextFollowUp(db, user.id, session);
-    return { view: toView(next.session), error: next.error };
-  });
-}
-
-/** A written version of the story, generated the first time it's viewed and saved after that. */
-export async function draftAction(entryId: string, style: StoryStyle, rewrite = false): Promise<DraftResult> {
-  const user = await signedIn();
-  if (!STORY_STYLES.includes(style)) throw new Error("Unknown story style.");
-  return withDrizzle(async (db) => {
-    let session = await ensureSession(db, user.id, entryId);
-    if (!session) redirect("/journal");
-    const existing = session.drafts[style];
-    const fresh = existing && existing.turns === session.turns.length;
-    if (existing && (fresh || (existing.edited && !rewrite))) {
-      return { text: existing.text, title: session.title, caption: session.caption, stale: !fresh };
-    }
-    if (!session.turns.length) return { text: "", title: session.title, caption: session.caption, stale: false };
-
-    const [env, image, score] = await Promise.all([
-      aiEnv(),
-      style === "crafted-photo" ? photo(user.id, entryId, "display") : null,
-      style === "crafted-photo" ? getScore(db, user.id, entryId) : null,
-    ]);
-    // The scorer's Wow reason, so the story and the score feel connected (Story Capture PRD 6.6).
-    const detected = score?.status === "done" && score.wowReason ? [score.wowReason] : [];
-    const turns = session.turns;
-    const result = await withAi(db, user.id, `story_${style}`, () => writeStory(env, style, turns, image, detected));
-    if (!result || result === "off" || result === "limited") {
-      // The user's own words are always a usable story.
-      return {
-        text: existing?.text ?? originalWords(turns),
-        title: session.title,
-        caption: session.caption,
-        stale: false,
-        error: aiMessage(result, "I couldn't write this version just now. Here are your own words; you can edit them or try again."),
-      };
-    }
-    session = await saveDraft(db, session, style, { text: result.story, turns: turns.length, edited: false }, result);
-    return { text: result.story, title: session.title, caption: session.caption, stale: false };
-  });
-}
-
-/** Saves the chosen version to the Journal entry. */
-export async function saveStoryAction(entryId: string, style: StoryStyle, form: FormData): Promise<{ error: string } | void> {
-  const user = await signedIn();
-  if (!STORY_STYLES.includes(style)) throw new Error("Unknown story style.");
-  const text = parseFinalStory(form.get("story"));
-  if (!text) return { error: "Your story is empty." };
-  const title = parseStoryText(form.get("title"), MAX_TITLE_LENGTH);
-  const caption = parseStoryText(form.get("caption"), MAX_CAPTION_LENGTH);
-  const saved = await withDrizzle(async (db) => {
-    const session = await ensureSession(db, user.id, entryId);
-    if (!session) return false;
-    await finishStory(db, session, { style, text, title, caption });
-    return true;
-  });
-  if (!saved) return { error: "This entry no longer exists." };
-  revalidatePath("/journal");
-  revalidatePath(`/journal/${entryId}`);
-  redirect(`/journal/${entryId}`);
 }
 
 /** Retry for a clip whose transcription failed: transcribes the stored clip again, no re-recording. */
@@ -223,41 +116,116 @@ export async function retryTranscriptionAction(entryId: string, clipId: string):
   });
 }
 
-/**
- * "What you said" for Entry Detail: made once from the spoken answers and saved; made again only
- * after more answers are added. If the AI isn't available, the raw words are returned unsaved.
- */
-export async function saidAction(entryId: string): Promise<{ text: string } | null> {
-  const user = await signedIn();
-  return withDrizzle(async (db) => {
-    const session = await getSession(db, user.id, entryId);
-    if (!session?.turns.length) return null;
-    if (session.said && session.said.turns === session.turns.length) return { text: session.said.text };
-    const turns = session.turns;
-    const spoken = turns.filter((t) => t.via === "spoken").map((t) => t.answer);
-    if (!spoken.length) return { text: originalWords(turns) };
-    const env = await aiEnv();
-    const result = await withAi(db, user.id, "said", () => cleanTranscripts(env, spoken));
-    if (!result || result === "off" || result === "limited") return { text: assembleSaid(turns, null) };
-    const text = assembleSaid(turns, result.answers);
-    await saveSaid(db, session, { text, turns: turns.length });
-    return { text };
-  });
-}
-
 /** The first-use notice: "Continue" records that it was seen. */
 export async function acceptAiNoticeAction(): Promise<void> {
   const user = await signedIn();
   await withDrizzle((db) => markAiNoticeSeen(db, user.id));
 }
 
-/** The first-use notice: "Turn off AI help". */
-export async function declineAiNoticeAction(entryId: string): Promise<void> {
+/** The first-use notice: "Turn off AI help". The story screen stays open, for typing. */
+export async function declineAiNoticeAction(): Promise<void> {
   const user = await signedIn();
   await withDrizzle(async (db) => {
     await markAiNoticeSeen(db, user.id);
     await setAiStoryHelp(db, user.id, false);
   });
   revalidatePath("/account");
+}
+
+// The story screen (Phase 4e, Build Spec 3.7–3.9): typing first, speaking right below, and the AI
+// only when asked. The person's words in the box are what gets saved; these actions help with them.
+
+/** A new transcript with filler words removed ("What you said"), or the raw words if that fails. */
+export async function tidyAction(entryId: string, transcript: string): Promise<{ text: string }> {
+  const user = await signedIn();
+  const raw = parseStoryText(transcript, MAX_ANSWER_LENGTH) ?? "";
+  if (!raw) return { text: "" };
+  return withDrizzle(async (db) => {
+    if (!(await getEntry(db, user.id, entryId))) return { text: raw };
+    const env = await aiEnv();
+    const result = await withAi(db, user.id, "said", () => cleanTranscripts(env, [raw]));
+    if (!result || result === "off" || result === "limited") return { text: raw };
+    const cleaned = result.answers[0]?.trim() ?? "";
+    return { text: cleaned && acceptCleaned(raw, cleaned) ? cleaned : raw };
+  });
+}
+
+/** A suggested title from the words in the box. */
+export async function suggestTitleAction(entryId: string, story: string): Promise<{ title: string } | { error: string }> {
+  const user = await signedIn();
+  const text = parseStoryText(story, MAX_ANSWER_LENGTH);
+  if (!text) return { error: "Add your story first." };
+  return withDrizzle(async (db) => {
+    if (!(await getEntry(db, user.id, entryId))) return { error: "This entry no longer exists." };
+    const env = await aiEnv();
+    const result = await withAi(db, user.id, "title", () => suggestTitle(env, text));
+    if (!result || result === "off" || result === "limited") return { error: aiMessage(result, "Story help isn't available right now. Your words are saved.") };
+    return { title: result.title.slice(0, MAX_TITLE_LENGTH) };
+  });
+}
+
+/**
+ * "Help me polish it": My story (three lengths) or Crafted story, written from the words in the box.
+ * If the AI isn't available, the person's own words come back with a message.
+ */
+export async function polishAction(entryId: string, style: StoryStyle, story: string): Promise<{ text: string; title: string | null; error?: string }> {
+  const user = await signedIn();
+  if (!STORY_STYLES.includes(style)) throw new Error("Unknown story style.");
+  const text = parseStoryText(story, MAX_ANSWER_LENGTH);
+  if (!text) return { text: "", title: null, error: "Add your story first." };
+  return withDrizzle(async (db) => {
+    if (!(await getEntry(db, user.id, entryId))) return { text, title: null, error: "This entry no longer exists." };
+    const [env, image, score] = await Promise.all([
+      aiEnv(),
+      style === "crafted-photo" ? photo(user.id, entryId, "display") : null,
+      style === "crafted-photo" ? getScore(db, user.id, entryId) : null,
+    ]);
+    const detected = score?.status === "done" && score.wowReason ? [score.wowReason] : [];
+    const turns = [{ question: null, answer: text, via: "typed" as const }];
+    const result = await withAi(db, user.id, `story_${style}`, () => writeStory(env, style, turns, image, detected));
+    if (!result || result === "off" || result === "limited") {
+      return { text, title: null, error: aiMessage(result, "Story help isn't available right now. Your words are saved.") };
+    }
+    return { text: result.story, title: result.title.slice(0, MAX_TITLE_LENGTH) || null };
+  });
+}
+
+/**
+ * Save on the story screen: the words in the box become the entry's story (an empty box leaves no
+ * story), with the title. The old sharing caption is cleared, so share cards use the story. A typed
+ * story is kept once as "What you wrote". With no title, one is suggested (best effort, and only
+ * after the first-use notice).
+ */
+export async function saveStoryTextAction(
+  entryId: string,
+  input: { story: string; title: string; removeLocation?: boolean },
+): Promise<{ error: string } | void> {
+  const user = await signedIn();
+  const story = parseStory(input.story);
+  if (!story.ok) return { error: story.error };
+  let title = parseStoryText(input.title, MAX_TITLE_LENGTH);
+  const saved = await withDrizzle(async (db) => {
+    const entry = await getEntry(db, user.id, entryId);
+    if (!entry) return false;
+    if (story.value) {
+      const session = await ensureSession(db, user.id, entryId);
+      if (session && !session.turns.length) await addTurn(db, session, { question: null, answer: story.value, via: "typed" });
+      // Only once the person has seen the first-use notice, so no words go to the AI unannounced.
+      if (!title && !entry.title && (await getStorySettings(db, user.id))?.noticeSeen) {
+        const env = await aiEnv();
+        const result = await withAi(db, user.id, "title", () => suggestTitle(env, story.value!));
+        if (result && result !== "off" && result !== "limited") title = result.title.slice(0, MAX_TITLE_LENGTH);
+      }
+    }
+    return updateEntry(db, user.id, entryId, {
+      story: story.value,
+      title: title ?? entry.title,
+      caption: null,
+      ...(input.removeLocation && { location: null }),
+    });
+  });
+  if (!saved) return { error: "This entry no longer exists." };
+  revalidatePath("/journal");
+  revalidatePath(`/journal/${entryId}`);
   redirect(`/journal/${entryId}`);
 }

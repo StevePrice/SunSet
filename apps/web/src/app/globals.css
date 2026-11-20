@@ -136,3 +136,24 @@ body:has([data-bottom-bar]) {
   60% { transform: scaleX(1.15); }
   100% { transform: scaleX(1); }
 }
+
+/* The moving line on the recording screen (story/voice-recorder.tsx; Build Spec 2.3): peach blush
+   in dark mode, the action blue in light mode, where peach nearly disappears on cream. Still under
+   reduced motion. */
+.ss-listening {
+  color: var(--ss-reaction-selected);
+}
+@media (prefers-color-scheme: light) {
+  .ss-listening {
+    color: var(--ss-action);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ss-listening path {
+    stroke-dasharray: 12 6;
+    animation: ss-listening 1.2s linear infinite;
+  }
+}
+@keyframes ss-listening {
+  to { stroke-dashoffset: -36; }
+}
