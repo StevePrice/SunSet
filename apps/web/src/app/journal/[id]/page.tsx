@@ -15,6 +15,7 @@ import { LocalDate } from "@/components/local-date";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
 import { DeleteEntryButton } from "./entry-controls";
+import { FillTitle } from "./fill-title";
 import { HearYourVoice } from "./recording";
 import { ShareButton } from "./share-button";
 
@@ -135,6 +136,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           <DeleteEntryButton id={entry.id} />
         </div>
       </ScoreProvider>
+      {!entry.title && <FillTitle entryId={entry.id} />}
       <BottomBar current="journal" />
     </main>
   );

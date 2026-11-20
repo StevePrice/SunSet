@@ -16,6 +16,7 @@ import {
   saidSchema,
   storyPrompt,
   storySchema,
+  PHOTO_TITLE_PROMPT,
   TITLE_PROMPT,
   titleInput,
   titleSchema,
@@ -119,6 +120,22 @@ export async function cleanTranscripts(env: AiEnv, spoken: string[]) {
   return { answers: output.answers, usage };
 }
 
+const cleanTitle = (title: string) => title.trim().replace(/^["'“”‘’]+|["'“”‘’.!]+$/g, "");
+
+/** A short title from the photo, for a sunset saved without a story. */
+export async function suggestTitleFromPhoto(env: AiEnv, photo: ArrayBuffer) {
+  const { output, usage } = await ask(env, {
+    model: QUESTION_MODEL,
+    system: PHOTO_TITLE_PROMPT,
+    content: [image(photo), { type: "text", text: "Suggest a title for this photo." }],
+    schema: titleSchema,
+    fast: true,
+  });
+  const title = cleanTitle(output.title);
+  if (!title) throw new StoryAiError("Empty title.");
+  return { title, usage };
+}
+
 /** A short title from the person's own words (Haiku: quick, and it only names what they said). */
 export async function suggestTitle(env: AiEnv, story: string) {
   const { output, usage } = await ask(env, {
@@ -128,7 +145,7 @@ export async function suggestTitle(env: AiEnv, story: string) {
     schema: titleSchema,
     fast: true,
   });
-  const title = output.title.trim().replace(/^["'“”‘’]+|["'“”‘’.!]+$/g, "");
+  const title = cleanTitle(output.title);
   if (!title) throw new StoryAiError("Empty title.");
   return { title, usage };
 }
