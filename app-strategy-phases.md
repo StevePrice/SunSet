@@ -174,9 +174,9 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
-**Status (2026-11-20):** in progress, 4 of 7 pieces merged into `Steve`: the score change and parts 1–3. Score and parts 1–3 are on staging; part 4 is in review. Parts 5–6 are still to do. Phone checks for all parts happen once, at the end of 4e (list below).
+**Status (2026-11-20):** in progress, 4 of 7 pieces merged into `Steve`: the score change and parts 1–3. Score and parts 1–4 are on staging; part 5 is in review. Part 6 is still to do. Phone checks for all parts happen once, at the end of 4e (list below).
 
-**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, on staging 2026-11-20); part 4 story flow (PR #21, merged 2026-11-20); part 5 Journal and New sunset (built, in review).
+**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, on staging 2026-11-20); part 4 story flow (PR #21, on staging 2026-11-20); part 5 Journal and New sunset (built, in review).
 
 **Part 4 (story flow) starts from Phase 5's work, on staging since 2026-11-09:** voice recording in the browser (up to 2 minutes per answer), recordings kept privately in R2, Whisper transcription with Retry and Type instead, playback and "What you said", the opening questions with "Ask me something else" (they become Story ideas), My story in three lengths and Crafted story (they become Help me polish it), the suggested title, and the AI settings with the first-use notice. What part 4 changes is the screens around them (Build Spec 3.7–3.9): the typing box first, Need ideas?, the Rather talk than type? panel, the microphone note, the recording screen and the review / edit screen, which also replaces the temporary Edit page from part 2. It also removes the interview-first path and the caption field.
 
