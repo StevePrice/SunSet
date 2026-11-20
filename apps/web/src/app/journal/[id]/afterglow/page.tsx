@@ -41,7 +41,7 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
 
       <div className="flex items-center gap-4">
         <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square corners="sm" className="w-20 shrink-0" />
-        <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} />}</p>
+        <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />}</p>
       </div>
 
       <dl className="grid grid-cols-2 gap-2">

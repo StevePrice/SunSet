@@ -71,6 +71,13 @@
       "when": 1795016315535,
       "tag": "0009_admin_log",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795206760022,
+      "tag": "0010_places_and_time_zones",
+      "breakpoints": true
     }
   ]
 }

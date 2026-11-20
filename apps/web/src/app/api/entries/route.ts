@@ -2,6 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { createEntry, photoKey } from "@/lib/entries";
+import { nearestPlace } from "@/lib/places";
 import { requestScore } from "@/lib/scores";
 import { isJpeg, MAX_PHOTO_BYTES, MAX_THUMB_BYTES, parseEntryForm } from "@/lib/entry-input";
 
@@ -31,7 +32,16 @@ export async function POST(request: Request) {
   await env.PHOTOS.put(keys[0], await photo.arrayBuffer(), { httpMetadata });
   await env.PHOTOS.put(keys[1], await thumb.arrayBuffer(), { httpMetadata });
   try {
-    const entry = await withDrizzle((db) => createEntry(db, user.id, id, input.value));
+    const entry = await withDrizzle(async (db) => {
+      // The place in words and the date's time zone (Phase 4e): a typed name wins over the nearest
+      // town; the place's time zone wins over the phone's, since the photo may be from a trip.
+      const place = input.value.location ? await nearestPlace(db, input.value.location) : null;
+      return createEntry(db, user.id, id, {
+        ...input.value,
+        placeName: input.value.placeName ?? place?.name ?? null,
+        timeZone: place?.timeZone ?? input.value.timeZone ?? null,
+      });
+    });
     // Scoring is best-effort: a queue hiccup must not lose the user's entry. The entry page
     // offers "Score it" when no score was requested.
     ctx.waitUntil(

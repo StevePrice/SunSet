@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isJpeg, parseEntryForm, parseLocation, parseStory, parseTakenAt } from "./entry-input";
+import { isJpeg, MAX_PLACE_NAME_LENGTH, parseEntryForm, parseLocation, parsePlaceName, parseStory, parseTakenAt, parseTimeZoneName } from "./entry-input";
 
 const form = (fields: Record<string, string>) => ({ get: (name: string) => fields[name] ?? null });
 
@@ -33,5 +33,23 @@ describe("entry input", () => {
   it("recognises JPEG files by their first bytes", async () => {
     expect(await isJpeg(new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0])]))).toBe(true);
     expect(await isJpeg(new Blob(["<svg>"]))).toBe(false);
+  });
+});
+
+describe("parsePlaceName", () => {
+  it("keeps a typed place on one line, blank means none", () => {
+    expect(parsePlaceName("  Sequoia   National\nPark ")).toEqual({ ok: true, value: "Sequoia National Park" });
+    expect(parsePlaceName("   ")).toEqual({ ok: true, value: null });
+    expect(parsePlaceName(null)).toEqual({ ok: true, value: null });
+    expect(parsePlaceName("x".repeat(MAX_PLACE_NAME_LENGTH + 1)).ok).toBe(false);
+  });
+});
+
+describe("parseTimeZoneName", () => {
+  it("accepts real IANA time zones only", () => {
+    expect(parseTimeZoneName("America/Los_Angeles")).toBe("America/Los_Angeles");
+    expect(parseTimeZoneName("Mars/Olympus")).toBeNull();
+    expect(parseTimeZoneName("")).toBeNull();
+    expect(parseTimeZoneName(42)).toBeNull();
   });
 });

@@ -4,7 +4,6 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
-import { formatLocation } from "@/lib/format";
 import { reactionTotals } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
@@ -16,6 +15,7 @@ import { LocalDate } from "@/components/local-date";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
 import { DeleteEntryButton } from "./entry-controls";
+import { FillTitle } from "./fill-title";
 import { HearYourVoice } from "./recording";
 import { ShareButton } from "./share-button";
 
@@ -49,7 +49,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   if (!found) notFound();
   const { entry, score, share, reactionCount, clips } = found;
   const { env } = await getCloudflareContext({ async: true });
-  const place = entry.location && formatLocation(entry.location);
+  const place = entry.placeName;
   const afterglowStatus = !share
     ? "Not shared"
     : reactionCount === 0
@@ -78,14 +78,14 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
               <>
                 <h1 className="font-serif text-title-2">{entry.title}</h1>
                 <p className="text-caption text-ink-muted">
-                  <LocalDate iso={entry.takenAt.toISOString()} />
+                  <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />
                   {place && ` · ${place}`}
                 </p>
               </>
             ) : (
               <>
                 <h1 className="font-serif text-title-2">
-                  <LocalDate iso={entry.takenAt.toISOString()} />
+                  <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />
                 </h1>
                 {place && <p className="text-caption text-ink-muted">{place}</p>}
               </>
@@ -136,6 +136,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           <DeleteEntryButton id={entry.id} />
         </div>
       </ScoreProvider>
+      {!entry.title && <FillTitle entryId={entry.id} />}
       <BottomBar current="journal" />
     </main>
   );

@@ -3,6 +3,7 @@ import { listUsers, requireAdmin } from "@/lib/admin";
 import { listActivity, type ActivityRow } from "@/lib/admin-log";
 import { withDrizzle } from "@/lib/db";
 import { LocalDate } from "@/components/local-date";
+import { FillTitlesButton } from "./fill-titles-button";
 import { RescoreButton } from "./rescore-button";
 import { UserActions } from "./user-actions";
 
@@ -29,6 +30,8 @@ function describe(row: ActivityRow): string {
       return `deleted the account of ${who}`;
     case "rescore_all":
       return `queued ${Number(d.queued ?? 0)} sunsets for scoring`;
+    case "fill_titles":
+      return `suggested titles for ${Number(d.filled ?? 0)} of ${Number(d.tried ?? 0)} untitled sunsets`;
     default:
       return row.action;
   }
@@ -48,7 +51,10 @@ export default async function AdminUsersPage() {
         <h1 className="text-title-2 font-semibold">
           Users <span className="text-ink-muted">· {users.length} people, {entries} sunsets</span>
         </h1>
-        <RescoreButton />
+        <div className="flex flex-wrap gap-3">
+          <FillTitlesButton />
+          <RescoreButton />
+        </div>
       </header>
       <p className="text-caption text-ink-muted">Opening someone&apos;s Journal, and every change below, is logged.</p>
       <div className="overflow-x-auto">

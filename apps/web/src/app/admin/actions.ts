@@ -6,6 +6,7 @@ import { queueRescoreAll, requireAdmin } from "@/lib/admin";
 import { logAdminAction } from "@/lib/admin-log";
 import { isParam, nextPair, recordVote, type Choice, type Pair } from "@/lib/calibration";
 import { withDrizzle } from "@/lib/db";
+import { fillMissingTitle, untitledEntries } from "@/lib/titles";
 import {
   deleteAccount,
   deleteAccountFiles,
@@ -25,6 +26,31 @@ export async function rescoreAllAction(): Promise<{ queued: number }> {
   });
   revalidatePath("/admin");
   return { queued };
+}
+
+/** How many untitled sunsets one click fills in (each is an AI call; a request can't run long). */
+const TITLES_PER_CLICK = 25;
+
+/**
+ * Suggests titles for sunsets that have none (Build Spec 2.6), up to TITLES_PER_CLICK at a time,
+ * oldest first. Each owner's AI setting and daily limit still apply, so some may stay untitled.
+ */
+export async function fillTitlesAction(): Promise<{ filled: number; tried: number; left: number }> {
+  const admin = await requireAdmin();
+  const { env } = await getCloudflareContext({ async: true });
+  const aiEnv = { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY, STORY_MODEL: env.STORY_MODEL, PHOTOS: env.PHOTOS };
+  const result = await withDrizzle(async (db) => {
+    const batch = await untitledEntries(db, TITLES_PER_CLICK);
+    let filled = 0;
+    for (const entry of batch) {
+      if (await fillMissingTitle(db, aiEnv, entry.userId, entry.id).catch(() => null)) filled++;
+    }
+    const left = (await untitledEntries(db, 1000)).length;
+    await logAdminAction(db, { adminId: admin.id, action: "fill_titles", details: { filled, tried: batch.length } });
+    return { filled, tried: batch.length, left };
+  });
+  revalidatePath("/admin");
+  return result;
 }
 
 // The account actions return an error message for the page to show, or null when it worked.

@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 import { PhotoCard } from "@/components/photo-card";
 import { groupByMonth } from "@/lib/journal-view";
 
-export type GridPhoto = { id: string; takenAt: string; alt: string };
+export type GridPhoto = { id: string; takenAt: string; timeZone: string | null; alt: string };
 
 const noSubscribe = () => () => {};
 const browserTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;

@@ -180,3 +180,8 @@ export const titleSchema = z.object({ title: z.string() });
 export function titleInput(story: string): string {
   return `<story>${story}</story>\n\nSuggest a title.`;
 }
+
+/** A title from the photo alone, for sunsets saved without a story (Build Spec 2.6). */
+export const PHOTO_TITLE_PROMPT = `You suggest a title for a person's sunset photo in their private journal.
+Write a warm, plain title of 2 to 6 words in title case about what is clearly visible: the sky, the light, the landscape.
+Never name a place, person or event you can't see written in the photo. No quotation marks, emoji or ending punctuation.`;
