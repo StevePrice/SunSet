@@ -183,7 +183,7 @@ export function NewEntryForm({ aiHelp }: { aiHelp: boolean }) {
           disabled={saving}
           className="flex-1 inline-flex min-h-13 min-w-12 items-center justify-center gap-2 rounded-ss-md px-5 py-2 text-center text-label font-bold disabled:opacity-50 bg-action text-on-action hover:bg-action/90"
         >
-          {!saving && !writeMyself && <MicIcon className="h-5 w-5" />}
+          {!saving && !writeMyself && <MicIcon size={20} />}
           {saving ? "Saving…" : writeMyself ? "Save to my Journal" : "Save and tell its story"}
         </button>
         {!writeMyself && (

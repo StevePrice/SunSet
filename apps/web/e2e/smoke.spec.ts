@@ -46,6 +46,30 @@ test("save an entry and see it in the Journal", async ({ page, context }) => {
   await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
 });
 
+test("add a story by typing, then change it with Edit", async ({ page, context }) => {
+  await context.addCookies(session);
+  await page.goto(entryUrl);
+  await page.getByRole("link", { name: "Add your story" }).click();
+  await expect(page).toHaveURL(/\/story$/);
+  await expect(page.getByRole("heading", { name: "The story behind this moment" })).toBeVisible();
+  await expect(page.getByText("Rather talk than type?")).toBeVisible();
+  await page.getByLabel("Your story", { exact: true }).fill("The sky went gold over the water.");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`${entryUrl}$`));
+  await expect(page.getByText("The sky went gold over the water.")).toBeVisible();
+
+  // Edit: the same screen with the words and a title field; a change sticks.
+  await page.getByRole("link", { name: "Edit" }).click();
+  await expect(page).toHaveURL(/\/edit$/);
+  const words = page.getByLabel("Here are your words. Change anything you like.");
+  await expect(words).toHaveValue("The sky went gold over the water.");
+  await expect(page.getByLabel("Title", { exact: true })).toBeVisible();
+  await words.fill("The sky went gold, then pink, over the water.");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`${entryUrl}$`));
+  await expect(page.getByText("The sky went gold, then pink, over the water.")).toBeVisible();
+});
+
 test("share in one tap, open the link signed out, then stop sharing in Afterglow", async ({ page, context, browser }) => {
   await context.addCookies(session);
   // Test browsers have no share menu: stand in for it and keep what the page shared.

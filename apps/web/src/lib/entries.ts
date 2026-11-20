@@ -88,12 +88,14 @@ export async function updateEntry(
   db: Db,
   userId: string,
   id: string,
-  changes: { story: string | null; location?: Location | null },
+  changes: { story: string | null; location?: Location | null; title?: string | null; caption?: string | null },
 ): Promise<boolean> {
   const rows = await db
     .update(entries)
     .set({
       story: changes.story,
+      ...(changes.title !== undefined && { title: changes.title }),
+      ...(changes.caption !== undefined && { caption: changes.caption }),
       ...(changes.location !== undefined && {
         location: changes.location && { x: changes.location.longitude, y: changes.location.latitude },
       }),

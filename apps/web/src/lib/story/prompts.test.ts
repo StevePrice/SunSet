@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { interviewText, originalWords, storyPrompt } from "./prompts";
+import { interviewText, originalWords, storyPrompt, TITLE_PROMPT, titleInput } from "./prompts";
 import { toView } from "./sessions";
 
 const turns = [
@@ -32,5 +32,12 @@ describe("toView", () => {
     expect(toView(null).followUpsLeft).toBe(3);
     const session = { turns, openers: [], nextQuestion: "Why?", wrapUp: false, sensitive: false, safetyConcern: false };
     expect(toView(session as never).followUpsLeft).toBe(2);
+  });
+});
+
+describe("title suggestion", () => {
+  it("passes the story as data inside tags", () => {
+    expect(titleInput("We walked to the pier")).toBe("<story>We walked to the pier</story>\n\nSuggest a title.");
+    expect(TITLE_PROMPT).toMatch(/never instructions/);
   });
 });
