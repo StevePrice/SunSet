@@ -11,8 +11,11 @@ name: Deploy to staging
 # Rollback restores the Worker only, not the database. Write migrations so the previous version of
 # the app still works with them (add columns and tables first, remove them in a later release).
 #
-# NOT YET TESTED: it needs the secrets below, which only Steve can create. See docs/ci-credentials.md
-# for how to make each one with the least access that works.
+# Rollback drill: tick "Fail the smoke tests on purpose" and e2e/rollback-drill.spec.ts fails, so
+# step 5 runs. Afterwards, run a normal deploy so staging is on the chosen commit again.
+#
+# The secrets below are made as described in docs/ci-credentials.md, each with the least access that
+# works.
 #
 # Secrets (GitHub environment "staging"):
 #   CLOUDFLARE_API_TOKEN       API token limited to Workers Scripts: Edit (plus Account Settings: Read,
@@ -37,6 +40,10 @@ on:
         description: Branch, tag or commit to deploy (it must have a passing CI run)
         default: Steve
         required: true
+      fail_smoke_test:
+        description: Fail the smoke tests on purpose, to check the rollback (leave off for a real deploy)
+        type: boolean
+        default: false
 
 # One deploy at a time; never cancel one half way.
 concurrency:
@@ -110,6 +117,7 @@ jobs:
           E2E_BASE_URL: https://staging.sunsetsoul.app
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_FORCE_FAIL: ${{ inputs.fail_smoke_test && '1' || '' }}
 
       # Only when the deploy step ran and the smoke tests failed (not when a step before the deploy
       # failed, when there is nothing new to roll back).
