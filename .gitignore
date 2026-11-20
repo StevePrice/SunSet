@@ -14,3 +14,6 @@ __pycache__/
 
 # Wrangler local state
 .wrangler/
+
+# Claude secret directory
+.claude/
