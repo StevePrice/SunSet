@@ -10,9 +10,17 @@ describe("parseJournalView", () => {
     expect(parseJournalView(["photos", "stories"])).toBe("stories");
   });
 
+  it("opens the last view used when the URL doesn't name one", () => {
+    expect(parseJournalView(undefined, "photos")).toBe("photos");
+    expect(parseJournalView(undefined, "stories")).toBe("stories");
+    expect(parseJournalView(undefined, "nonsense")).toBe("stories");
+    // The URL wins over the remembered view.
+    expect(parseJournalView("stories", "photos")).toBe("stories");
+  });
+
   it("round-trips through the URL", () => {
     expect(journalViewHref("photos")).toBe("/journal?view=photos");
-    expect(journalViewHref("stories")).toBe("/journal");
+    expect(journalViewHref("stories")).toBe("/journal?view=stories");
     expect(parseJournalView(new URL(journalViewHref("photos"), "https://x").searchParams.get("view") ?? undefined)).toBe("photos");
   });
 });
@@ -48,5 +56,12 @@ describe("groupByMonth", () => {
 
   it("returns no groups for no items", () => {
     expect(groupByMonth([], "UTC")).toEqual([]);
+  });
+
+  it("groups each entry by its own time zone when it has one", () => {
+    // 05:30 UTC on 1 November is still 31 October in Los Angeles.
+    const items = [{ takenAt: "2026-11-01T05:30:00Z", timeZone: "America/Los_Angeles" }, { takenAt: "2026-11-01T05:30:00Z", timeZone: null }];
+    const groups = groupByMonth(items, "UTC");
+    expect(groups.map((g) => g.label)).toEqual(["October 2026", "November 2026"]);
   });
 });

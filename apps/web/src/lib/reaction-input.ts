@@ -2,7 +2,7 @@
 // Kept free of database code so the client and the tests can import it.
 import { z } from "zod";
 
-export const REACTION_KINDS = ["wow", "wish", "love"] as const;
+export const REACTION_KINDS = ["wow", "wish", "love", "hugs"] as const;
 export type ReactionKind = (typeof REACTION_KINDS)[number];
 
 /** Positive only (PRD 6.9). In the order the Share Page shows them. */
@@ -10,6 +10,7 @@ export const REACTION_LABELS: Record<ReactionKind, string> = {
   wow: "Wow",
   wish: "Wish I was there",
   love: "Love this!",
+  hugs: "Sending hugs",
 };
 
 export const MAX_NOTE_LENGTH = 100;
@@ -69,5 +70,5 @@ export type PublicReactions = {
 };
 
 export function emptyCounts(): ReactionCounts {
-  return { wow: 0, wish: 0, love: 0 };
+  return { wow: 0, wish: 0, love: 0, hugs: 0 };
 }

@@ -49,20 +49,30 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-8">
-      <p className="text-body text-ink-muted">
-        {share.ownerName ? `${share.ownerName} shared a sunset with you` : "A sunset shared with you"}
+      <p className="text-body">
+        {share.ownerName ? (
+          <>
+            <strong>{share.ownerName}</strong> shared a sunset with you
+          </>
+        ) : (
+          "A sunset shared with you"
+        )}
       </p>
       <PhotoCard src={`/s/${id}/photo`} alt={share.story ?? "A sunset"} width={photo.width} height={photo.height} />
-      {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
-      <p className="text-label text-ink-muted">{shareByline(share)}</p>
+      <div className="flex flex-col gap-1">
+        {share.title && <h1 className="font-serif text-title-2">{share.title}</h1>}
+        {/* Date and place only: the owner's name is in the line above. */}
+        <p className="text-caption text-ink-muted">{shareByline({ ...share, ownerName: null })}</p>
+      </div>
       {share.story && <p className="ss-story whitespace-pre-wrap text-ink-story">{share.story}</p>}
+      <hr className="border-divider" />
       <Reactions shareId={id} initial={reactions} ownerName={share.ownerName} />
       <footer className="mt-4 flex flex-col items-start gap-3 border-t border-divider pt-5">
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span>Shared from</span>
+          <span className="text-caption text-ink-muted">Shared from</span>
           <Logo width={132} />
         </p>
-        <p className="text-ink-muted">A place to keep the sunsets that move you.</p>
+        <p>A place to keep the sunsets that move you, and the stories behind them.</p>
         <Link href="/sign-in?mode=sign-up" className="inline-flex min-h-12 items-center text-label underline">
           Start your own Journal
         </Link>

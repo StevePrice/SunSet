@@ -1,7 +1,7 @@
 // Public share links. Creating, changing and stopping a share is scoped to the entry's owner,
 // like entries.ts. getPublicShare is the one deliberately public read: it returns only what
 // the share page shows, never the exact location, the score or the owner's email.
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { entries, shares, users } from "@/db/schema";
 import type { Db } from "@/lib/db";
 
@@ -62,13 +62,24 @@ export async function getShareForEntry(db: Db, userId: string, entryId: string):
 }
 
 /** Returns the entry's share, creating it if needed; null if the user doesn't own the entry. */
+/** Which of the owner's entries are shared right now (the Journal's "Shared" line). */
+export async function listSharedEntryIds(db: Db, userId: string): Promise<Set<string>> {
+  const rows = await db.select({ entryId: shares.entryId }).from(shares).where(eq(shares.userId, userId));
+  return new Set(rows.map((r) => r.entryId));
+}
+
 export async function createShare(db: Db, userId: string, entryId: string, timeZone: string): Promise<Share | null> {
   const [owned] = await db
-    .select({ id: entries.id })
+    .select({ id: entries.id, placeName: entries.placeName, timeZone: entries.timeZone })
     .from(entries)
     .where(and(eq(entries.id, entryId), eq(entries.userId, userId)));
   if (!owned) return null;
-  await db.insert(shares).values({ id: newShareId(), entryId, userId, timeZone }).onConflictDoNothing();
+  // The place friends see starts as the entry's place in words (a town, never the exact point);
+  // the owner can change it in Afterglow. The date follows the entry's time zone when it has one.
+  await db
+    .insert(shares)
+    .values({ id: newShareId(), entryId, userId, timeZone: owned.timeZone ?? timeZone, place: owned.placeName })
+    .onConflictDoNothing();
   return getShareForEntry(db, userId, entryId);
 }
 
@@ -104,7 +115,8 @@ export async function getPublicShare(db: Db, id: string): Promise<PublicShare | 
       photoWidth: entries.photoWidth,
       photoHeight: entries.photoHeight,
       place: shares.place,
-      timeZone: shares.timeZone,
+      // One date rule: the entry's time zone, else the one saved when the link was made.
+      timeZone: sql<string>`coalesce(${entries.timeZone}, ${shares.timeZone})`,
     })
     .from(shares)
     .innerJoin(entries, eq(entries.id, shares.entryId))

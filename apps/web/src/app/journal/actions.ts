@@ -9,6 +9,7 @@ import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
 import { parseStory } from "@/lib/entry-input";
 import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
 import { deleteAllRecordings, deleteEntryRecordings, listClips } from "@/lib/story/clips";
+import { fillMissingTitle } from "@/lib/titles";
 import {
   createShare,
   deleteShare,
@@ -86,6 +87,7 @@ export async function createShareAction(entryId: string, timeZone: string): Prom
   const share = await withDrizzle((db) => createShare(db, user.id, entryId, parseTimeZone(timeZone)));
   if (!share) return { error: "This entry no longer exists." };
   revalidatePath(`/journal/${entryId}`);
+  revalidatePath(`/journal/${entryId}/afterglow`);
   return { url: await shareUrl(share.id), place: share.place };
 }
 
@@ -97,6 +99,7 @@ export async function updateSharePlaceAction(entryId: string, _prev: ActionResul
   const updated = await withDrizzle((db) => updateSharePlace(db, user.id, entryId, place.value));
   if (!updated) return { error: "This sunset isn't shared any more." };
   revalidatePath(`/journal/${entryId}`);
+  revalidatePath(`/journal/${entryId}/afterglow`);
   return null;
 }
 
@@ -109,6 +112,7 @@ export async function stopSharingAction(entryId: string): Promise<void> {
     await deleteShareCards(env.PHOTOS, shareId);
   }
   revalidatePath(`/journal/${entryId}`);
+  revalidatePath(`/journal/${entryId}/afterglow`);
 }
 
 // Afterglow: the owner can delete any reaction or note a friend left.
@@ -140,4 +144,19 @@ async function shareUrl(shareId: string): Promise<string> {
 async function deleteShareCards(bucket: R2Bucket, shareId: string) {
   const { objects } = await bucket.list({ prefix: shareCardPrefix(shareId) });
   if (objects.length) await bucket.delete(objects.map((o) => o.key));
+}
+
+/** Entry Detail on an entry without a title: suggests one once (Build Spec 2.6). */
+export async function ensureTitleAction(entryId: string): Promise<string | null> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  const { env } = await getCloudflareContext({ async: true });
+  const title = await withDrizzle((db) =>
+    fillMissingTitle(db, { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY, STORY_MODEL: env.STORY_MODEL, PHOTOS: env.PHOTOS }, user.id, entryId),
+  ).catch(() => null);
+  if (title) {
+    revalidatePath("/journal");
+    revalidatePath(`/journal/${entryId}`);
+  }
+  return title;
 }
