@@ -210,7 +210,7 @@ e. **Tests:** data-access tests for each action and the last-admin rule, and a b
 
 **Done when:** on staging, an admin named only by `ADMIN_EMAILS` promotes, disables (the user is signed out at once), re-enables and deletes a test account, and each step shows in the activity log.
 
-**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` isn't set on staging yet; existing admins keep their role. The "Done when" check on staging is still to do.
+**Status:** built (PR #10, merged into `Steve`) and deployed to staging (2026-11-18, migration 0009 applied: `admin_views` became `admin_log`, its rows kept, and `users.disabled_at` added). `ADMIN_EMAILS` is set on staging (2026-11-20). ✅ **Done when passed (2026-11-20):** a new account named only by `ADMIN_EMAILS` became admin on sign-in, then promoted, demoted, disabled (the test user was signed out at once and couldn't sign back in), re-enabled and deleted a test account, each step in the activity log; the admin's own role, disable and delete buttons were blocked.
 
 **Later, not in 5b:** invite-only sign-up for the beta (a decision for Phase 7), self-service data export and account deletion (Phase 7's user rights, reusing 5b's delete), and a moderator role when Phase 6 adds the hide switch.
 
@@ -273,7 +273,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Next (set 2026-11-08):** 4b → 4c → 4d (all done), then the rest of Phase 5 (step 3 voice, step 4 Settings), then 6.
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
-- **Update (2026-11-20):** 5c done. Before 6: the 5b staging check (set `ADMIN_EMAILS`) and the rest of 4e.
+- **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
 - **7** follows Phase 6, and **8** comes last.
 
 ### Remaining estimates (2026-11-08)
