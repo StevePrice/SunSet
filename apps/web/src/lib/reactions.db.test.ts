@@ -62,7 +62,7 @@ describe.skipIf(!url)("reactions data access", () => {
     const { shareId } = await sharedEntry();
     const steve = await visitor("Steve");
     expect(await getPublicReactions(db, shareId, steve)).toEqual({
-      counts: { wow: 0, wish: 0, love: 0 },
+      counts: { wow: 0, wish: 0, love: 0, hugs: 0 },
       mine: [],
       note: null,
       name: "Steve",
@@ -70,10 +70,14 @@ describe.skipIf(!url)("reactions data access", () => {
 
     await toggleReaction(db, shareId, steve, "love");
     const both = await toggleReaction(db, shareId, steve, "wow");
-    expect(both).toMatchObject({ status: "ok", reactions: { counts: { wow: 1, wish: 0, love: 1 }, mine: ["wow", "love"] } });
+    expect(both).toMatchObject({ status: "ok", reactions: { counts: { wow: 1, wish: 0, love: 1, hugs: 0 }, mine: ["wow", "love"] } });
 
     const undone = await toggleReaction(db, shareId, steve, "wow");
-    expect(undone).toMatchObject({ status: "ok", reactions: { counts: { wow: 0, wish: 0, love: 1 }, mine: ["love"] } });
+    expect(undone).toMatchObject({ status: "ok", reactions: { counts: { wow: 0, wish: 0, love: 1, hugs: 0 }, mine: ["love"] } });
+
+    // Sending hugs, the fourth reaction (Phase 4e).
+    const hugs = await toggleReaction(db, shareId, steve, "hugs");
+    expect(hugs).toMatchObject({ status: "ok", reactions: { counts: { wow: 0, wish: 0, love: 1, hugs: 1 }, mine: ["love", "hugs"] } });
   });
 
   it("shows friends counts only, and the owner names and notes", async () => {
@@ -87,13 +91,13 @@ describe.skipIf(!url)("reactions data access", () => {
 
     // Another friend, or anyone without a cookie, sees counts and nothing about who.
     const stranger = await getPublicReactions(db, shareId, null);
-    expect(stranger).toEqual({ counts: { wow: 2, wish: 1, love: 0 }, mine: [], note: null, name: null });
+    expect(stranger).toEqual({ counts: { wow: 2, wish: 1, love: 0, hugs: 0 }, mine: [], note: null, name: null });
     expect(JSON.stringify(await getPublicReactions(db, shareId, louise))).not.toMatch(/Steve|Best night/);
     // A visitor sees their own note.
     expect((await getPublicReactions(db, shareId, steve))?.note).toBe("Best night of the whole trip");
 
     const afterglow = await getAfterglow(db, alice, entryId);
-    expect(afterglow?.counts).toEqual({ wow: 2, wish: 1, love: 0 });
+    expect(afterglow?.counts).toEqual({ wow: 2, wish: 1, love: 0, hugs: 0 });
     expect(afterglow?.people).toMatchObject([
       { name: "Steve", reactions: [{ kind: "wow" }], note: { body: "Best night of the whole trip" } },
       { name: "Louise", reactions: [{ kind: "wow" }, { kind: "wish" }], note: null },

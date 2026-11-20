@@ -72,8 +72,24 @@ test("share in one tap, open the link signed out, then stop sharing in Afterglow
   expect(response?.status()).toBe(200);
   await expect(friendPage.getByRole("main")).toBeVisible();
 
+  // The friend taps Sending hugs (asked for a first name once), sees the checkmark state, and
+  // sends a note; the owner sees both in Afterglow.
+  await friendPage.getByRole("button", { name: /Sending hugs/ }).click();
+  await friendPage.getByLabel(/first name/).fill("Maria");
+  await friendPage.getByRole("button", { name: "Continue" }).click();
+  await expect(friendPage.getByRole("button", { name: /Sending hugs/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(friendPage.getByText("Reacting as Maria.", { exact: false })).toBeVisible();
+  await friendPage.getByLabel(/Your note to/).fill("Beautiful, thank you");
+  await friendPage.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(friendPage.getByRole("status")).toContainText("will see your reaction");
+
   // Afterglow has Share again and the link settings; Stop sharing kills the link.
+  await page.reload();
+  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("Shared · 1 reaction");
   await page.getByRole("link", { name: /Afterglow/ }).click();
+  await expect(page.getByText("Maria", { exact: true })).toBeVisible();
+  await expect(page.getByText("Beautiful, thank you")).toBeVisible();
+  await expect(page.getByRole("term").filter({ hasText: "Sending hugs" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Share again" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Link settings" })).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());

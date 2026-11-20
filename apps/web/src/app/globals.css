@@ -93,3 +93,46 @@ h3 {
 body:has([data-bottom-bar]) {
   padding-bottom: calc(4rem + 1px + env(safe-area-inset-bottom));
 }
+
+/* Reaction icon animations (components/reaction-icons.tsx), played once on the reaction just
+   tapped: rays spread, horizon glows, heart beats, arms open wide. None under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .ss-anim-part {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .ss-anim-wow .ss-anim-part {
+    animation: ss-rays 0.6s ease-out;
+  }
+  .ss-anim-wish .ss-anim-part {
+    transform-origin: center bottom;
+    animation: ss-glow 0.7s ease-out;
+  }
+  .ss-anim-love .ss-anim-part {
+    animation: ss-beat 0.6s ease-in-out;
+  }
+  .ss-anim-hugs .ss-anim-part {
+    animation: ss-arms 0.6s ease-out;
+  }
+}
+
+@keyframes ss-rays {
+  0% { transform: scale(0.6); opacity: 0.4; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes ss-glow {
+  0% { transform: translateY(2px) scale(0.85); opacity: 0.5; }
+  60% { transform: translateY(-1px) scale(1.08); opacity: 1; }
+  100% { transform: none; }
+}
+@keyframes ss-beat {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.22); }
+  60% { transform: scale(0.95); }
+}
+@keyframes ss-arms {
+  0% { transform: scaleX(0.6); }
+  60% { transform: scaleX(1.15); }
+  100% { transform: scaleX(1); }
+}
