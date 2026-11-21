@@ -1,15 +1,21 @@
 "use client";
 
-// Records one spoken answer in the browser, uploads it, and hands back the transcript. The clip
-// is saved on the server before transcription, so if Whisper fails the user can retry on the
-// stored clip (no re-recording) or type instead, and the recording is never lost.
-import { useEffect, useRef, useState } from "react";
+// Voice for the story screen (Phase 4e, Build Spec 3.8). Records in the browser, uploads the clip,
+// and hands back the transcript. The clip is saved on the server before transcription, so if
+// Whisper fails the person can retry on the stored clip (no re-recording) or type instead, and the
+// recording is never lost.
+//
+// - useVoiceRecorder: the recording itself (start, stop, cancel, retry);
+// - RecordingScreen (B3c): Cancel, LISTENING, the timer, a moving line, a big Stop button;
+// - VoiceStatus: "Turning your words into text…", or what went wrong with Retry and Type instead;
+// - MicNote (B3b): the bottom sheet before the browser's microphone prompt, once per person.
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { buttonClass } from "@/components/button";
 import { noticeClass } from "@/components/styles";
 import { formatDuration, MAX_RECORDING_SECONDS, pickRecorderMime } from "@/lib/story/voice";
 import { retryTranscriptionAction } from "./actions";
 
-type State =
+export type VoiceState =
   | { kind: "idle" }
   | { kind: "starting" }
   | { kind: "recording"; elapsedMs: number }
@@ -19,46 +25,39 @@ type State =
   | { kind: "retrying"; clipId: string };
 
 const TRANSCRIBE_FAILED = "We couldn't turn that into text.";
+const CANT_RECORD = "This browser can't record audio. You can type your story instead.";
+export const MIC_DENIED =
+  "Sunset Soul can't use your microphone. You can type your story instead, or allow the microphone in your phone's settings.";
 
-export function MicIcon({ className = "h-6 w-6" }: { className?: string }) {
+export function MicIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <svg viewBox="0 0 24 24" aria-hidden width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="9" y="3" width="6" height="11" rx="3" />
-      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" />
     </svg>
   );
 }
 
-export function VoiceRecorder({
+export function useVoiceRecorder({
   entryId,
-  prominent,
-  label,
-  disabled,
   onClip,
   onTranscript,
   onTypeInstead,
-  onActiveChange,
 }: {
   entryId: string;
-  /** The big primary mic button, or a smaller secondary one ("Add more by voice"). */
-  prominent: boolean;
-  label: string;
-  disabled?: boolean;
-  /** Called for every clip saved on the server, transcribed or not. */
-  onClip: (clipId: string) => void;
-  onTranscript: (text: string) => void;
-  /** Switch to typing, with a message saying why when voice can't be used. */
+  /** Every clip saved on the server, transcribed or not. */
+  onClip: (clip: { id: string; durationMs: number }) => void;
+  /** The transcript, with the clip it came from. */
+  onTranscript: (text: string, clipId: string) => void;
+  /** Voice can't be used (or the person chose to type); `message` says why. */
   onTypeInstead: (message?: string) => void;
-  /** True while recording or uploading, so the answer can't be sent half-recorded. */
-  onActiveChange?: (active: boolean) => void;
 }) {
-  const [state, setState] = useState<State>({ kind: "idle" });
-  const active = state.kind === "starting" || state.kind === "recording" || state.kind === "uploading" || state.kind === "retrying";
-  useEffect(() => onActiveChange?.(active), [active, onActiveChange]);
+  const [state, setState] = useState<VoiceState>({ kind: "idle" });
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAt = useRef(0);
+  const discard = useRef(false);
   const unmounted = useRef(false);
 
   function release() {
@@ -98,14 +97,14 @@ export function VoiceRecorder({
       setState({ kind: "uploadFailed", blob, durationMs });
       return;
     }
-    onClip(reply.clipId);
+    onClip({ id: reply.clipId, durationMs });
     if (reply.transcript) {
       setState({ kind: "idle" });
-      onTranscript(reply.transcript);
+      onTranscript(reply.transcript, reply.clipId);
     } else {
       const message =
         reply.transcribeError === "limited"
-          ? "You've reached today's limit for story help, so we couldn't turn that into text. Your recording is saved."
+          ? "You've reached today's limit for story help, so we couldn't turn that into text."
           : TRANSCRIBE_FAILED;
       setState({ kind: "transcribeFailed", clipId: reply.clipId, message });
     }
@@ -114,7 +113,7 @@ export function VoiceRecorder({
   async function start() {
     const mime = typeof MediaRecorder === "undefined" ? null : pickRecorderMime((t) => MediaRecorder.isTypeSupported(t));
     if (!mime || !navigator.mediaDevices?.getUserMedia) {
-      onTypeInstead("This browser can't record audio, so you can type your answer instead.");
+      onTypeInstead(CANT_RECORD);
       return;
     }
     setState({ kind: "starting" });
@@ -122,7 +121,7 @@ export function VoiceRecorder({
       stream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
       setState({ kind: "idle" });
-      onTypeInstead("Sunset Soul can't use your microphone. You can type instead, or allow the microphone in your browser settings and try again.");
+      onTypeInstead(MIC_DENIED);
       return;
     }
     // The page was left while the permission prompt was open: turn the mic straight back off.
@@ -137,10 +136,11 @@ export function VoiceRecorder({
     } catch {
       release();
       setState({ kind: "idle" });
-      onTypeInstead("This browser can't record audio, so you can type your answer instead.");
+      onTypeInstead(CANT_RECORD);
       return;
     }
     recorder.current = rec;
+    discard.current = false;
     rec.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data);
     };
@@ -148,7 +148,7 @@ export function VoiceRecorder({
       const durationMs = Date.now() - startedAt.current;
       release();
       const blob = new Blob(chunks, { type: rec.mimeType || mime });
-      if (!blob.size) {
+      if (discard.current || !blob.size) {
         setState({ kind: "idle" });
         return;
       }
@@ -160,12 +160,13 @@ export function VoiceRecorder({
     } catch {
       release();
       setState({ kind: "idle" });
-      onTypeInstead("This browser can't record audio, so you can type your answer instead.");
+      onTypeInstead(CANT_RECORD);
       return;
     }
     setState({ kind: "recording", elapsedMs: 0 });
     timer.current = setInterval(() => {
       const elapsedMs = Date.now() - startedAt.current;
+      // At 2 minutes, recording stops on its own.
       if (elapsedMs >= MAX_RECORDING_SECONDS * 1000) stop();
       else setState({ kind: "recording", elapsedMs });
     }, 250);
@@ -177,102 +178,140 @@ export function VoiceRecorder({
     if (recorder.current?.state === "recording") recorder.current.stop();
   }
 
-  async function retry(clipId: string) {
+  /** Cancel on the recording screen: stops and throws the recording away. */
+  function cancel() {
+    discard.current = true;
+    stop();
+  }
+
+  async function retry() {
+    if (state.kind === "uploadFailed") return upload(state.blob, state.durationMs);
+    if (state.kind !== "transcribeFailed") return;
+    const clipId = state.clipId;
     setState({ kind: "retrying", clipId });
     const result = await retryTranscriptionAction(entryId, clipId).catch(() => ({ error: TRANSCRIBE_FAILED }));
     if ("transcript" in result) {
       setState({ kind: "idle" });
-      onTranscript(result.transcript);
+      onTranscript(result.transcript, clipId);
     } else {
       setState({ kind: "transcribeFailed", clipId, message: result.error });
     }
   }
 
-  // One status line that stays in the page, so screen readers hear each change of state once
-  // (the timer itself isn't announced every second).
-  const status =
-    state.kind === "starting"
-      ? "Starting the microphone."
-      : state.kind === "recording"
-        ? `Recording. Up to ${formatDuration(MAX_RECORDING_SECONDS * 1000)}.`
-        : state.kind === "uploading" || state.kind === "retrying"
-          ? "Recording stopped. Turning your words into text."
-          : "";
+  function typeInstead() {
+    setState({ kind: "idle" });
+    onTypeInstead();
+  }
+
+  return { state, start, stop, cancel, retry, typeInstead };
+}
+
+/** Recording (B3c): fills the screen, so the box and buttons underneath can't be tapped mid-recording. */
+export function RecordingScreen({
+  elapsedMs,
+  onStop,
+  onCancel,
+  header,
+}: {
+  elapsedMs: number;
+  onStop: () => void;
+  onCancel: () => void;
+  /** The thumbnail with date and place, and the heading, as on the story screen. */
+  header: ReactNode;
+}) {
   return (
-    <>
-      {body()}
-      <p role="status" className="sr-only">
-        {status}
-      </p>
-    </>
-  );
-
-  function body() {
-    if (state.kind === "recording") {
-      return (
-        <div className="flex flex-col items-center gap-3 rounded-ss-lg bg-surface-raised p-5">
-          <p className="flex items-center gap-2 text-label font-bold">
-            <span className="h-3 w-3 animate-pulse rounded-ss-pill bg-action" aria-hidden="true" />
-            Recording {formatDuration(state.elapsedMs)}
-            <span className="font-normal text-ink-muted">of {formatDuration(MAX_RECORDING_SECONDS * 1000)}</span>
+    <div className="fixed inset-0 z-30 overflow-y-auto bg-surface" role="dialog" aria-modal="true" aria-labelledby="listening">
+      <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col gap-6 px-4 pt-2 pb-8">
+        <button type="button" onClick={onCancel} className="inline-flex min-h-12 items-center self-start text-label font-bold">
+          Cancel
+        </button>
+        {header}
+        <div className="flex flex-col items-center gap-5 rounded-ss-lg bg-surface-raised px-5 py-8 text-center">
+          <p id="listening" className="text-caption font-bold tracking-widest text-ink-muted uppercase">
+            Listening
           </p>
-          <button type="button" onClick={stop} className={buttonClass(prominent ? "action" : "secondary", "w-full")}>
-            Stop recording
+          <p className="text-display leading-none font-bold tabular-nums" aria-hidden>
+            {formatDuration(elapsedMs)}
+          </p>
+          <svg aria-hidden viewBox="0 0 240 40" className="ss-listening h-10 w-full max-w-xs" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <path d="M4 20h20c6 0 6-14 12-14s6 28 12 28 6-24 12-24 6 20 12 20 6-14 12-14 6 10 12 10h20M196 20h40" />
+          </svg>
+          <button
+            type="button"
+            onClick={onStop}
+            aria-label="Stop recording"
+            className="flex size-24 items-center justify-center rounded-ss-pill bg-action text-on-action hover:bg-action/90"
+          >
+            <span aria-hidden className="size-7 rounded-ss-sm bg-on-action" />
           </button>
+          <p className="text-label font-bold">Tap to stop</p>
+          <p className="text-caption text-ink-muted">Take your time. Pauses are fine. Up to 2 minutes.</p>
         </div>
-      );
-    }
+        <p className="mt-auto text-center text-caption text-ink-muted">When you stop, your words appear so you can read and change them.</p>
+      </div>
+    </div>
+  );
+}
 
-    if (state.kind === "uploading" || state.kind === "retrying") {
-      return <p className="animate-pulse rounded-ss-lg bg-surface-raised p-5 text-center text-ink-muted">Turning your words into text…</p>;
-    }
-
-    if (state.kind === "transcribeFailed" || state.kind === "uploadFailed") {
-      const uploadFailed = state.kind === "uploadFailed";
-      return (
-        <div role="alert" className={`${noticeClass} flex flex-col gap-3`}>
-          <p>
-            {uploadFailed
-              ? "We couldn't save that recording. Check your connection and try again."
-              : `${state.message} Your recording is saved.`}
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              className={buttonClass("secondary")}
-              onClick={() => (uploadFailed ? upload(state.blob, state.durationMs) : retry(state.clipId))}
-            >
-              Retry
-            </button>
-            <button
-              type="button"
-              className={buttonClass("secondary")}
-              onClick={() => {
-                setState({ kind: "idle" });
-                onTypeInstead();
-              }}
-            >
-              Type instead
-            </button>
-          </div>
-        </div>
-      );
-    }
-
+/** Uploading, transcribing, or what went wrong (Retry, Type instead). Nothing when idle or recording. */
+export function VoiceStatus({ state, onRetry, onTypeInstead }: { state: VoiceState; onRetry: () => void; onTypeInstead: () => void }) {
+  if (state.kind === "uploading" || state.kind === "retrying") {
     return (
-      <button
-        type="button"
-        onClick={start}
-        disabled={disabled || state.kind === "starting"}
-        className={
-          prominent
-            ? "inline-flex min-h-20 w-full items-center justify-center gap-3 rounded-ss-lg bg-action px-5 py-3 text-title-3 font-bold text-on-action hover:bg-action/90 disabled:opacity-50"
-            : buttonClass("secondary", "self-start")
-        }
-      >
-        <MicIcon className={prominent ? "h-8 w-8" : "h-5 w-5"} />
-        {state.kind === "starting" ? "Starting…" : label}
-      </button>
+      <p role="status" className="animate-pulse rounded-ss-lg bg-surface-raised p-5 text-center text-ink-muted">
+        Turning your words into text…
+      </p>
     );
   }
+  if (state.kind !== "transcribeFailed" && state.kind !== "uploadFailed") return null;
+  return (
+    <div role="alert" className={`${noticeClass} flex flex-col gap-3`}>
+      <p>
+        {state.kind === "uploadFailed"
+          ? "We couldn't save that recording. Check your connection and try again."
+          : `${state.message} Your recording is saved.`}
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <button type="button" className={buttonClass("secondary")} onClick={onRetry}>
+          Retry
+        </button>
+        <button type="button" className={buttonClass("secondary")} onClick={onTypeInstead}>
+          Type instead
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** A bottom sheet over a dimmed screen (the microphone note and the first-use AI notice). */
+export function BottomSheet({ labelledBy, children }: { labelledBy: string; children: ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-30 flex items-end bg-photo-scrim" role="dialog" aria-modal="true" aria-labelledby={labelledBy}>
+      <div className="mx-auto flex max-h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-t-ss-lg bg-surface-raised px-5 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** The microphone note (B3b), before the browser's prompt, once per person. */
+export function MicNote({ onContinue, onTypeInstead }: { onContinue: () => void; onTypeInstead: () => void }) {
+  return (
+    <BottomSheet labelledBy="mic-note-title">
+      <span className="flex size-14 items-center justify-center self-center rounded-ss-pill border-[1.5px] border-border-subtle bg-surface">
+        <MicIcon size={28} />
+      </span>
+      <h2 id="mic-note-title" className="text-center font-serif text-title-2">
+        Tell it in your own voice
+      </h2>
+      <p>Your phone will ask if Sunset Soul can use the microphone. Tap Allow.</p>
+      <p>Your recording stays private. Friends never hear it.</p>
+      <p>AI turns what you say into text you can change.</p>
+      <button type="button" onClick={onContinue} className={buttonClass("action", "w-full")}>
+        Continue
+      </button>
+      <button type="button" onClick={onTypeInstead} className="inline-flex min-h-12 items-center self-center text-label underline">
+        Type instead
+      </button>
+    </BottomSheet>
+  );
 }

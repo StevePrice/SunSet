@@ -94,8 +94,10 @@ export function SignInForm({ providers, initialMode = "magic-link" }: { provider
         {mode === "sign-up" && (
           <input
             className={inputClass}
-            placeholder="Your name"
-            autoComplete="name"
+            placeholder="First name"
+            aria-label="First name"
+            autoComplete="given-name"
+            maxLength={40}
             required
             value={name}
             onChange={(e) => setName(e.target.value)}

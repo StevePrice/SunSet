@@ -174,7 +174,25 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see section 8 of the Build Spec.
 
-**Status (2026-11-19):** the score part (Build Spec 2.4, user feedback: the story matters more than the score) is built on `phase-4e-score`: no score on Journal photos (both views), the Share Page or share images; on Entry Detail the Wow line sits under the date and the score is in a Score details row, closed by default, below Share. Share images are redrawn automatically (new layout version). The rest of 4e (navigation, Share button, Afterglow link settings, story flow) is still to check against section 8.
+**Status:** ✅ done (2026-11-20). All seven pieces (the score change and parts 1–6) are merged and on staging (`3c0a109`), and the end-of-phase phone checks passed. GeoNames is loaded on staging (162,265 towns): the 3 sunsets with a location got a town name, and 10 more got a time zone from their share link; sunsets with neither still show dates in the viewer's time zone.
+
+**Parts done:** score (PR #15, on staging, checked on a phone); part 1 navigation and first name (PR #18, on staging 2026-11-20); part 2 Entry Detail, Share and Afterglow (PR #19, on staging 2026-11-20); part 3 Share Page and reactions (PR #20, on staging 2026-11-20); part 4 story flow (PR #21, on staging 2026-11-20); part 5 Journal and New sunset (PR #22, on staging 2026-11-20); part 6 fixes (PR #23, on staging 2026-11-20).
+
+**Part 4 (story flow) starts from Phase 5's work, on staging since 2026-11-09:** voice recording in the browser (up to 2 minutes per answer), recordings kept privately in R2, Whisper transcription with Retry and Type instead, playback and "What you said", the opening questions with "Ask me something else" (they become Story ideas), My story in three lengths and Crafted story (they become Help me polish it), the suggested title, and the AI settings with the first-use notice. What part 4 changes is the screens around them (Build Spec 3.7–3.9): the typing box first, Need ideas?, the Rather talk than type? panel, the microphone note, the recording screen and the review / edit screen, which also replaces the temporary Edit page from part 2. It also removes the interview-first path and the caption field.
+
+**Known gap from part 4:** the crisis-line message (shown when the old interview's follow-up questions noticed distress) no longer has a trigger, because the new screen has no follow-up questions. Decide before the beta: check the saved story for safety concerns, or drop the message. It also still needs review before launch.
+
+**Part 6 decisions (2026-11-20):** place names come from GeoNames (towns with 1,000+ people, CC BY 4.0) in our own PostGIS `places` table, so no location goes to a geocoding service; the nearest town within 50 km, labelled "Town, State" in the US, Canada, Australia and the UK and "Town, Country" elsewhere; a typed name wins. Compared with Stadia Maps, Mapbox, OpenCage, Geoapify, MapTiler and Google (storage rights, privacy, cost); landmark names can come later with the Phase 6 map provider. One date rule: each entry has a time zone (the place's, else the phone's when saved), used everywhere. Titles: from the story after the AI notice, otherwise from the photo.
+
+**Part 6 on staging, once, after the deploy that runs migration 0010:** `scripts/staging-db.sh node scripts/load-places.mjs` (downloads GeoNames, loads about 150,000 towns, then names existing sunsets and sets their time zones), then **Fill in missing titles** on `/admin` until it says all done.
+
+**Phone checks for the end of 4e** (dark and light mode), all passed 2026-11-20:
+- Part 1: header and bottom bar on Journal, a sunset, Afterglow and You; the bar never covers the copyright line; a new account made by email link sees Welcome once; changing the name on You changes "[Name] shared a sunset with you" on an existing link.
+- Part 2: Entry Detail order (photo, title, date, Wow line, story or Add your story, Hear it in your own voice, Edit, Share, Afterglow row, Score details, Delete); **Share opens the share menu with the Stories image in one tap**, including the first time (when the link is made; if iOS refuses, "Tap again to share" works); the Afterglow row reads Not shared / No reactions yet / Shared · n reactions; Afterglow's Share again, Copy link, Place name friends see and Stop sharing (the old link stops working); the Edit page saves the story and plays and deletes recordings.
+- Part 3: on the Share Page (as a friend, signed out): **[Name]** in bold, title, date and place, story, divider, "Let [Name] know you saw it"; four reactions in two rows of two, each with its new icon; a tapped reaction fills peach with a checkmark beside the count and its icon animates once (not with Reduce Motion on); tap again to undo; "Your note to [Name]", Send, "Reacting as [friend]…", "Sent!"; the new footer line. Afterglow shows four totals in two rows, including Sending hugs.
+- Part 4: Add your story opens "The story behind this moment" with the typing box first; typing and Save works (also with AI help off); Need ideas? shows three ideas, More ideas, and a tapped idea sits above the box; the microphone note appears once, then the iPhone's microphone prompt; the recording screen (Cancel throws it away, the timer, the moving line, Stop, stops on its own at 2 minutes); after Stop your tidied words appear with "Your recording", Add more, Delete recording (your words stay), Help me polish it (My story lengths, Crafted story, Use this version) and a suggested title; Edit on Entry Detail opens the same screen with your words, recording, title and "What you said" / "What you wrote"; the first-use AI notice appears the first time an AI step is used, and "Turn off AI help and type" keeps the screen open; denying the microphone shows a sentence and keeps the box ready.
+- Part 5: Journal Stories cards show date · place, title, three lines of story, and "Shared · n reactions" for shared sunsets; All photos shows "n sunsets" and month headings in small capitals; leaving on All photos and coming back to the Journal opens All photos; a new account sees the empty card (sun mark, No sunsets yet, Save your first sunset). New sunset: step one has Cancel, the two large cards (Take a photo opens the camera, Choose from your photos opens the library) and the note; step two has the photo, Choose a different photo, Date taken and Place with Change (the date picker and the place choices work), Add your story (saves, then the story screen), Save for now (saves, then Entry Detail); a failed upload says "Couldn't save your sunset…" and keeps the photo.
+- Part 6: place names in words ("Carlsbad, California") on the Journal, Entry Detail, the story screen and new share links, never coordinates; New sunset shows the town before saving and "Or name it yourself" works; the same sunset shows the same date on the Journal, Entry Detail and the Share Page; untitled sunsets get a title when opened; the GeoNames credit on You; **the light-mode pass:** every screen against the designs' Light mode page.
 
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
@@ -233,6 +251,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - Migrations are numbered, so two branches can both create the same number. Generate a migration only on a branch that has just merged `Steve`, and regenerate it if `Steve` gains a migration before the branch merges.
 - When a partner's branch and ours touch the same screens, test them together on an `integrate/...` branch before merging into `Steve`.
 - Delete a branch once its pull request merges.
+- **Phone checks at the end of each phase (set 2026-11-20):** each part is merged and deployed to staging as it's done, but the phone check is done once, at the end of the phase, against its "Done when" and a list of what each part changed.
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
@@ -260,12 +279,41 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - A notification shortly before local sunset, timed by a sunset-time calculation on the device. On iOS this only works once the PWA is installed
 - Notification settings in the Settings screen
 
+### Phase 9: Native apps, a native shell around the web app (added 2026-11-20)
+**Goal:** Sunset Soul in the App Store and Google Play, from the same code as the website, with native features where they're worth it. The web version stays as it is.
+
+**Approach:** Capacitor apps for iOS and Android that load the live site (`sunsetsoul.app`) inside the app, plus native plugins. A web change reaches the apps without a store release; only native changes need one. Starts after the beta (Phase 7), once beta users show which native features matter.
+- **App shells:** iOS (Xcode) and Android (Android Studio) projects in the repo, the app icon and splash screen from the design system, and links to `sunsetsoul.app` opening in the app (Universal Links and App Links)
+- **Native sharing:** share straight to Instagram Stories (and Facebook and Snapchat where their SDKs allow it) with the Stories card, alongside the phone's share sheet. This is the main reason for a native app
+- **Push notifications:** the Phase 8 sunset reminder and "a friend reacted" through APNs and Firebase Cloud Messaging, without installing the PWA
+- **Camera, microphone and photos:** native camera and photo-library pickers that keep the photo's date and place, and the microphone for voice stories
+- **Sign-in:** native Sign in with Apple and Google sign-in (Google blocks sign-in inside embedded web views); the session is shared with the web view
+- **Store rules:** Sign in with Apple wherever Google sign-in is offered, account deletion inside the app (from Phase 7), privacy details for both stores (photos, recordings and words go to an AI service), and enough native features that Apple doesn't treat it as "just a website"
+- **Release:** TestFlight and a Google Play internal test with the beta group, then store review. A release checklist in the repo; CI builds the apps
+
+**Owner tasks:** Apple Developer Program ($99 a year), Google Play Console ($25 once), store listings (screenshots, description, privacy answers), and Meta and Snapchat developer accounts for direct sharing.
+
+**Done when:** both apps are live in the stores; on a phone a user signs in with Apple or Google, saves a sunset with the native camera, tells its story by voice, shares straight to Instagram Stories, and gets a sunset reminder; and the website still works unchanged.
+
+### Phase 10: Fully native apps (added 2026-11-20)
+**Goal:** the most polished feel on each phone, if the Phase 9 shell isn't good enough. Decide after Phase 9 has been in use, based on what users say and how the app performs.
+
+**Approach:** React Native apps built with Expo, replacing the Phase 9 shell's web view screen by screen, with the same database, storage and AI services behind them. The website stays and is still built separately, so new screens are built twice from here on.
+- **An API first:** today's screens talk to the server through Next.js server actions, which native apps can't call. Add a versioned JSON API (entries, photos, stories, shares, reactions, account), used by the native apps and gradually by the web too, with tests
+- **Sign-in:** Better Auth's Expo support, with Apple, Google, email and magic links, and tokens kept in the phone's secure storage
+- **Screens:** the Phase 4e screens rebuilt natively, from the same design tokens (generated for React Native from `design-tokens.json`), in dark and light mode
+- **Native features:** carry over Phase 9's sharing, notifications, camera and microphone; add offline drafts, so a sunset saved without signal uploads later
+- **Shared code:** validation, scoring display and copy in a shared package used by web and native
+- **Release:** Expo EAS builds and over-the-air updates for JavaScript changes; store releases for native changes
+
+**Done when:** every Phase 4e screen works natively on iOS and Android with the Phase 9 features, the JSON API has tests, and the store apps are updated from the shell to the native version without users losing their sign-in or data.
+
 ### After the MVP (v2+)
 - Public story feed
 - In-app friend circles
 - Community voting that affects map retention
 - A weighted, trained scoring model
-- Native iOS and Android apps (possibly React Native with Expo). Revisit after the beta: direct Instagram, Snapchat, TikTok and Facebook share buttons need a native app
+- Native iOS and Android apps: now Phases 9 (native shell) and 10 (fully native)
 - Monetization: printed photo books, a premium tier
 
 ### Order and dependencies
@@ -274,7 +322,9 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Updated (2026-11-08, later):** 4e (flow fixes, including the voice screens) comes before the rest of Phase 5. Phase 5 step 3 (voice) merges into 4e; step 4 (Settings) waits for the Settings screen on the Later List.
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
 - **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
+- **Update (2026-11-20, later):** 4e done. Next: Phase 6 (Live Global Map). Open before the beta: the crisis-line message has no trigger since part 4.
 - **7** follows Phase 6, and **8** comes last.
+- **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 
 ### Remaining estimates (2026-11-08)
 Rough planning numbers. "Human" is one developer who knows the codebase (±30%). "With Claude, total" includes review, phone testing and fixes.
@@ -291,8 +341,10 @@ Rough planning numbers. "Human" is one developer who knows the codebase (±30%).
 | 7 Hardening and beta | 6–8 days | 5–8 hours | 2–3 days |
 | 8 Daily Ritual | 2–3 days | 2–3 hours | about a day |
 | **Total** | **32–43 days** | **25–43 hours** | **11.5–16 days** |
+| 9 Native apps, shell (added 2026-11-20) | 8–12 days | 6–10 hours | 5–8 days, plus store review |
+| 10 Fully native apps (added 2026-11-20) | 30–45 days | 25–45 hours | 4–8 weeks |
 
-Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
+The total covers the MVP (Phases 4b to 8); Phases 9 and 10 come after it. Not included: the 2–3 week beta itself, owner tasks (map tile provider, Google and Apple sign-in, legal review, the crisis-line message), and the unreproduced hung requests from Phase 5.
 
 ---
 

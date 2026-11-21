@@ -82,4 +82,23 @@ describe.skipIf(!url)("shares data access", () => {
     await deleteEntry(db, alice, entryId);
     expect(await getPublicShare(db, share.id)).toBeNull();
   });
+
+  it("starts a new link with the entry's place in words and dates it in the entry's time zone", async () => {
+    const id = crypto.randomUUID();
+    await createEntry(db, alice, id, {
+      story: "Over the pier",
+      takenAt: new Date("2026-08-23T03:30:00Z"),
+      location: { latitude: 33.15, longitude: -117.35 },
+      placeName: "Carlsbad, California",
+      timeZone: "America/Los_Angeles",
+      photoWidth: 100,
+      photoHeight: 100,
+    });
+    // Shared from a phone set to London: the entry's own time zone still wins.
+    const share = await createShare(db, alice, id, "Europe/London");
+    expect(share?.place).toBe("Carlsbad, California");
+    const view = await getPublicShare(db, share!.id);
+    expect(view?.timeZone).toBe("America/Los_Angeles");
+    await deleteEntry(db, alice, id);
+  });
 });

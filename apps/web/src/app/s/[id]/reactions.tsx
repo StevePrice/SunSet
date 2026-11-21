@@ -26,6 +26,8 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
   const [editingNote, setEditingNote] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The reaction just turned on plays its icon animation once.
+  const [justTapped, setJustTapped] = useState<ReactionKind | null>(null);
 
   async function send(pending: Pending, withName?: string) {
     setBusy(true);
@@ -61,6 +63,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
   }
 
   function tap(kind: ReactionKind) {
+    setJustTapped(state.mine.includes(kind) ? null : kind);
     const pending: Pending = { action: "toggle", kind };
     if (!state.name) setAskingName(pending);
     else void send(pending);
@@ -85,11 +88,12 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     <section aria-labelledby="reactions-heading" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <h2 id="reactions-heading" className="font-serif text-title-3">
-          How did this sunset make you feel?
+          Let {who} know you saw it
         </h2>
-        <p className="text-ink-muted">Tap a reaction to let {who} know.</p>
+        <p className="text-ink-muted">Tap one or more, and add a note if you like.</p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      {/* Two rows of two (Build Spec 3.12). */}
+      <div className="grid grid-cols-2 gap-3">
         {REACTION_KINDS.map((kind) => {
           return (
             <ReactionChip
@@ -98,6 +102,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
               label={REACTION_LABELS[kind]}
               count={state.counts[kind]}
               selected={state.mine.includes(kind)}
+              animate={justTapped === kind && state.mine.includes(kind)}
               disabled={busy}
               onClick={() => tap(kind)}
             />
@@ -143,27 +148,25 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
 
       {showNote && !askingName && !(noteSent && !editingNote) && (
         <form onSubmit={submitNote} className="flex flex-col gap-2">
-          <label htmlFor="reaction-note" className="sr-only">
-            Add a note for {who} (optional)
+          <label htmlFor="reaction-note" className="text-caption text-ink-muted">
+            Your note to {who}
           </label>
-          <div className="flex gap-2">
-            <input
-              id="reaction-note"
-              value={note}
-              onChange={(e) => {
-                setNote(e.target.value);
-                setNoteSent(false);
-              }}
-              maxLength={MAX_NOTE_LENGTH}
-              placeholder={`Add a note for ${who} (optional)`}
-              className={`${fieldClass} ss-story flex-1`}
-            />
-            <Button type="submit" variant="action" disabled={busy}>
-              Send
-            </Button>
-          </div>
+          <input
+            id="reaction-note"
+            value={note}
+            onChange={(e) => {
+              setNote(e.target.value);
+              setNoteSent(false);
+            }}
+            maxLength={MAX_NOTE_LENGTH}
+            placeholder={`Add a note for ${who} (optional)`}
+            className={`${fieldClass} ss-story`}
+          />
+          <Button type="submit" variant="action" disabled={busy} className="w-full">
+            Send
+          </Button>
           <p className="text-caption text-ink-muted">
-            Only {ownerName ?? "the person who shared this"} sees your name and note. Others see the counts.
+            {state.name ? `Reacting as ${state.name}. ` : ""}Only {ownerName ?? "the person who shared this"} sees your name and note.
           </p>
         </form>
       )}

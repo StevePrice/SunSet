@@ -11,9 +11,34 @@ export type EntryInput = {
   story: string | null;
   takenAt: Date | null;
   location: Location | null;
+  /** A place name the owner typed, e.g. "Sequoia National Park"; otherwise looked up. */
+  placeName?: string | null;
+  /** The phone's IANA time zone when saved; the place's time zone wins when there's a location. */
+  timeZone?: string | null;
   photoWidth: number;
   photoHeight: number;
 };
+
+export const MAX_PLACE_NAME_LENGTH = 80;
+
+/** A typed place name: one line, at most MAX_PLACE_NAME_LENGTH characters; blank means none. */
+export function parsePlaceName(raw: unknown): Parsed<string | null> {
+  if (raw == null) return { ok: true, value: null };
+  if (typeof raw !== "string") return { ok: false, error: "Place must be text." };
+  const name = raw.replace(/\s+/g, " ").trim();
+  if (name.length > MAX_PLACE_NAME_LENGTH) return { ok: false, error: `Keep the place to ${MAX_PLACE_NAME_LENGTH} characters.` };
+  return { ok: true, value: name || null };
+}
+
+/** An IANA time zone the runtime knows, or null. */
+export function parseTimeZoneName(raw: unknown): string | null {
+  if (typeof raw !== "string" || !raw || raw.length > 64) return null;
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone: raw }).resolvedOptions().timeZone;
+  } catch {
+    return null;
+  }
+}
 
 export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -69,6 +94,8 @@ export function parseEntryForm(form: {
   if (!story.ok) return story;
   const location = parseLocation(form.get("latitude"), form.get("longitude"));
   if (!location.ok) return location;
+  const placeName = parsePlaceName(form.get("placeName"));
+  if (!placeName.ok) return placeName;
   const photoWidth = parseDimension(form.get("photoWidth"));
   const photoHeight = parseDimension(form.get("photoHeight"));
   if (!photoWidth || !photoHeight) return { ok: false, error: "Photo dimensions are missing." };
@@ -78,6 +105,8 @@ export function parseEntryForm(form: {
       story: story.value,
       takenAt: parseTakenAt(form.get("takenAt")),
       location: location.value,
+      placeName: placeName.value,
+      timeZone: parseTimeZoneName(form.get("timeZone")),
       photoWidth,
       photoHeight,
     },

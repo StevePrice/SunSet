@@ -1,5 +1,4 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
@@ -8,10 +7,11 @@ import { REACTION_KINDS, REACTION_LABELS } from "@/lib/reaction-input";
 import { getAfterglow } from "@/lib/reactions";
 import { getShareForEntry } from "@/lib/shares";
 import { LocalDate } from "@/components/local-date";
-import { AppHeader } from "@/components/logo";
+import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
 import { ReactionIcon } from "@/components/reaction-icons";
-import { SharePanel } from "../share-panel";
+import { LinkSettings } from "../link-settings";
+import { ShareButton } from "../share-button";
 import { RemoveButton } from "./remove-button";
 
 export const metadata = { title: "Afterglow · Sunset Soul" };
@@ -32,11 +32,8 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
   const { env } = await getCloudflareContext({ async: true });
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8">
-      <AppHeader />
-      <Link href={`/journal/${entry.id}`} className="inline-flex min-h-12 items-center self-start text-label underline">
-        ← Back to this sunset
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 pt-4 pb-8">
+      <AppHeader back={{ href: `/journal/${entry.id}`, label: "Back" }} />
       <header className="flex flex-col gap-1">
         <h1 className="font-serif text-title-1">Afterglow</h1>
         <p className="text-body text-ink-muted">from your friends</p>
@@ -44,10 +41,10 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
 
       <div className="flex items-center gap-4">
         <PhotoCard src={`/api/photos/${entry.id}/thumb`} alt="" square corners="sm" className="w-20 shrink-0" />
-        <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} />}</p>
+        <p className="font-serif text-title-3">{entry.title ?? <LocalDate iso={entry.takenAt.toISOString()} timeZone={entry.timeZone} />}</p>
       </div>
 
-      <dl className="grid grid-cols-3 gap-2">
+      <dl className="grid grid-cols-2 gap-2">
         {REACTION_KINDS.map((kind) => (
           <div key={kind} className="flex flex-col-reverse items-center gap-1 rounded-ss-lg bg-surface-raised p-3 text-center">
             <dt className="flex flex-col items-center gap-1 text-label">
@@ -93,7 +90,18 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
         </ul>
       )}
 
-      <SharePanel entryId={entry.id} initial={share && { url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+      {share ? (
+        <>
+          <ShareButton entryId={entry.id} initialUrl={`${env.BETTER_AUTH_URL}/s/${share.id}`} label="Share again" />
+          <LinkSettings entryId={entry.id} share={{ url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+        </>
+      ) : (
+        <section className="flex flex-col gap-3">
+          <p className="text-ink-muted">Not shared. Share it to get a new link friends can open and react to.</p>
+          <ShareButton entryId={entry.id} initialUrl={null} />
+        </section>
+      )}
+      <BottomBar current="journal" />
     </main>
   );
 }

@@ -13,6 +13,10 @@ export type Entry = {
   caption: string | null;
   takenAt: Date;
   location: Location | null;
+  /** "Carlsbad, California": typed by the owner or the nearest town. */
+  placeName: string | null;
+  /** The time zone the date is shown in (Phase 4e, one date rule). */
+  timeZone: string | null;
   photoWidth: number;
   photoHeight: number;
   createdAt: Date;
@@ -25,6 +29,8 @@ const columns = {
   caption: entries.caption,
   takenAt: entries.takenAt,
   location: entries.location,
+  placeName: entries.placeName,
+  timeZone: entries.timeZone,
   photoWidth: entries.photoWidth,
   photoHeight: entries.photoHeight,
   createdAt: entries.createdAt,
@@ -37,6 +43,8 @@ function toEntry(row: {
   caption: string | null;
   takenAt: Date;
   location: { x: number; y: number } | null;
+  placeName: string | null;
+  timeZone: string | null;
   photoWidth: number;
   photoHeight: number;
   createdAt: Date;
@@ -56,6 +64,8 @@ export async function createEntry(db: Db, userId: string, id: string, input: Ent
       story: input.story,
       takenAt: input.takenAt ?? new Date(),
       location: input.location && { x: input.location.longitude, y: input.location.latitude },
+      placeName: input.placeName ?? null,
+      timeZone: input.timeZone ?? null,
       photoWidth: input.photoWidth,
       photoHeight: input.photoHeight,
     })
@@ -88,14 +98,18 @@ export async function updateEntry(
   db: Db,
   userId: string,
   id: string,
-  changes: { story: string | null; location?: Location | null },
+  changes: { story: string | null; location?: Location | null; title?: string | null; caption?: string | null },
 ): Promise<boolean> {
   const rows = await db
     .update(entries)
     .set({
       story: changes.story,
+      ...(changes.title !== undefined && { title: changes.title }),
+      ...(changes.caption !== undefined && { caption: changes.caption }),
       ...(changes.location !== undefined && {
         location: changes.location && { x: changes.location.longitude, y: changes.location.latitude },
+        // The name came from the location (or describes it), so it goes with it.
+        ...(changes.location === null && { placeName: null }),
       }),
     })
     .where(and(eq(entries.id, id), eq(entries.userId, userId)))

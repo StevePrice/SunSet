@@ -15,7 +15,8 @@ export type AdminAction =
   | "enable"
   | "sign_out_everywhere"
   | "delete_account"
-  | "rescore_all";
+  | "rescore_all"
+  | "fill_titles";
 
 /** Adds a row to the activity log. `adminId` is null when the system acted (ADMIN_EMAILS). */
 export async function logAdminAction(

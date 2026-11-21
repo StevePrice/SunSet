@@ -1,14 +1,16 @@
-import { ReactionIcon } from "@/components/reaction-icons";
+import { CheckIcon, ReactionIcon } from "@/components/reaction-icons";
 import type { ReactionKind } from "@/lib/reaction-input";
 
-// A reaction button (Wow, Wish I was there, Love this!) with its line icon beside the word. A
-// tapped chip fills with reaction-selected (peach blush), a fill only, with on-reaction text and
-// icon. 48px tall, pill-shaped.
+// A reaction button on the Share Page (Phase 4e, Build Spec 3.12): line icon, word, count, filling
+// its half of a two-by-two grid. A tapped chip fills with reaction-selected (a fill only) with its
+// border and on-reaction text, and a checkmark beside the count, so the choice never relies on
+// colour alone. Tap again to undo. At least 48px tall; long words wrap to a second line.
 export function ReactionChip({
   kind,
   label,
   count,
   selected,
+  animate = false,
   disabled,
   onClick,
 }: {
@@ -16,6 +18,7 @@ export function ReactionChip({
   label: string;
   count: number;
   selected: boolean;
+  animate?: boolean;
   disabled?: boolean;
   onClick: () => void;
 }) {
@@ -25,16 +28,17 @@ export function ReactionChip({
       aria-pressed={selected}
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex min-h-12 items-center gap-2 rounded-ss-pill border px-5 text-label font-bold disabled:opacity-60 ${
+      className={`flex min-h-14 w-full items-center gap-3 rounded-ss-pill border-[1.5px] px-4 py-2 text-left text-label font-bold disabled:opacity-60 ${
         selected
           ? "border-reaction-selected-border bg-reaction-selected text-on-reaction"
           : "border-border-subtle bg-surface-raised text-ink"
       }`}
     >
-      <ReactionIcon kind={kind} />
-      <span>{label}</span>
-      <span className="font-normal tabular-nums" aria-label={`, ${count} so far`}>
-        {count}
+      <ReactionIcon kind={kind} animate={animate} />
+      <span className="min-w-0 flex-1 leading-tight">{label}</span>
+      <span className={`flex shrink-0 items-center gap-1 tabular-nums ${selected ? "" : "font-normal"}`}>
+        <span aria-label={`, ${count} so far`}>{count}</span>
+        {selected && <CheckIcon />}
       </span>
     </button>
   );

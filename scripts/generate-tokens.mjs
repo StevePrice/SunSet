@@ -62,6 +62,8 @@ const servedLogos = [
   "sunset-soul-logo-horizontal-transparent-for-light-backgrounds.png",
   "sunset-soul-logo-stacked-transparent-for-dark-backgrounds.svg",
   "sunset-soul-logo-stacked-transparent-for-light-backgrounds.svg",
+  "sunset-soul-mark-for-dark-backgrounds.svg",
+  "sunset-soul-mark-for-light-backgrounds.svg",
 ];
 await mkdir(new URL("apps/web/public/brand/", root), { recursive: true });
 for (const file of servedLogos) {

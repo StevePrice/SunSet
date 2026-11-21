@@ -67,7 +67,7 @@ export async function signIn(page: Page, email: string, password: string) {
 export async function signUp(page: Page, name: string, email: string, password: string) {
   await page.goto("/sign-in");
   await page.getByRole("button", { name: /create an account|sign up/i }).click();
-  await page.getByPlaceholder("Your name").fill(name);
+  await page.getByPlaceholder("First name").fill(name);
   await page.getByPlaceholder("Email").fill(email);
   await page.getByPlaceholder(/^Password/).fill(password);
   const before = emailCount(email);
