@@ -2,6 +2,8 @@
 **Status:** Ready to build · **Date:** November 8, 2026 · **Decided by:** Louise (product), designed with Claude
 **For:** Steve, or Claude Code working in this repo
 
+> **Updated November 22, 2026:** some wording and labels on these screens changed (voice privacy wording, "Afterglow" is now titled "From your friends" with a "See what friends sent" row, "Stories · Photos", Choose from your photos first). Those changes and the new Sunsets Together screens are in [`sunset-soul-build-spec-sunsets-together.md`](sunset-soul-build-spec-sunsets-together.md) (Phase 4f). Where the two disagree, follow Phase 4f.
+
 This spec turns the November 8 design review into build instructions. It fixes the flow of the screens that are already built and adds voice storytelling. It doesn't add Live Map, Settings or reminders (see `sunset-soul-later-list.md`).
 
 **Designs and references**

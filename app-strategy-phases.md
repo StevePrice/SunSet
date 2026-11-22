@@ -194,6 +194,16 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 - Part 5: Journal Stories cards show date · place, title, three lines of story, and "Shared · n reactions" for shared sunsets; All photos shows "n sunsets" and month headings in small capitals; leaving on All photos and coming back to the Journal opens All photos; a new account sees the empty card (sun mark, No sunsets yet, Save your first sunset). New sunset: step one has Cancel, the two large cards (Take a photo opens the camera, Choose from your photos opens the library) and the note; step two has the photo, Choose a different photo, Date taken and Place with Change (the date picker and the place choices work), Add your story (saves, then the story screen), Save for now (saves, then Entry Detail); a failed upload says "Couldn't save your sunset…" and keeps the photo.
 - Part 6: place names in words ("Carlsbad, California") on the Journal, Entry Detail, the story screen and new share links, never coordinates; New sunset shows the town before saving and "Or name it yourself" works; the same sunset shows the same date on the Journal, Entry Detail and the Share Page; untitled sunsets get a title when opened; the GeoNames credit on You; **the light-mode pass:** every screen against the designs' Light mode page.
 
+### Phase 4f: Sunsets Together and November 22 updates (Louise, 2026-11-22)
+**Goal:** people in sunset photos become part of the memory and the reason to share, while everything stays private until shared. Full detail: [sunset-soul-build-spec-sunsets-together.md](sunset-soul-build-spec-sunsets-together.md); requirements in PRD 6.10; designs in the row "Journey D · Sunsets Together" on the canvas; pictures 17–26 in `design/screens/`.
+- **Copy and labels on 4e screens:** "Private until you share it" voice wording; Afterglow titled "From your friends" with a two-line "See what friends sent" row; Journal "Stories · Photos"; Choose from your photos first on New sunset
+- **People:** the AI notices people (no face recognition); optional "Who's in this one?" names with chips; Journal filter All · With people · Pure sunset; Sunsets with [Name]
+- **Sharing:** Before you share (who it's for, Include my voice) only when it applies; personal links ("Steve, you're in Louise's sunset", "I was there!"); sending all your sunsets with one person as a set
+- **Two sides of the story:** every friend can add a memory on the Share Page, typed or spoken (up to 1 minute), owner-only
+- **Scoring:** people never raise or lower the Wow score by themselves; photos with people added to calibration
+
+**Done when:** see "Done when" in the Phase 4f Build Spec.
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
@@ -323,6 +333,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Next (set 2026-11-18):** 5b (user administration) → 5c (test and deploy from CI), then 6.
 - **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
 - **Update (2026-11-20, later):** 4e done. Next: Phase 6 (Live Global Map). Open before the beta: the crisis-line message has no trigger since part 4.
+- **Update (2026-11-22):** Phase 4f (Sunsets Together) added, and comes before Phase 6: Louise has moved the Live Global Map to a later phase. Native-app items decided on 2026-11-22 (photos saving to the phone automatically, the "From today" photo strip, finding sunsets in the camera roll) are on the Later List for Phase 9.
 - **7** follows Phase 6, and **8** comes last.
 - **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 
