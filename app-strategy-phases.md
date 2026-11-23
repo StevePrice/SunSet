@@ -287,6 +287,8 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 **Goal:** safe to put in front of real people.
 
 **Split (set 2026-11-22):** everything except the beta itself is **7a Beta essentials**, built after 4f-1 and before 4f-2. Analytics record whether each photo has people (from 4f-1), so share and reaction rates can be compared for photos with and without people (PRD section 3). The crisis-line decision (no trigger since 4e part 4) is part of 7a. The **private beta** starts after 4f-3 and runs while 4f-4, 4f-5 and Phase 8 are built.
+
+**7a status (2026-11-23):** first half built (`phase-7a`): Delete my account and Download your sunsets (a ZIP of photos, recordings and journal.json) on You; upload caps (30 sunsets and 60 recordings per person per day); the installable web app (manifest, icons); nightly database backups to R2 with a restore drill (`docs/backups.md`); an uptime check every 15 minutes (GitHub Actions). **Owner tasks:** set up the backup bucket, token and service on the Droplet, and run the restore drill once. **Waiting on decisions:** analytics (PostHog, or events in our own database), error monitoring (Sentry, or Cloudflare logs only), the privacy policy and terms (Claude drafts, owners and ideally a lawyer review), and the crisis-line message (a safety check on saved stories, or drop it).
 - **Backups:** nightly `pg_dump` to R2, with a tested restore
 - **Monitoring:** Sentry for errors, an uptime check, and memory alerts for the Droplet
 - **Analytics (PostHog):** the PRD's success metrics (a second entry within 7 days, story rate, share rate, map-post rate)
