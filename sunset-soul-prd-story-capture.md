@@ -87,9 +87,9 @@ In the MVP, a story is an optional text caption with one static prompt ("What wa
 - If the user shares something painful (grief, illness, loss, a hard time), the interviewer becomes gentler and may end the interview sooner. See the Interviewer Guide.
 
 ### 6.4 Voice Recording
-- **First tap on the microphone (once per person):** a short sheet before the phone's own permission prompt: "Tell it in your own voice" · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording stays private. Friends never hear it." · "AI turns what you say into text you can change." · **Continue** / **Type instead**.
+- **First tap on the microphone (once per person):** a short sheet before the phone's own permission prompt: "Tell it in your own voice" · "Your phone will ask if Sunset Soul can use the microphone. Tap Allow." · "Your recording is private. You decide if friends hear it." (wording changed November 22, 2026) · "AI turns what you say into text you can change." · **Continue** / **Type instead**.
 - **While recording:** "Listening", a timer, a gentle moving line, a large **Stop** button, "Take your time. Pauses are fine. Up to 2 minutes." Recording stops on its own at 2 minutes.
-- When the user stops, the transcript appears in the box to change ("Here are your words. Change anything you like."), with a "Your recording · 0:48 · Only you can hear it" row (play, **Add more**).
+- When the user stops, the transcript appears in the box to change ("Here are your words. Change anything you like."), with a "Your recording · 0:48 · Private until you share it" row (play, **Add more**). The owner can choose **Include my voice** when sharing (off by default), which puts "Hear [Name] tell it" on the Share Page; friends can also add their own spoken or typed memory. See PRD 6.10e–f and `sunset-soul-build-spec-sunsets-together.md`.
 - When the user speaks, the app records audio and transcribes it to text.
 - The audio is **always saved** with the journal entry (private by default) and can be played back from Entry Detail ("Hear it in your own voice").
 - If the microphone is denied, the typing box stays ready with a plain explanation.
