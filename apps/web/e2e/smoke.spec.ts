@@ -7,6 +7,7 @@
 // so the tests sign in as an existing account named by E2E_USER_EMAIL and E2E_USER_PASSWORD and
 // skip sign-up and verification.
 import { expect, test, type BrowserContext } from "@playwright/test";
+import { strFromU8, unzipSync } from "fflate";
 import { deployed, signIn, signUp } from "./helpers";
 
 const email = deployed ? (process.env.E2E_USER_EMAIL ?? "") : `smoke-${Date.now()}@example.com`;
@@ -129,6 +130,21 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await expect(page.getByText(/^Not shared/)).toBeVisible();
   expect((await friendPage.goto(path))?.status()).toBe(404);
   await friend.close();
+});
+
+test("download your sunsets as a ZIP (Phase 7a)", async ({ context }) => {
+  await context.addCookies(session);
+  const response = await context.request.get("/api/export");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toBe("application/zip");
+  const files = unzipSync(new Uint8Array(await response.body()));
+  expect(Object.keys(files)).toContain("sunset-soul/README.txt");
+  const journal = JSON.parse(strFromU8(files["sunset-soul/journal.json"])) as { sunsets: { photo: string | null }[] };
+  expect(journal.sunsets.length).toBeGreaterThan(0);
+  // Every listed photo is in the ZIP, as a JPEG.
+  for (const { photo } of journal.sunsets.filter((s) => s.photo)) {
+    expect([...files[`sunset-soul/${photo}`].slice(0, 3)]).toEqual([0xff, 0xd8, 0xff]);
+  }
 });
 
 // Leaves a shared account's Journal as it was (matters on staging, where the account is reused).
