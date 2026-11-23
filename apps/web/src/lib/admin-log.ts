@@ -15,6 +15,7 @@ export type AdminAction =
   | "enable"
   | "sign_out_everywhere"
   | "delete_account"
+  | "delete_own_account"
   | "rescore_all"
   | "fill_titles";
 
