@@ -1,0 +1,26 @@
+name: Uptime
+
+# Checks staging every 15 minutes (Phase 7a monitoring). /api/health reads the database through
+# Hyperdrive, so a pass means the Worker, the tunnel and Postgres are all up. A failed run makes
+# GitHub email whoever last changed this schedule. GitHub may run scheduled jobs a few minutes late.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Staging health
+        run: |
+          for attempt in 1 2 3; do
+            if curl -fsS --max-time 20 https://staging.sunsetsoul.app/api/health; then exit 0; fi
+            echo "Attempt $attempt failed"; sleep 20
+          done
+          echo "::error::staging.sunsetsoul.app/api/health failed 3 times"
+          exit 1
