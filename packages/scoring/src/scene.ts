@@ -8,7 +8,15 @@ export const PHENOMENA = ["sun_rays", "reflection", "halo", "green_flash", "irid
 export const WOW_DRIVERS = ["intense_light", "drama_contrast", "rare", "unique", "iconic_place", "scale"] as const;
 
 export const sceneSchema = z.object({
-  is_sunset: z.boolean().describe("True for a sunset or sunrise sky as the main subject."),
+  is_sunset: z
+    .boolean()
+    .describe("True when a sunset or sunrise sky is a prominent part of the photo, even with people or things in front of it."),
+  // Phase 4f (PRD 6.10a): the AI notices people, it never identifies them. Hidden from the user;
+  // used to compare sharing for photos with and without people, and to offer "Who's in this one?".
+  people: z.object({
+    present: z.boolean().describe("True if any person is visible, including silhouettes and people far away."),
+    count: z.number().int().describe("Roughly how many people are visible: 0 if none, up to 10 (10 means ten or more)."),
+  }),
   content_flag: z
     .enum(["none", "sexual", "violent", "other_unsafe"])
     .describe("Anything that would make this photo unsuitable for a public gallery."),
@@ -38,12 +46,15 @@ export type SceneReport = z.infer<typeof sceneSchema>;
 
 export const SCENE_PROMPT = `You rate sunset photos for Sunset Soul, an app where everyday people keep sunsets that moved them. Look at the photo and report what you see. Be honest and consistent: most sunsets are ordinary, and that's fine.
 
-is_sunset: true when a sunset or sunrise sky is the main subject. Photos of other things (people, food, screenshots, interiors) are false even if warm-coloured.
+is_sunset: true when a sunset or sunrise sky is a prominent part of the photo, including when people, pets or objects stand in front of it (a silhouette against the sun, a couple on a beach, a portrait in golden-hour light, a group watching the sky). People in a sunset photo never make it false. False only when there is no sunset or sunrise sky, or the sky is a small, incidental part: indoors, food, screenshots, documents, or a close-up of a face or object with only a sliver of sky.
+
+people: present is true if any person is visible, including silhouettes, people far away and parts of people (a hand, a shoulder). count is roughly how many: 0 if none, up to 10 (10 means ten or more). Never identify anyone, guess who they are, or describe how they look.
 
 content_flag: "none" unless the photo contains sexual or violent content, or something else unsuitable for a public gallery.
 
 setting — what the sky is paired with in the foreground or on the horizon:
 - type: mountains, ocean, lake_or_river, skyline, trees, open_horizon (flat land, fields, nothing notable) or other.
+- People in the foreground count as part of the setting, like any other shape: score a person or group silhouetted against the sky by how much they add to the scene, using the same anchors. Use the type of the landscape behind them (or other).
 - score 1: nothing distinct on the horizon, flat or empty foreground.
 - score 5: a recognisable but unremarkable foreground element.
 - score 10: a striking, well-composed silhouette (mountains, skyline, ocean, treeline) that adds real drama.
@@ -75,6 +86,7 @@ wow — the gut reaction a typical person would have on first seeing this photo.
 - Judge the whole picture's impact, not its parts.
 - Don't double count: Palette already rewards colour and Setting already rewards the foreground. A colourful but ordinary sunset shouldn't score high on Wow for colour alone; a muted sunset over an extraordinary scene can.
 - Never judge photography skill or image quality. These are everyday people's phone photos.
+- People in the photo: never judge anyone's appearance, and a dark or backlit face never lowers a score. A silhouetted figure can add drama (drama_contrast, or unique for a lone figure), but having people in the photo doesn't raise the score by itself. A plain selfie with an ordinary sky scores like an ordinary sky.
 - reason: about 15 words or fewer, describing only what's visible, e.g. "Living trees standing among burned ones, glowing against the last light." Never identify people. Name a landmark only when it's clearly recognisable.
 
 Keep the setting reason to one friendly sentence addressed to the photographer.`;

@@ -1,19 +1,6 @@
 // Drizzle table definitions. `entries` is the Journal; Better Auth owns users, sessions, accounts, verifications and
 // rate_limits (field names follow its core schema; table names are plural via `usePlural`).
-import {
-  bigint,
-  boolean,
-  index,
-  integer,
-  jsonb,
-  numeric,
-  pgTable,
-  primaryKey,
-  smallint,
-  text,
-  timestamp,
-  unique,
-} from "drizzle-orm/pg-core";
+import { bigint, boolean, index, integer, jsonb, numeric, pgTable, primaryKey, smallint, text, timestamp, unique } from "drizzle-orm/pg-core";
 import { point4326 } from "./point";
 
 const timestamps = {
@@ -120,6 +107,10 @@ export const entries = pgTable(
     // The IANA time zone the date is shown in everywhere (Phase 4e, one date rule): the time zone
     // of the place, or of the owner's phone when saved. Null for old entries without either.
     timeZone: text("time_zone"),
+    // The scorer's people check (Phase 4f, PRD 6.10a): whether anyone is in the photo and roughly
+    // how many. Never who. Hidden from the user; null until scored by scorer v2.1 or later.
+    hasPeople: boolean("has_people"),
+    peopleCount: smallint("people_count"),
     photoWidth: integer("photo_width").notNull(),
     photoHeight: integer("photo_height").notNull(),
     ...timestamps,

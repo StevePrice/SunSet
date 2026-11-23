@@ -65,6 +65,15 @@ async function handle(env: Env, db: Db, message: Message<ScoringMessage>): Promi
       error: null,
       scoredAt: new Date(),
     });
+    // The people check goes on the entry (Journal filter, analytics), but only from the current
+    // scorer, so re-running an old version for comparison never overwrites it.
+    if (version === SCORER_VERSION) {
+      const people = result.details.scene.people;
+      await db
+        .update(entries)
+        .set({ hasPeople: people.present, peopleCount: Math.max(0, Math.min(10, people.count)) })
+        .where(eq(entries.id, entryId));
+    }
     message.ack();
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);

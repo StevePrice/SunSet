@@ -50,8 +50,12 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const { entry, score, share, reactionCount, clips } = found;
   const { env } = await getCloudflareContext({ async: true });
   const place = entry.placeName;
+  // The "See what friends sent" row's second line (4f Build Spec 1.2). Reactions stay after Stop
+  // sharing, so a sunset with reactions but no link was shared before.
   const afterglowStatus = !share
-    ? "Not shared"
+    ? reactionCount > 0
+      ? "Not shared"
+      : "Not shared yet"
     : reactionCount === 0
       ? "No reactions yet"
       : `Shared · ${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"}`;
@@ -104,8 +108,8 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
           {clips.length > 0 && (
             <HearYourVoice
               clips={clips.map((c) => `/api/clips/${c.id}`)}
-              title={`Hear it in your own voice · ${formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))}`}
-              subtitle="Only you can hear it"
+              title="Hear it in your own voice"
+              subtitle={`${formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))} · Private until you share it`}
             />
           )}
 
@@ -124,7 +128,7 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
             className="flex min-h-12 items-center justify-between gap-3 rounded-ss-lg bg-surface-raised px-5 py-3"
           >
             <span className="flex flex-col">
-              <span className="font-serif text-title-3">Afterglow</span>
+              <span className="font-serif text-title-3">See what friends sent</span>
               <span className="text-caption text-ink-muted">{afterglowStatus}</span>
             </span>
             <span aria-hidden className="text-ink-muted">

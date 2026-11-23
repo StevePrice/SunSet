@@ -113,7 +113,7 @@ export default async function JournalPage(props: PageProps<"/journal">) {
 function ViewToggle({ view }: { view: JournalView }) {
   const segments: { view: JournalView; label: string }[] = [
     { view: "stories", label: "Stories" },
-    { view: "photos", label: "All photos" },
+    { view: "photos", label: "Photos" },
   ];
   return (
     <nav aria-label="Journal view" className="flex self-start rounded-ss-pill bg-surface-sunken p-1">

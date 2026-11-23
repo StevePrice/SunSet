@@ -45,11 +45,11 @@ test("save an entry and see it in the Journal", async ({ page, context }) => {
   await page.goto("/journal");
   await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
 
-  // All photos shows the count, and plain /journal opens the view used last.
+  // Photos shows the count, and plain /journal opens the view used last.
   await page.goto("/journal?view=photos");
   await expect(page.getByText(/^\d+ sunsets?$/)).toBeVisible();
   await page.goto("/journal");
-  await expect(page.getByRole("link", { name: "All photos" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("link", { name: "Photos", exact: true })).toHaveAttribute("aria-current", "page");
   await page.goto("/journal?view=stories");
   await expect(page.getByText(/^\d+ sunsets?$/)).toHaveCount(0);
 });
@@ -78,7 +78,7 @@ test("add a story by typing, then change it with Edit", async ({ page, context }
   await expect(page.getByText("The sky went gold, then pink, over the water.")).toBeVisible();
 });
 
-test("share in one tap, open the link signed out, then stop sharing in Afterglow", async ({ page, context, browser }) => {
+test("share in one tap, open the link signed out, then stop sharing from From your friends", async ({ page, context, browser }) => {
   await context.addCookies(session);
   // Test browsers have no share menu: stand in for it and keep what the page shared.
   await page.addInitScript(() => {
@@ -89,12 +89,12 @@ test("share in one tap, open the link signed out, then stop sharing in Afterglow
     navigator.canShare = () => false;
   });
   await page.goto(entryUrl);
-  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("Not shared");
+  await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Not shared yet");
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const shared = await page.waitForFunction(() => (window as unknown as { shared?: ShareData }).shared);
   const link = (await shared.jsonValue())!.url!;
   expect(link).toMatch(/\/s\/[\w-]+$/);
-  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("No reactions yet");
+  await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("No reactions yet");
 
   // A fresh browser context has no session: this is what a friend sees.
   const friend = await browser.newContext();
@@ -105,7 +105,7 @@ test("share in one tap, open the link signed out, then stop sharing in Afterglow
   await expect(friendPage.getByRole("main")).toBeVisible();
 
   // The friend taps Sending hugs (asked for a first name once), sees the checkmark state, and
-  // sends a note; the owner sees both in Afterglow.
+  // sends a note; the owner sees both on From your friends.
   await friendPage.getByRole("button", { name: /Sending hugs/ }).click();
   await friendPage.getByLabel(/first name/).fill("Maria");
   await friendPage.getByRole("button", { name: "Continue" }).click();
@@ -115,10 +115,10 @@ test("share in one tap, open the link signed out, then stop sharing in Afterglow
   await friendPage.getByRole("button", { name: "Send", exact: true }).click();
   await expect(friendPage.getByRole("status")).toContainText("will see your reaction");
 
-  // Afterglow has Share again and the link settings; Stop sharing kills the link.
+  // From your friends has Share again and the link settings; Stop sharing kills the link.
   await page.reload();
-  await expect(page.getByRole("link", { name: /Afterglow/ })).toContainText("Shared · 1 reaction");
-  await page.getByRole("link", { name: /Afterglow/ }).click();
+  await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Shared · 1 reaction");
+  await page.getByRole("link", { name: /See what friends sent/ }).click();
   await expect(page.getByText("Maria", { exact: true })).toBeVisible();
   await expect(page.getByText("Beautiful, thank you")).toBeVisible();
   await expect(page.getByRole("term").filter({ hasText: "Sending hugs" })).toBeVisible();
