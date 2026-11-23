@@ -204,6 +204,15 @@ Sunset Soul is a web app (installable as a PWA). The app runs on Cloudflare, and
 
 **Done when:** see "Done when" in the Phase 4f Build Spec.
 
+**Build order (set 2026-11-22, Steve): the beta starts partway through 4f.** Every PRD goal (the capture habit, sharing, and "photos with people are shared more") needs real users and analytics, so the beta comes as soon as the people test can be measured; the rest of 4f is built during it. Louise's build order is kept, except that scoring moves first: the scorer's "is this a sunset?" check currently rejects many photos with people, and the hidden people check belongs in the same scorer change.
+1. **4f-1 Quick wins and the scorer fix:** the copy and labels (Build Spec 1.1–1.4); rewrite the "is this a sunset?" check so photos with people pass (it lists "people" as a reason to say no); the Wow rule for people (1.5); the hidden people check (2.0); one scorer version and a re-score; photos with people in the calibration set. About 1 day.
+2. **7a Beta essentials** (Phase 7, below), then:
+3. **4f-2 Names and the filter:** "Who's in this one?" with name chips; All · With people · Pure sunset (2.1, 2.2). About 1 day.
+4. **4f-3 Sharing with the people in the photo:** Before you share, personal links and "I was there!", Include my voice (2.7, 2.8). About 2 days.
+5. **▶ Private beta starts.**
+6. **4f-4 Two sides of the story** (during the beta): friends' memories, typed then spoken (2.8, 2.6, 2.9). Recording in a friend's browser is the riskiest piece (in-app browsers often block the microphone), so real beta phones are the test. About 2–3 days.
+7. **4f-5 Sunsets with [Name] and shared sets** (during the beta) (2.3–2.5). About 1.5–2 days.
+
 ### Phase 5: AI Story Capture
 **Goal:** telling the story behind a sunset is easy, mostly by speaking. See [sunset-soul-prd-story-capture.md](sunset-soul-prd-story-capture.md) and [sunset-soul-interviewer-guide.md](sunset-soul-interviewer-guide.md).
 - **Opening questions:** three questions tailored to the photo, with "Ask me something else". A fixed set of three is shown if the photo can't be analyzed
@@ -275,6 +284,8 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 
 ### Phase 7: Hardening and beta
 **Goal:** safe to put in front of real people.
+
+**Split (set 2026-11-22):** everything except the beta itself is **7a Beta essentials**, built after 4f-1 and before 4f-2. Analytics record whether each photo has people (from 4f-1), so share and reaction rates can be compared for photos with and without people (PRD section 3). The crisis-line decision (no trigger since 4e part 4) is part of 7a. The **private beta** starts after 4f-3 and runs while 4f-4, 4f-5 and Phase 8 are built.
 - **Backups:** nightly `pg_dump` to R2, with a tested restore
 - **Monitoring:** Sentry for errors, an uptime check, and memory alerts for the Droplet
 - **Analytics (PostHog):** the PRD's success metrics (a second entry within 7 days, story rate, share rate, map-post rate)
@@ -334,7 +345,8 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Update (2026-11-20):** 5b and 5c done. Before 6: the rest of 4e.
 - **Update (2026-11-20, later):** 4e done. Next: Phase 6 (Live Global Map). Open before the beta: the crisis-line message has no trigger since part 4.
 - **Update (2026-11-22):** Phase 4f (Sunsets Together) added, and comes before Phase 6: Louise has moved the Live Global Map to a later phase. Native-app items decided on 2026-11-22 (photos saving to the phone automatically, the "From today" photo strip, finding sunsets in the camera roll) are on the Later List for Phase 9.
-- **7** follows Phase 6, and **8** comes last.
+- ~~**7** follows Phase 6, and **8** comes last.~~ Replaced on 2026-11-22, below.
+- **Order (set 2026-11-22, Steve): the beta first, the map last.** 4f-1 → 7a beta essentials → 4f-2 → 4f-3 → **private beta starts** → 4f-4 and 4f-5 during the beta → 8 Daily Ritual (late in the beta or right after, to see whether reminders bring people back) → **6 Live Global Map, last of the MVP** (with the 6.10 rules: photos with people not posted by default, photos of children never) → 9 and 10 native apps after the beta. About 6–7 days of building before the beta starts, plus owner tasks (privacy policy and terms; Google and Apple sign-in if wanted for the beta).
 - **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 
 ### Remaining estimates (2026-11-08)
@@ -351,6 +363,7 @@ Rough planning numbers. "Human" is one developer who knows the codebase (±30%).
 | 6 Live Global Map | 6–8 days | 5–8 hours | 2–3 days |
 | 7 Hardening and beta | 6–8 days | 5–8 hours | 2–3 days |
 | 8 Daily Ritual | 2–3 days | 2–3 hours | about a day |
+| 4f Sunsets Together, all parts (added 2026-11-22) | 12–16 days | 8–12 hours | 7.5–9 days |
 | **Total** | **32–43 days** | **25–43 hours** | **11.5–16 days** |
 | 9 Native apps, shell (added 2026-11-20) | 8–12 days | 6–10 hours | 5–8 days, plus store review |
 | 10 Fully native apps (added 2026-11-20) | 30–45 days | 25–45 hours | 4–8 weeks |
