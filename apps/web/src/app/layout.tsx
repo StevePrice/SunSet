@@ -28,6 +28,8 @@ const atkinson = localFont({
 export const metadata: Metadata = {
   title: "Sunset Soul",
   description: "A place to keep and share the sunsets that move you.",
+  // On iPhone, "Add to Home Screen" opens it full screen, named Sunset Soul (the icon is apple-icon.png).
+  appleWebApp: { capable: true, title: "Sunset Soul" },
 };
 
 // Browser chrome follows the page: navy in dark mode (the brand default), cream in light mode.

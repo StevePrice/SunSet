@@ -132,6 +132,15 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await friend.close();
 });
 
+test("the web app manifest is public, so phones can install it (Phase 7a)", async ({ request }) => {
+  const response = await request.get("/manifest.webmanifest");
+  expect(response.status()).toBe(200);
+  const manifest = (await response.json()) as { name: string; display: string; icons: { sizes: string }[] };
+  expect(manifest).toMatchObject({ name: "Sunset Soul", display: "standalone" });
+  expect(manifest.icons.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
+  expect((await request.get("/icons/icon-512.png")).status()).toBe(200);
+});
+
 test("download your sunsets as a ZIP (Phase 7a)", async ({ context }) => {
   await context.addCookies(session);
   const response = await context.request.get("/api/export");
