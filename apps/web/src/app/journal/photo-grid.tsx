@@ -10,7 +10,7 @@ export type GridPhoto = { id: string; takenAt: string; timeZone: string | null; 
 const noSubscribe = () => () => {};
 const browserTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-// The All photos view: square photos two to a row (never three), 8pt apart with 10pt corners,
+// The Photos view: square photos two to a row (never three), 8pt apart with 10pt corners,
 // under month headings, and nothing drawn on them. Months are worked out in the
 // viewer's time zone, like the dates shown elsewhere (LocalDate). The server and hydration render
 // use UTC, then the browser's time zone takes over, so there's no hydration mismatch.

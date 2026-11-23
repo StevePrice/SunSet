@@ -14,7 +14,7 @@ import { LinkSettings } from "../link-settings";
 import { ShareButton } from "../share-button";
 import { RemoveButton } from "./remove-button";
 
-export const metadata = { title: "Afterglow · Sunset Soul" };
+export const metadata = { title: "From your friends · Sunset Soul" };
 
 // What friends sent for one entry (PRD 6.9b): totals, who reacted, their notes. Owner only.
 export default async function AfterglowPage(props: PageProps<"/journal/[id]/afterglow">) {
@@ -35,8 +35,8 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 pt-4 pb-8">
       <AppHeader back={{ href: `/journal/${entry.id}`, label: "Back" }} />
       <header className="flex flex-col gap-1">
-        <h1 className="font-serif text-title-1">Afterglow</h1>
-        <p className="text-body text-ink-muted">from your friends</p>
+        {/* "Afterglow" is the team's internal name for this screen; it never appears in the app. */}
+        <h1 className="font-serif text-title-1">From your friends</h1>
       </header>
 
       <div className="flex items-center gap-4">

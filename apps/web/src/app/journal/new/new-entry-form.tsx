@@ -154,11 +154,20 @@ export function NewEntryForm() {
         {cancelButton}
         <div className="flex flex-col gap-2">
           <h1 className="font-serif text-title-1">New sunset</h1>
-          <p>Add one you&apos;re watching now, or one you took earlier.</p>
+          <p>Add one you&apos;ve already taken, or one you&apos;re watching now.</p>
         </div>
         <div className="flex flex-col gap-4">
-          <PhotoChoice icon={<CameraIcon />} title="Take a photo" note="Opens your camera" capture disabled={processing} onChange={onPick} />
-          <PhotoChoice icon={<PhotoIcon />} title="Choose from your photos" note="A sunset you took earlier" disabled={processing} onChange={onPick} />
+          {/* Choose from your photos first (decided 2026-11-22): most people take sunsets with the
+              phone's own camera and add the best shot later. */}
+          <PhotoChoice icon={<PhotoIcon />} title="Choose from your photos" note="A sunset you've already taken" disabled={processing} onChange={onPick} />
+          <PhotoChoice
+            icon={<CameraIcon />}
+            title="Take a photo"
+            note="Opens the camera. The photo is saved in your Journal."
+            capture
+            disabled={processing}
+            onChange={onPick}
+          />
         </div>
         {processing && (
           <p role="status" className="animate-pulse text-ink-muted">

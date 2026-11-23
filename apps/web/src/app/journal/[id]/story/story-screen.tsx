@@ -199,7 +199,7 @@ export function StoryScreen({
             key={clips.map((c) => c.id).join()}
             clips={clips.map((c) => `/api/clips/${c.id}`)}
             title="Your recording"
-            subtitle={`${formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))} · Only you can hear it`}
+            subtitle={`${formatDuration(clips.reduce((total, c) => total + c.durationMs, 0))} · Private until you share it`}
             action={
               aiOn && (
                 <button type="button" onClick={startVoice} disabled={voice.state.kind !== "idle"} className={`${textLink} shrink-0`}>
@@ -332,7 +332,7 @@ export function StoryScreen({
       {!review && <p className="text-center text-caption text-ink-muted">Not ready? Save now and add your story any time.</p>}
       {clips.length > 0 && (
         <p className="text-caption text-ink-muted">
-          AI turned your recording into text{titleSuggested ? " and suggested the title" : ""}. Your recording stays private; your story is shared only if you share it.
+          AI turned your recording into text{titleSuggested ? " and suggested the title" : ""}. Your recording and story stay private until you share them.
         </p>
       )}
 
