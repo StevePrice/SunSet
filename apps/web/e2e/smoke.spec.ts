@@ -163,7 +163,8 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await expect(page.getByText("Maria", { exact: true })).toBeVisible();
   await expect(page.getByText("Beautiful, thank you")).toBeVisible();
   await expect(page.getByRole("term").filter({ hasText: "Sending hugs" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Share again" })).toBeVisible();
+  // A link to Before you share, since this sunset has a name on it (4f-3).
+  await expect(page.getByRole("link", { name: "Share again" })).toHaveAttribute("href", `${entryUrl}/share`);
   await expect(page.getByRole("heading", { name: "Link settings" })).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Stop sharing" }).click();
