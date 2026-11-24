@@ -1,5 +1,5 @@
 # Sunset Soul — Later List
-**Started:** November 8, 2026, by Louise. **Updated:** November 22, 2026 (Sunsets Together Phase 2, Finding Your Sunsets, and "When it's a native app").
+**Started:** November 8, 2026, by Louise. **Updated:** November 23, 2026 (Safety: the crisis-line message, dropped for the beta).
 **What this is:** features we've decided are *not* in the MVP, kept in one place so good ideas aren't lost. Each one is designed right before it's built, using the design system and the flow map.
 **Related:** [Build Spec, Phase 4e](sunset-soul-build-spec-flow-fixes.md) · [Build Spec, Phase 4f Sunsets Together](sunset-soul-build-spec-sunsets-together.md) · [PRD](sunset-soul-prd.md) "Out of Scope" (section 8) and Sunsets Together (6.10) · [Flow fixes decisions](sunset-soul-flow-fixes-decisions.md) · [Concept doc](sunset-soul-concept.md) "Later (v2+)".
 
@@ -14,6 +14,9 @@ Sunset Soul is a web app for the MVP. These features need, or work much better i
 - **Sunset reminders** that work reliably (PRD 6.8; on a web app they need the app installed to the home screen on iPhone).
 - **Notification when a friend reacts.**
 - **Home-screen widget** for a close circle (Locket-style).
+
+## Safety
+- **A gentle check on saved stories:** if a story suggests someone is in crisis, show a kind message with a crisis line for their country. The old interview had this, triggered by its follow-up questions; the Phase 4e story screen has no follow-up questions, so the message had no trigger. Dropped for the beta on November 23 (Steve). Needs careful wording, country-specific numbers and review before it comes back.
 
 ## Sunsets Together — Phase 2
 The MVP part (names, the With people filter, Sunsets with [Name], Two sides of the story typed or spoken, Share it in your own voice, "You're in Louise's sunset" and "I was there!") is in PRD 6.10 and the Phase 4f Build Spec.

@@ -116,6 +116,10 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await friendPage.getByRole("button", { name: "Send", exact: true }).click();
   await expect(friendPage.getByRole("status")).toContainText("will see your reaction");
 
+  // "Start your own Journal" goes through /join (counted, Phase 7a) to sign-up.
+  await friendPage.getByRole("link", { name: "Start your own Journal" }).click();
+  await expect(friendPage).toHaveURL(/\/sign-in\?mode=sign-up$/);
+
   // From your friends has Share again and the link settings; Stop sharing kills the link.
   await page.reload();
   await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Shared · 1 reaction");
@@ -139,6 +143,19 @@ test("the web app manifest is public, so phones can install it (Phase 7a)", asyn
   expect(manifest).toMatchObject({ name: "Sunset Soul", display: "standalone" });
   expect(manifest.icons.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
   expect((await request.get("/icons/icon-512.png")).status()).toBe(200);
+});
+
+test("the privacy policy and terms are public and linked from every page (Phase 7a)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Privacy" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Privacy policy" })).toBeVisible();
+  await page.getByRole("contentinfo").getByRole("link", { name: "Terms" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Terms" })).toBeVisible();
+});
+
+test("an error report from the browser is accepted (Phase 7a)", async ({ request }) => {
+  const response = await request.post("/api/client-errors", { data: { message: "smoke test", path: "/smoke" } });
+  expect(response.status()).toBe(204);
 });
 
 test("download your sunsets as a ZIP (Phase 7a)", async ({ context }) => {

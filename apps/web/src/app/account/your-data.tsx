@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { buttonClass } from "@/components/button";
 import { noticeClass } from "@/components/styles";
@@ -26,6 +27,9 @@ export function YourData() {
       <a href="/api/export" className={buttonClass("secondary", "w-full")} download>
         Download your sunsets
       </a>
+      <p className="text-caption text-ink-muted">
+        How we look after it: the <Link href="/privacy" className="underline">Privacy policy</Link>.
+      </p>
 
       {confirming ? (
         <div className="flex flex-col gap-3 rounded-ss-lg bg-surface-raised p-4">

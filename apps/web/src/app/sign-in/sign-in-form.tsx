@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -134,6 +135,13 @@ export function SignInForm({ providers, initialMode = "magic-link" }: { provider
                 : "Send reset link"}
         </button>
       </form>
+      {mode !== "forgot" && (
+        // An email link, Google and Apple can all create an account, so the note shows for every way in.
+        <p className="text-caption text-ink-muted">
+          By continuing you agree to the <Link href="/terms" className="underline">Terms</Link> and the{" "}
+          <Link href="/privacy" className="underline">Privacy policy</Link>.
+        </p>
+      )}
 
       {notice && <p className="rounded-ss-md border border-border-subtle bg-surface-raised p-3 text-ink">{notice}</p>}
       {error && (
