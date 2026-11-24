@@ -17,8 +17,25 @@ export function parseJournalView(value: string | string[] | undefined, remembere
   return isView(remembered) ? remembered : "stories";
 }
 
-export function journalViewHref(view: JournalView): string {
-  return `/journal?view=${view}`;
+// The filter under the view switch (Phase 4f-2, Build Spec 1.3): All · With people · Pure sunset,
+// in the URL as ?show=people or ?show=pure, and remembered like the view.
+export type JournalShow = "all" | "people" | "pure";
+
+export const JOURNAL_SHOW_COOKIE = "ss_journal_show";
+
+function isShow(value: unknown): value is JournalShow {
+  return value === "all" || value === "people" || value === "pure";
+}
+
+/** The filter from the URL, else the last one used, else All. */
+export function parseJournalShow(value: string | string[] | undefined, remembered?: string): JournalShow {
+  if (isShow(value)) return value;
+  return isShow(remembered) ? remembered : "all";
+}
+
+/** A Journal link that keeps both choices in the URL. */
+export function journalHref(view: JournalView, show: JournalShow): string {
+  return `/journal?view=${view}&show=${show}`;
 }
 
 export type MonthGroup<T> = { key: string; label: string; items: T[] };

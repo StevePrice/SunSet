@@ -3,6 +3,7 @@ import { LocalDate } from "@/components/local-date";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { nameChips, namesForEntry } from "@/lib/people";
 import { getStorySettings } from "@/lib/settings";
 import { listClips } from "@/lib/story/clips";
 import { assembleSaid, originalWords } from "@/lib/story/prompts";
@@ -19,11 +20,17 @@ export async function StoryScreenPage({ id, mode }: { id: string; mode: "new" | 
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [session, clips, settings] = await Promise.all([getSession(db, user.id, id), listClips(db, user.id, id), getStorySettings(db, user.id)]);
-    return { entry, session, clips, settings };
+    const [session, clips, settings, names, known] = await Promise.all([
+      getSession(db, user.id, id),
+      listClips(db, user.id, id),
+      getStorySettings(db, user.id),
+      namesForEntry(db, user.id, id),
+      nameChips(db, user.id),
+    ]);
+    return { entry, session, clips, settings, names, known };
   });
   if (!found) notFound();
-  const { entry, session, clips, settings } = found;
+  const { entry, session, clips, settings, names, known } = found;
   const turns = session?.turns ?? [];
   const spoken = turns.some((t) => t.via === "spoken");
   // The person's original words, kept private: "What you said" (spoken) or "What you wrote".
@@ -54,6 +61,9 @@ export async function StoryScreenPage({ id, mode }: { id: string; mode: "new" | 
         hasLocation={entry.location !== null}
         aiHelp={settings?.aiStoryHelp ?? true}
         noticeSeen={settings?.noticeSeen ?? false}
+        hasPeople={entry.hasPeople}
+        initialNames={names}
+        knownNames={known.map((k) => k.name)}
       />
     </main>
   );

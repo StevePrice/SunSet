@@ -17,6 +17,8 @@ export type Entry = {
   placeName: string | null;
   /** The time zone the date is shown in (Phase 4e, one date rule). */
   timeZone: string | null;
+  /** The scorer's people check (never who); null until scored by v2.1+. */
+  hasPeople: boolean | null;
   photoWidth: number;
   photoHeight: number;
   createdAt: Date;
@@ -31,6 +33,7 @@ const columns = {
   location: entries.location,
   placeName: entries.placeName,
   timeZone: entries.timeZone,
+  hasPeople: entries.hasPeople,
   photoWidth: entries.photoWidth,
   photoHeight: entries.photoHeight,
   createdAt: entries.createdAt,
@@ -45,6 +48,7 @@ function toEntry(row: {
   location: { x: number; y: number } | null;
   placeName: string | null;
   timeZone: string | null;
+  hasPeople: boolean | null;
   photoWidth: number;
   photoHeight: number;
   createdAt: Date;

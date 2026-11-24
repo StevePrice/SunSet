@@ -1,6 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { Zip, ZipPassThrough, strToU8 } from "fflate";
 import { track } from "@/lib/analytics";
+import { namesByEntry } from "@/lib/people";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries, photoKey } from "@/lib/entries";
@@ -20,7 +21,7 @@ export async function GET() {
   const { env, ctx } = await getCloudflareContext({ async: true });
 
   const sunsets: ExportSunset[] = await withDrizzle(async (db) => {
-    const entries = await listEntries(db, user.id);
+    const [entries, names] = await Promise.all([listEntries(db, user.id), namesByEntry(db, user.id)]);
     const out: ExportSunset[] = [];
     for (const entry of entries) {
       const [score, afterglow, clips, session] = await Promise.all([
@@ -30,7 +31,7 @@ export async function GET() {
         getSession(db, user.id, entry.id),
       ]);
       const turns = session?.turns ?? [];
-      out.push({ entry, score, afterglow, clips, originalWords: turns.length ? originalWords(turns) : null });
+      out.push({ entry, score, afterglow, clips, originalWords: turns.length ? originalWords(turns) : null, people: names.get(entry.id) ?? [] });
     }
     return out;
   });

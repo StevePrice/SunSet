@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { namesForEntry } from "@/lib/people";
 import { reactionTotals } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { getShareForEntry } from "@/lib/shares";
@@ -12,6 +13,7 @@ import { formatDuration } from "@/lib/story/voice";
 import { AppHeader, BottomBar } from "@/components/app-nav";
 import { buttonClass } from "@/components/button";
 import { LocalDate } from "@/components/local-date";
+import { NameLink } from "@/components/people";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
 import { DeleteEntryButton } from "./entry-controls";
@@ -32,11 +34,12 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [score, share, totals, clips] = await Promise.all([
+    const [score, share, totals, clips, names] = await Promise.all([
       getScore(db, user.id, id),
       getShareForEntry(db, user.id, id),
       reactionTotals(db, user.id),
       listClips(db, user.id, id),
+      namesForEntry(db, user.id, id),
     ]);
     return {
       entry,
@@ -44,10 +47,11 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
       share,
       reactionCount: totals.get(id) ?? 0,
       clips: clips.map((c) => ({ id: c.id, durationMs: c.durationMs })),
+      names,
     };
   });
   if (!found) notFound();
-  const { entry, score, share, reactionCount, clips } = found;
+  const { entry, score, share, reactionCount, clips, names } = found;
   const { env } = await getCloudflareContext({ async: true });
   const place = entry.placeName;
   // The "See what friends sent" row's second line (4f Build Spec 1.2). Reactions stay after Stop
@@ -93,6 +97,15 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
                 </h1>
                 {place && <p className="text-caption text-ink-muted">{place}</p>}
               </>
+            )}
+            {/* Who's in it (4f-2, Build Spec 2.6): each name opens Sunsets with [Name]. Owner-only. */}
+            {names.length > 0 && (
+              <div className="my-2 flex flex-wrap items-center gap-3">
+                <span className="text-caption text-ink-muted">With</span>
+                {names.map((name) => (
+                  <NameLink key={name} name={name} icon />
+                ))}
+              </div>
             )}
             <WowLine />
           </div>

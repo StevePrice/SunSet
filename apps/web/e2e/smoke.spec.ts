@@ -79,6 +79,36 @@ test("add a story by typing, then change it with Edit", async ({ page, context }
   await expect(page.getByText("The sky went gold, then pink, over the water.")).toBeVisible();
 });
 
+test("name who's in a sunset, then find it under With people and Sunsets with (Phase 4f-2)", async ({ page, context }) => {
+  await context.addCookies(session);
+  // The test photo has no people, so the card opens from Edit ("Add who's in it").
+  await page.goto(`${entryUrl}/edit`);
+  await page.getByRole("button", { name: "Add who's in it" }).click();
+  await expect(page.getByRole("heading", { name: "Who's in this one?" })).toBeVisible();
+  await page.getByLabel("Add a name").fill("Smoke Friend");
+  await page.getByRole("button", { name: "Add this name" }).click();
+  await expect(page.getByRole("button", { name: "Smoke Friend" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`${entryUrl}$`));
+
+  // Entry Detail: "With" and the name, which opens Sunsets with [Name].
+  await expect(page.getByText("With", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Smoke Friend" }).click();
+  await expect(page.getByRole("heading", { name: "Sunsets with Smoke Friend" })).toBeVisible();
+  await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
+
+  // The Journal filter: With people shows it with the name chip; Pure sunset doesn't.
+  await page.goto("/journal?view=stories&show=people");
+  await expect(page.getByRole("link", { name: "With people" })).toHaveAttribute("aria-current", "page");
+  await expect(page.locator(`a[href="${entryUrl}"]`)).toContainText("With Smoke Friend");
+  await expect(page.getByRole("link", { name: /^Smoke Friend\s*\d+$/ })).toBeVisible();
+  await page.goto("/journal?view=stories&show=pure");
+  await expect(page.locator(`a[href="${entryUrl}"]`)).toHaveCount(0);
+  // Back to All, so later tests (and the next visit) see everything.
+  await page.goto("/journal?view=stories&show=all");
+  await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
+});
+
 test("share in one tap, open the link signed out, then stop sharing from From your friends", async ({ page, context, browser }) => {
   await context.addCookies(session);
   // Test browsers have no share menu: stand in for it and keep what the page shared.

@@ -7,7 +7,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import { entries, shares, storyClips } from "@/db/schema";
+import { entries, entryPeople, shares, storyClips } from "@/db/schema";
 import type { Db } from "@/lib/db";
 
 /** Set by /s/[id]/join so sign-up can tell it came from a share page. Holds only the word "share". */
@@ -20,6 +20,8 @@ export type AnalyticsEvent =
   | "entry_saved"
   | "story_saved"
   | "story_polished"
+  | "names_added"
+  | "journal_filtered"
   | "entry_shared"
   | "share_page_viewed"
   | "share_signup_tapped"
@@ -96,6 +98,7 @@ export async function entryFacts(db: Db, entryId: string): Promise<Properties> {
     .where(eq(entries.id, entryId));
   if (!row) return { entry_id: entryId };
   const [clips] = await db.select({ n: count() }).from(storyClips).where(eq(storyClips.entryId, entryId));
+  const [named] = await db.select({ n: count() }).from(entryPeople).where(eq(entryPeople.entryId, entryId));
   return {
     entry_id: entryId,
     // null until the scorer has looked at the photo.
@@ -103,6 +106,8 @@ export async function entryFacts(db: Db, entryId: string): Promise<Properties> {
     people_count: row.peopleCount,
     has_story: Boolean(row.story?.trim()),
     has_voice: (clips?.n ?? 0) > 0,
+    // Names the owner added (4f-2); the count only, never the names.
+    names_count: named?.n ?? 0,
   };
 }
 
