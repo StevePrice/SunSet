@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         <List>
           <li>Your Journal is private. Nobody sees a sunset unless you make a link and send it.</li>
           <li>We don&apos;t sell your data, and there are no ads.</li>
-          <li>Your recordings are never shared, not even when you share a sunset.</li>
+          <li>Your recordings stay private. Friends hear one only if you turn on Include my voice when you share.</li>
           <li>Friends see a town name, never the exact spot where you took the photo.</li>
           <li>You can download everything, or delete your account and all of it, from You at any time.</li>
         </List>
@@ -118,7 +118,9 @@ export default function PrivacyPage() {
       <Section title="What friends see when you share">
         <p>
           A share link shows the photo, its title and story, the date and the town to anyone who has the link. It never
-          shows your recordings, your exact location or your email. You choose the place name friends see, and you can
+          shows your exact location or your email, and plays your recording only if you turned on Include my voice for
+          that link. When you send a sunset to someone you named in the photo, their link greets them by name; the names
+          on your other sunsets stay private. You choose the place name friends see, and you can
           stop sharing at any time; the link then stops working. Shared pages are hidden from search engines.
         </p>
       </Section>

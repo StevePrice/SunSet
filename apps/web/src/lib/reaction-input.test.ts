@@ -50,3 +50,18 @@ describe("parseVisitorId", () => {
     expect(parseVisitorId(`${id.slice(0, 21)};`)).toBeNull();
   });
 });
+
+describe("personal links (4f-3)", () => {
+  it("says I was there! for the person in the photo, Wish I was there for everyone else", async () => {
+    const { reactionLabel } = await import("./reaction-input");
+    expect(reactionLabel("wish", true)).toBe("I was there!");
+    expect(reactionLabel("wish")).toBe("Wish I was there");
+    expect(reactionLabel("love", true)).toBe("Love this!");
+  });
+
+  it("accepts only a well-formed personal link token", async () => {
+    const { parseReactionRequest } = await import("./reaction-input");
+    expect(parseReactionRequest({ action: "toggle", kind: "wish", recipient: "A".repeat(22) }).ok).toBe(true);
+    expect(parseReactionRequest({ action: "toggle", kind: "wish", recipient: "short" }).ok).toBe(false);
+  });
+});

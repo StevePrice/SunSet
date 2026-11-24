@@ -32,10 +32,10 @@ link-preview bots are skipped. Without `POSTHOG_KEY`, nothing is sent.
 | `story_polished` | user | `entry_id`, `style` |
 | `names_added` | user | `entry_id`, `names` (how many, never the names) |
 | `journal_filtered` | user | `show` (`people` or `pure`), `view`; only when a filter is picked, not on plain visits |
-| `entry_shared` | user | `entry_id`, `share_id`, `has_people`, `people_count`, `has_story`, `has_voice` (every Share tap) |
-| `share_page_viewed` | friend's visitor id, or a random one | `share_id`, `entry_id`, the people/story facts, `returning_friend` (not the owner, not bots) |
+| `entry_shared` | user | `entry_id`, `share_id`, `has_people`, `people_count`, `has_story`, `has_voice`, `personal` (a link for someone named in the photo), `include_voice` (every Share tap) |
+| `share_page_viewed` | friend's visitor id, or a random one | `share_id`, `entry_id`, the people/story facts, `returning_friend`, `personal`, `voice_included` (not the owner, not bots) |
 | `share_signup_tapped` | as above | `share_id` |
-| `reaction_received` | friend's visitor id | `share_id`, `entry_id`, `kind`, the people/story facts |
+| `reaction_received` | friend's visitor id | `share_id`, `entry_id`, `kind`, `personal` (`wish` on a personal link is "I was there!"), the people/story facts |
 | `note_received` | friend's visitor id | `share_id`, `entry_id`, the people/story facts |
 | `data_exported` | user | `sunsets` |
 | `account_deleted` | user | none |
@@ -54,7 +54,8 @@ story is saved or a sunset shared.
 | Share page → "Start your own Journal" | `share_signup_tapped` ÷ `share_page_viewed`; and `signed_up` where `from_share = true` |
 | Entries per active user per week | `entry_saved` total ÷ weekly active users |
 | **With people vs. without (the main test)** | The share and reaction rates above, broken down by `has_people` |
-| Shares that include voice | `entry_shared` broken down by `has_voice` |
+| Shares that include voice | `entry_shared` with `include_voice = true` ÷ `entry_shared` with `has_voice = true` |
+| "Start your own Journal" for people named in a photo vs. other friends | `share_signup_tapped` and `share_page_viewed` broken down by `personal` |
 | Photos with people where names are added | `names_added` unique `entry_id` ÷ entries with `has_people = true` (or `story_saved` with `has_people = true` and `names_count > 0`) |
 | Use of the With people filter | `journal_filtered` with `show = people`, unique users |
 

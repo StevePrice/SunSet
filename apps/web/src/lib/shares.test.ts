@@ -40,6 +40,7 @@ describe("share card content", () => {
     photoWidth: 2560,
     photoHeight: 1440,
     place: null,
+    includeVoice: false,
     timeZone: "America/Los_Angeles",
   };
 

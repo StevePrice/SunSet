@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
-import { stopSharingAction, updateSharePlaceAction, type ShareLink } from "../actions";
+import { stopSharingAction, stopSharingVoiceAction, updateSharePlaceAction, type ShareLink } from "../actions";
+import { joinNames } from "@/lib/people-input";
 import { Button } from "@/components/button";
 import { fieldClass, noticeClass, panelClass } from "@/components/styles";
 import { MAX_PLACE_LENGTH } from "@/lib/shares";
@@ -13,8 +14,19 @@ type PlaceState = { error: string } | { saved: true } | null;
  * Link settings in Afterglow (Phase 4e, Build Spec 3.11): what the link shows, Copy link, the place
  * name friends see, and Stop sharing. Only shown while the sunset is shared.
  */
-export function LinkSettings({ entryId, share }: { entryId: string; share: ShareLink }) {
+export function LinkSettings({
+  entryId,
+  share,
+  voice,
+}: {
+  entryId: string;
+  share: ShareLink;
+  /** Which links carry the owner's voice (4f-3): the normal link, and personal links by name. */
+  voice: { normal: boolean; people: string[] };
+}) {
   const router = useRouter();
+  const [stoppingVoice, setStoppingVoice] = useState(false);
+  const voiceListeners = [...voice.people, ...(voice.normal ? ["anyone with the link"] : [])];
   const [copied, setCopied] = useState(false);
   const [stopping, setStopping] = useState(false);
   const [placeState, placeAction, placePending] = useActionState<PlaceState, FormData>(
@@ -34,7 +46,7 @@ export function LinkSettings({ entryId, share }: { entryId: string; share: Share
       <h2 id="link-settings" className="font-serif text-title-3">
         Link settings
       </h2>
-      <p>Anyone with the link can see the photo, title, story and date, and react. The exact location is never shared.</p>
+      <p>Anyone with the link can see the photo, title, story and date, and react. The exact location is never shared, and your voice only if you turned it on.</p>
       <Button
         className="self-start"
         onClick={async () => {
@@ -73,6 +85,24 @@ export function LinkSettings({ entryId, share }: { entryId: string; share: Share
           </p>
         )}
       </form>
+      {voiceListeners.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <p>Your voice: {joinNames(voiceListeners)} can hear you tell this story.</p>
+          <button
+            type="button"
+            disabled={stoppingVoice}
+            onClick={async () => {
+              setStoppingVoice(true);
+              await stopSharingVoiceAction(entryId);
+              setStoppingVoice(false);
+              router.refresh();
+            }}
+            className="inline-flex min-h-12 items-center self-start text-label underline disabled:opacity-50"
+          >
+            {stoppingVoice ? "Stopping…" : "Stop sharing my voice"}
+          </button>
+        </div>
+      )}
       <button
         type="button"
         disabled={stopping}

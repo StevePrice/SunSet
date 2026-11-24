@@ -182,9 +182,34 @@ export const shares = pgTable(
     place: text("place"),
     // The owner's time zone when they shared, so the date shown is the day they saw the sunset.
     timeZone: text("time_zone").notNull(),
+    // Include my voice (Phase 4f-3) for the normal link: friends can hear the owner tell the story.
+    // Off unless the owner turns it on. Personal links have their own switch (share_recipients).
+    includeVoice: boolean("include_voice").notNull().default(false),
     ...timestamps,
   },
   (table) => [index("shares_user_idx").on(table.userId)],
+);
+
+// A personal link (Phase 4f-3, Build Spec 2.7–2.8): the share sent to someone named in the photo.
+// /s/[share id]?r=[token] greets them by name ("Steve, you're in Louise's sunset"), skips the
+// first-name question and offers "I was there!". One per name per share; Stop sharing (deleting the
+// share) ends every personal link with it.
+export const shareRecipients = pgTable(
+  "share_recipients",
+  {
+    id: text("id").primaryKey(),
+    shareId: text("share_id")
+      .notNull()
+      .references(() => shares.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    // 22 random base62 characters; the link works only with it.
+    token: text("token").notNull().unique(),
+    includeVoice: boolean("include_voice").notNull().default(false),
+    // The reaction visitor made the first time they reacted, so "I was there!" can be shown as theirs.
+    visitorId: text("visitor_id").references(() => reactionVisitors.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("share_recipients_share_name_idx").on(table.shareId, sql`lower(${table.name})`)],
 );
 
 // A friend who reacted to a shared sunset (Phase 4b). No account: the id lives in a long-lived

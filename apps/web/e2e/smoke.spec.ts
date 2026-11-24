@@ -121,10 +121,16 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   });
   await page.goto(entryUrl);
   await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Not shared yet");
+  // The sunset has a name on it (the test above), so Share asks who it's for first (4f-3).
+  await page.getByRole("link", { name: "Share", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Before you share" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: /Smoke Friend/ })).toBeChecked();
+  await page.getByRole("radio", { name: /Someone else/ }).check();
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const shared = await page.waitForFunction(() => (window as unknown as { shared?: ShareData }).shared);
   const link = (await shared.jsonValue())!.url!;
   expect(link).toMatch(/\/s\/[\w-]+$/);
+  await page.goto(entryUrl);
   await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("No reactions yet");
 
   // A fresh browser context has no session: this is what a friend sees.
@@ -157,13 +163,49 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await expect(page.getByText("Maria", { exact: true })).toBeVisible();
   await expect(page.getByText("Beautiful, thank you")).toBeVisible();
   await expect(page.getByRole("term").filter({ hasText: "Sending hugs" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Share again" })).toBeVisible();
+  // A link to Before you share, since this sunset has a name on it (4f-3).
+  await expect(page.getByRole("link", { name: "Share again" })).toHaveAttribute("href", `${entryUrl}/share`);
   await expect(page.getByRole("heading", { name: "Link settings" })).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Stop sharing" }).click();
   await expect(page.getByText(/^Not shared/)).toBeVisible();
   expect((await friendPage.goto(path))?.status()).toBe(404);
   await friend.close();
+});
+
+test("a personal link greets the person in the photo, who taps I was there! without giving a name (Phase 4f-3)", async ({ page, context, browser }) => {
+  await context.addCookies(session);
+  await page.addInitScript(() => {
+    const w = window as unknown as { shared?: ShareData };
+    navigator.share = async (data?: ShareData) => {
+      w.shared = data;
+    };
+    navigator.canShare = () => false;
+  });
+  await page.goto(`${entryUrl}/share`);
+  await expect(page.getByRole("radio", { name: /Smoke Friend/ })).toBeChecked();
+  await expect(page.getByText("“Smoke Friend, you're in")).toBeVisible();
+  // No spoken story, so no Include my voice.
+  await expect(page.getByRole("switch")).toHaveCount(0);
+  await page.getByRole("button", { name: "Share", exact: true }).click();
+  const shared = await page.waitForFunction(() => (window as unknown as { shared?: ShareData }).shared);
+  const link = (await shared.jsonValue())!.url!;
+  expect(link).toMatch(/\/s\/[\w-]+\?r=[\w]+$/);
+
+  const friend = await browser.newContext();
+  const friendPage = await friend.newPage();
+  const url = new URL(link);
+  await friendPage.goto(url.pathname + url.search);
+  await expect(friendPage.getByText(/^Smoke Friend, you're in .+ sunset$/)).toBeVisible();
+  await expect(friendPage.getByRole("button", { name: /Wish I was there/ })).toHaveCount(0);
+  await friendPage.getByRole("button", { name: /I was there!/ }).click();
+  await expect(friendPage.getByRole("button", { name: /I was there!/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(friendPage.getByLabel(/first name/)).toHaveCount(0);
+  await friend.close();
+
+  // The owner sees it as "I was there!" from Smoke Friend.
+  await page.goto(`${entryUrl}/afterglow`);
+  await expect(page.getByRole("listitem").filter({ hasText: "Smoke Friend" }).getByText("I was there!")).toBeVisible();
 });
 
 test("the web app manifest is public, so phones can install it (Phase 7a)", async ({ request }) => {

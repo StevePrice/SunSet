@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
  * One play button for a story's recordings, played one after another: "Hear it in your own voice"
- * on Entry Detail and "Your recording" on the story screen. Owner only; never on the Share Page.
+ * on Entry Detail and "Your recording" on the story screen. Also "Hear Louise tell it" on the Share Page, when the owner turned on Include my voice (4f-3).
  */
 export function HearYourVoice({
   clips,
