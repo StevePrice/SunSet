@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { createEntry, photoKey } from "@/lib/entries";
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
         console.error(`Couldn't queue scoring for ${entry.id}:`, error),
       ),
     );
+    await track("entry_saved", user.id, { entry_id: entry.id, has_location: Boolean(input.value.location) });
     return Response.json({ id: entry.id }, { status: 201 });
   } catch (error) {
     await env.PHOTOS.delete(keys);

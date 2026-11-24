@@ -3,6 +3,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { firstNameSchema } from "@/lib/first-name";
@@ -45,6 +46,7 @@ export async function deleteMyAccountAction(): Promise<{ error: string } | void>
   const { env } = await getCloudflareContext({ async: true });
   const result = await withDrizzle((db) => deleteOwnAccount(db, user.id, parseAdminEmails(env.ADMIN_EMAILS)));
   if (!result.ok) return { error: result.error };
+  await track("account_deleted", user.id);
   try {
     await deleteAccountFiles(env.PHOTOS, result.userId, result.shareIds);
   } catch (error) {

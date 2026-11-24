@@ -3,6 +3,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { entryFacts, track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
@@ -86,6 +87,8 @@ export async function createShareAction(entryId: string, timeZone: string): Prom
   if (!user) redirect("/sign-in");
   const share = await withDrizzle((db) => createShare(db, user.id, entryId, parseTimeZone(timeZone)));
   if (!share) return { error: "This entry no longer exists." };
+  // Every tap of Share (a new link or the same one again); share rate counts distinct entry_ids.
+  await track("entry_shared", user.id, { ...(await withDrizzle((db) => entryFacts(db, entryId))), share_id: share.id });
   revalidatePath(`/journal/${entryId}`);
   revalidatePath(`/journal/${entryId}/afterglow`);
   return { url: await shareUrl(share.id), place: share.place };

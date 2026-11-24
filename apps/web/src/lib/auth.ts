@@ -10,6 +10,7 @@ import { headers } from "next/headers";
 import { connection } from "next/server";
 import { Client } from "pg";
 import * as schema from "@/db/schema";
+import { REF_COOKIE, track } from "@/lib/analytics";
 import { magicLinkEmail, resetPasswordEmail, sendEmail, verifyEmailEmail } from "@/lib/email";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { onSessionStart, parseAdminEmails } from "@/lib/user-admin";
@@ -42,6 +43,16 @@ export function createAuth(env: CloudflareEnv, client: Client, runInBackground: 
     },
     rateLimit: { storage: "database" },
     databaseHooks: {
+      user: {
+        create: {
+          // "from_share": they came from a friend's share page ("Start your own Journal").
+          after: async (user, context) => {
+            const cookie = context?.request?.headers.get("cookie") ?? "";
+            const fromShare = cookie.split(/;\s*/).includes(`${REF_COOKIE}=share`);
+            await track("signed_up", user.id, { from_share: fromShare });
+          },
+        },
+      },
       session: {
         // Every sign-in method ends in a new session, so this one check covers password, magic link,
         // Google and Apple. It also gives ADMIN_EMAILS accounts their role.

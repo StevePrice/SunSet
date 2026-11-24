@@ -1,11 +1,12 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import Link from "next/link";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Logo } from "@/components/logo";
 import { PhotoCard } from "@/components/photo-card";
+import { anonymous, isBot, shareFacts, track } from "@/lib/analytics";
+import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { CARD_HEIGHT, CARD_WIDTH, cardContent, cardVersion, shareByline } from "@/lib/share-card";
 import { parseVisitorId, VISITOR_COOKIE } from "@/lib/reaction-input";
@@ -44,6 +45,7 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
   const visitorId = parseVisitorId((await cookies()).get(VISITOR_COOKIE)?.value);
   const reactions = await withDrizzle((db) => getPublicReactions(db, id, visitorId));
   if (!reactions) notFound();
+  await trackView(share, visitorId);
   // /photo serves the share size (the display photo scaled to SHARE_PHOTO_EDGE).
   const photo = fitWithin(share.photoWidth, share.photoHeight, SHARE_PHOTO_EDGE);
 
@@ -73,10 +75,21 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
           <Logo width={132} />
         </p>
         <p>A place to keep the sunsets that move you, and the stories behind them.</p>
-        <Link href="/sign-in?mode=sign-up" className="inline-flex min-h-12 items-center text-label underline">
+        {/* A plain link, not <Link>: prefetching would count as a tap. */}
+        <a href={`/s/${id}/join`} className="inline-flex min-h-12 items-center text-label underline">
           Start your own Journal
-        </Link>
+        </a>
       </footer>
     </main>
   );
+}
+
+// A friend opening the link (not a link-preview fetcher, and not the owner checking their own link).
+async function trackView(share: { id: string; entryId: string; ownerId: string }, visitorId: string | null) {
+  if (isBot((await headers()).get("user-agent"))) return;
+  const viewer = await getCurrentUser().catch(() => null);
+  if (viewer?.id === share.ownerId) return;
+  const facts = await withDrizzle((db) => shareFacts(db, share.id));
+  const { distinctId, properties } = anonymous({ ...facts, returning_friend: visitorId !== null });
+  await track("share_page_viewed", visitorId ?? distinctId, properties);
 }
