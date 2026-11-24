@@ -28,6 +28,8 @@ function describe(row: ActivityRow): string {
       return `signed ${who} out everywhere (${Number(d.sessionsEnded ?? 0)} sessions)`;
     case "delete_account":
       return `deleted the account of ${who}`;
+    case "delete_own_account":
+      return `deleted their own account (${who})`;
     case "rescore_all":
       return `queued ${Number(d.queued ?? 0)} sunsets for scoring`;
     case "fill_titles":

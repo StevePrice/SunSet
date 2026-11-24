@@ -78,6 +78,28 @@ services:
       - internal
       - egress
 
+  # Nightly pg_dump to Cloudflare R2, checked and pruned (backup.sh; setup and restore in
+  # docs/backups.md). On both networks: the database is internal-only, R2 needs egress.
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    entrypoint: ["sh", "-ec", "apk add --no-cache aws-cli coreutils >/dev/null && exec sh /backup.sh \"$$@\"", "--"]
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:?Set R2_ACCOUNT_ID in .env}
+      R2_ACCESS_KEY_ID: ${R2_BACKUP_ACCESS_KEY_ID:?Set R2_BACKUP_ACCESS_KEY_ID in .env}
+      R2_SECRET_ACCESS_KEY: ${R2_BACKUP_SECRET_ACCESS_KEY:?Set R2_BACKUP_SECRET_ACCESS_KEY in .env}
+      R2_BACKUP_BUCKET: ${R2_BACKUP_BUCKET:-sunset-backups}
+    volumes:
+      - ./backup.sh:/backup.sh:ro
+    mem_limit: 128m
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+      - egress
+
 networks:
   internal:
     internal: true

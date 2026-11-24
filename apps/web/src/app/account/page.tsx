@@ -6,6 +6,7 @@ import { withDrizzle } from "@/lib/db";
 import { getStorySettings } from "@/lib/settings";
 import { countRecordings } from "@/lib/story/clips";
 import { FirstNameForm } from "./first-name-form";
+import { YourData } from "./your-data";
 import { SettingsPanel } from "./settings-panel";
 import { SignOutButton } from "./sign-out-button";
 
@@ -42,6 +43,7 @@ async function AccountDetails() {
       </div>
       <SettingsPanel aiStoryHelp={settings?.aiStoryHelp ?? true} recordings={recordings} />
       <SignOutButton />
+      <YourData />
       {/* Attribution required by the GeoNames licence (CC BY 4.0) for the town names. */}
       <p className="text-caption text-ink-muted">
         Place names from{" "}
