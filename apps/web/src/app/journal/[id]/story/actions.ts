@@ -10,6 +10,7 @@ import { entryFacts, track, wordBucket } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry, photoKey, updateEntry } from "@/lib/entries";
+import { parseNames, setEntryNames } from "@/lib/people";
 import { parseStory } from "@/lib/entry-input";
 import { getScore } from "@/lib/scores";
 import { AI_OFF_MESSAGE, getStorySettings, markAiNoticeSeen, setAiStoryHelp } from "@/lib/settings";
@@ -200,7 +201,7 @@ export async function polishAction(entryId: string, style: StoryStyle, story: st
  */
 export async function saveStoryTextAction(
   entryId: string,
-  input: { story: string; title: string; removeLocation?: boolean },
+  input: { story: string; title: string; removeLocation?: boolean; names?: string[] },
 ): Promise<{ error: string } | void> {
   const user = await signedIn();
   const story = parseStory(input.story);
@@ -225,6 +226,10 @@ export async function saveStoryTextAction(
       caption: null,
       ...(input.removeLocation && { location: null }),
     });
+    // Names only when "Who's in this one?" was on screen; otherwise they're left as they are.
+    const names = input.names === undefined ? null : parseNames(input.names);
+    if (updated && names) await setEntryNames(db, user.id, entryId, names);
+    if (updated && names?.length) await track("names_added", user.id, { entry_id: entryId, names: names.length });
     if (updated && story.value) {
       await track("story_saved", user.id, {
         ...(await entryFacts(db, entryId)),

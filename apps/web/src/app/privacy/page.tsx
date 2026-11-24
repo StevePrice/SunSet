@@ -40,6 +40,11 @@ export default function PrivacyPage() {
           answers you give to story questions.
         </p>
         <p>
+          <strong>Who&apos;s in a sunset:</strong> names you add to a photo (&ldquo;Steve&rdquo;, &ldquo;The grandkids&rdquo;).
+          Only you see them. We never recognise faces: the scorer only notices whether people are in a photo, and you
+          decide who they are.
+        </p>
+        <p>
           <strong>Scores:</strong> each photo&apos;s Sunset Score and what the scorer noticed about it, including whether
           people appear in it and roughly how many. We don&apos;t recognise who anyone is.
         </p>

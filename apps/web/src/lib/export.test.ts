@@ -11,6 +11,7 @@ const entry: Entry = {
   location: { latitude: 33.15, longitude: -117.35 },
   placeName: "Carlsbad, California",
   timeZone: "America/Los_Angeles",
+  hasPeople: true,
   photoWidth: 100,
   photoHeight: 100,
   createdAt: new Date("2026-08-23T04:00:00Z"),
@@ -44,6 +45,7 @@ describe("export record", () => {
         { id: "c2", r2Key: "k2", contentType: "audio/mp4", durationMs: 10_000, transcript: null },
       ],
       originalWords: "We walked out",
+      people: ["Steve"],
     });
     expect(photo).toBe("photos/2026-08-22 Lone Trees After the Fire 0f1e2d3c.jpg");
     expect(recordings.map((r) => r.path)).toEqual([
@@ -53,6 +55,7 @@ describe("export record", () => {
     expect(record).toMatchObject({
       title: "Lone Trees: After the Fire!",
       place: "Carlsbad, California",
+      people: ["Steve"],
       score: null,
       recordings: [{ seconds: 42, transcript: "We walked out" }, { seconds: 10, transcript: null }],
       fromFriends: [{ name: "Maria", reactions: ["Wow", "Sending hugs"], note: "Beautiful" }],

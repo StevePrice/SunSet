@@ -30,6 +30,8 @@ link-preview bots are skipped. Without `POSTHOG_KEY`, nothing is sent.
 | `entry_saved` | user | `entry_id`, `has_location` |
 | `story_saved` | user | `entry_id`, `has_people`, `people_count`, `has_story`, `has_voice`, `first_story`, `words` (a range) |
 | `story_polished` | user | `entry_id`, `style` |
+| `names_added` | user | `entry_id`, `names` (how many, never the names) |
+| `journal_filtered` | user | `show` (`people` or `pure`), `view`; only when a filter is picked, not on plain visits |
 | `entry_shared` | user | `entry_id`, `share_id`, `has_people`, `people_count`, `has_story`, `has_voice` (every Share tap) |
 | `share_page_viewed` | friend's visitor id, or a random one | `share_id`, `entry_id`, the people/story facts, `returning_friend` (not the owner, not bots) |
 | `share_signup_tapped` | as above | `share_id` |
@@ -53,8 +55,12 @@ story is saved or a sunset shared.
 | Entries per active user per week | `entry_saved` total ÷ weekly active users |
 | **With people vs. without (the main test)** | The share and reaction rates above, broken down by `has_people` |
 | Shares that include voice | `entry_shared` broken down by `has_voice` |
+| Photos with people where names are added | `names_added` unique `entry_id` ÷ entries with `has_people = true` (or `story_saved` with `has_people = true` and `names_count > 0`) |
+| Use of the With people filter | `journal_filtered` with `show = people`, unique users |
 
-Not tracked yet: map posts (Phase 6), names on people (4f-2), friends' memories (4f-4), and the Story
+Every entry fact set also carries `names_count`.
+
+Not tracked yet: map posts (Phase 6), opening Sunsets with [Name] (4f-5 adds it with shared sets), friends' memories (4f-4), and the Story
 Capture details that happen only in the browser (opening "Need ideas?", playing a recording). Add them
 with the feature, from the server where possible.
 

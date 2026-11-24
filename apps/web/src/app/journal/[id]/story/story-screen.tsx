@@ -27,6 +27,7 @@ import {
   tidyAction,
 } from "./actions";
 import { BottomSheet, MicIcon, MicNote, RecordingScreen, useVoiceRecorder, VoiceStatus } from "./voice-recorder";
+import { WhosIn } from "./whos-in";
 
 type Clip = { id: string; durationMs: number };
 
@@ -60,6 +61,9 @@ export function StoryScreen({
   hasLocation,
   aiHelp,
   noticeSeen,
+  hasPeople,
+  initialNames,
+  knownNames,
 }: {
   entryId: string;
   /** "new" from Add your story; "edit" from Edit on Entry Detail. */
@@ -74,6 +78,12 @@ export function StoryScreen({
   hasLocation: boolean;
   aiHelp: boolean;
   noticeSeen: boolean;
+  /** The scorer's people check: null while a new sunset is still being scored. */
+  hasPeople: boolean | null;
+  /** Names already on this sunset. */
+  initialNames: string[];
+  /** Names this person has used before, most recent first. */
+  knownNames: string[];
 }) {
   const [story, setStory] = useState(initialStory);
   const [title, setTitle] = useState(initialTitle);
@@ -89,6 +99,11 @@ export function StoryScreen({
   const [nudge, setNudge] = useState<string | null>(null);
   const [polishOpen, setPolishOpen] = useState(false);
   const [removeLocation, setRemoveLocation] = useState(false);
+  const [names, setNames] = useState<string[]>(initialNames);
+  const [peopleSeen, setPeopleSeen] = useState(hasPeople === true);
+  // Edit: "Add who's in it" opens the card when the people check missed someone.
+  const [askWho, setAskWho] = useState(false);
+  const showWho = peopleSeen || initialNames.length > 0 || askWho;
   const [message, setMessage] = useState<string | null>(null);
   const [tidying, setTidying] = useState(false);
   const [busy, startBusy] = useTransition();
@@ -168,10 +183,26 @@ export function StoryScreen({
     });
   }
 
+  // A new sunset is usually still being scored when this screen opens: ask for the people check
+  // every few seconds for up to a minute, and show "Who's in this one?" if it says yes.
+  useEffect(() => {
+    if (hasPeople !== null) return;
+    const started = Date.now();
+    const timer = setInterval(async () => {
+      if (Date.now() - started > 60_000) return clearInterval(timer);
+      const response = await fetch(`/api/entries/${entryId}/people`, { cache: "no-store" }).catch(() => null);
+      if (!response?.ok) return;
+      const { hasPeople: found } = (await response.json()) as { hasPeople: boolean | null };
+      if (found !== null) clearInterval(timer);
+      if (found) setPeopleSeen(true);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [entryId, hasPeople]);
+
   function save() {
     setMessage(null);
     startSaving(async () => {
-      const result = await saveStoryTextAction(entryId, { story, title, removeLocation });
+      const result = await saveStoryTextAction(entryId, { story, title, removeLocation, ...(showWho && { names }) });
       if (result?.error) setMessage(result.error);
     });
   }
@@ -308,6 +339,16 @@ export function StoryScreen({
       )}
 
       <VoiceStatus state={voice.state} onRetry={() => void voice.retry()} onTypeInstead={voice.typeInstead} />
+
+      {showWho ? (
+        <WhosIn known={knownNames} picked={names} onChange={setNames} detected={peopleSeen} />
+      ) : (
+        mode === "edit" && (
+          <button type="button" onClick={() => setAskWho(true)} className={`${textLink} self-start`}>
+            Add who&apos;s in it
+          </button>
+        )
+      )}
 
       {review && (
         <div className="flex flex-col gap-2">

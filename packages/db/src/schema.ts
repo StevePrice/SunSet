@@ -1,6 +1,7 @@
 // Drizzle table definitions. `entries` is the Journal; Better Auth owns users, sessions, accounts, verifications and
 // rate_limits (field names follow its core schema; table names are plural via `usePlural`).
-import { bigint, boolean, index, integer, jsonb, numeric, pgTable, primaryKey, smallint, text, timestamp, unique } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { bigint, boolean, index, integer, jsonb, numeric, pgTable, primaryKey, smallint, text, timestamp, unique, uniqueIndex } from "drizzle-orm/pg-core";
 import { point4326 } from "./point";
 
 const timestamps = {
@@ -291,6 +292,28 @@ export const storyClips = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("story_clips_entry_idx").on(table.entryId, table.createdAt), index("story_clips_user_idx").on(table.userId)],
+);
+
+// Who's in a sunset (Phase 4f, Sunsets Together): names the owner typed or tapped. Owner-only,
+// never shown to friends unless shared later (4f-3). No face recognition: the scorer only says
+// whether people are in the photo; the owner says who. A name appears once per entry, ignoring case.
+export const entryPeople = pgTable(
+  "entry_people",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("entry_people_entry_name_idx").on(table.entryId, sql`lower(${table.name})`),
+    index("entry_people_user_idx").on(table.userId, table.createdAt.desc()),
+  ],
 );
 
 // One row per AI call, for the per-user daily limit.
