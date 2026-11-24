@@ -6,6 +6,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { transcribe } from "@/lib/story/transcribe";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { entryFacts, track, wordBucket } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry, photoKey, updateEntry } from "@/lib/entries";
@@ -186,6 +187,7 @@ export async function polishAction(entryId: string, style: StoryStyle, story: st
     if (!result || result === "off" || result === "limited") {
       return { text, title: null, error: aiMessage(result, "Story help isn't available right now. Your words are saved.") };
     }
+    await track("story_polished", user.id, { entry_id: entryId, style });
     return { text: result.story, title: result.title.slice(0, MAX_TITLE_LENGTH) || null };
   });
 }
@@ -217,12 +219,20 @@ export async function saveStoryTextAction(
         if (result && result !== "off" && result !== "limited") title = result.title.slice(0, MAX_TITLE_LENGTH);
       }
     }
-    return updateEntry(db, user.id, entryId, {
+    const updated = await updateEntry(db, user.id, entryId, {
       story: story.value,
       title: title ?? entry.title,
       caption: null,
       ...(input.removeLocation && { location: null }),
     });
+    if (updated && story.value) {
+      await track("story_saved", user.id, {
+        ...(await entryFacts(db, entryId)),
+        first_story: !entry.story?.trim(),
+        words: wordBucket(story.value),
+      });
+    }
+    return updated;
   });
   if (!saved) return { error: "This entry no longer exists." };
   revalidatePath("/journal");

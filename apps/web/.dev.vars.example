@@ -13,3 +13,7 @@ ANTHROPIC_API_KEY=
 STORY_MODEL=
 # Optional: comma-separated emails that become admin when they sign in (case-insensitive).
 ADMIN_EMAILS=
+# Optional: product analytics (Phase 7a). Nothing is sent without a key. POSTHOG_HOST defaults to
+# https://us.i.posthog.com (use https://eu.i.posthog.com for an EU project).
+POSTHOG_KEY=
+POSTHOG_HOST=

@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { Zip, ZipPassThrough, strToU8 } from "fflate";
+import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries, photoKey } from "@/lib/entries";
@@ -88,6 +89,7 @@ export async function GET() {
     }
   })();
   ctx.waitUntil(produce);
+  await track("data_exported", user.id, { sunsets: sunsets.length });
 
   const day = new Date().toISOString().slice(0, 10);
   return new Response(readable, {

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { anonymous, type Properties, shareFacts, track } from "@/lib/analytics";
 import { withDrizzle } from "@/lib/db";
 import { clientIp, hitRateLimit } from "@/lib/rate-limit";
 import {
@@ -64,6 +65,14 @@ export async function POST(request: Request, ctx: RouteContext<"/s/[id]/reaction
   if (result.status === "need_name") return Response.json({ needName: true }, { status: 400 });
   if (result.status === "not_found") {
     return Response.json({ error: "This sunset isn't shared any more." }, { status: 404 });
+  }
+  // A friend's reaction or note reaching the owner (not a reaction taken back, or a note removed).
+  const received =
+    input.action === "toggle" ? result.reactions.mine.includes(input.kind) : input.note !== null;
+  if (received) {
+    const facts = await withDrizzle((db) => shareFacts(db, id));
+    const extra: Properties = input.action === "toggle" ? { kind: input.kind } : {};
+    await track(input.action === "toggle" ? "reaction_received" : "note_received", result.visitorId, anonymous({ ...facts, ...extra }).properties);
   }
   return Response.json(result.reactions, { headers: { "Cache-Control": "no-store" } });
 }
