@@ -17,6 +17,12 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      // Android crops installed app icons to its own shape (a circle on most phones). Without a
+      // maskable icon it shrinks the square one onto a white disc. These keep the navy edge to edge
+      // with the sun smaller, so every ray stays inside even the tightest circle
+      // (brand/logo/app-icons/sunset-soul-app-icon-maskable.svg, the app icon at 0.68 scale).
+      { src: "/icons/icon-maskable-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }
