@@ -169,10 +169,10 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
 test("the web app manifest is public, so phones can install it (Phase 7a)", async ({ request }) => {
   const response = await request.get("/manifest.webmanifest");
   expect(response.status()).toBe(200);
-  const manifest = (await response.json()) as { name: string; display: string; icons: { sizes: string }[] };
+  const manifest = (await response.json()) as { name: string; display: string; icons: { sizes: string; purpose: string; src: string }[] };
   expect(manifest).toMatchObject({ name: "Sunset Soul", display: "standalone" });
-  expect(manifest.icons.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
-  expect((await request.get("/icons/icon-512.png")).status()).toBe(200);
+  expect(manifest.icons.map((i) => `${i.sizes} ${i.purpose}`)).toEqual(["192x192 any", "512x512 any", "192x192 maskable", "512x512 maskable"]);
+  for (const icon of manifest.icons) expect((await request.get(icon.src)).status()).toBe(200);
 });
 
 test("the privacy policy and terms are public and linked from every page (Phase 7a)", async ({ page }) => {
