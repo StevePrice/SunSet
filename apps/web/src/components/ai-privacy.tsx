@@ -7,7 +7,7 @@ export function AiPrivacyText() {
         To make questions, transcripts and your story, your photo, recordings and words are processed by AI services:
         Anthropic&apos;s Claude and Cloudflare Workers AI. They don&apos;t use them to train their models.
       </p>
-      <p>Your recordings are private. They are never shared, not even when you share a sunset.</p>
+      <p>Your recording is private. You decide if friends hear it.</p>
     </div>
   );
 }

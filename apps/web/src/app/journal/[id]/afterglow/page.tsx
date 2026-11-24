@@ -3,9 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
-import { REACTION_KINDS, REACTION_LABELS } from "@/lib/reaction-input";
+import { REACTION_KINDS, REACTION_LABELS, reactionLabel } from "@/lib/reaction-input";
 import { getAfterglow } from "@/lib/reactions";
-import { getShareForEntry } from "@/lib/shares";
+import { namesForEntry } from "@/lib/people";
+import { listClips } from "@/lib/story/clips";
+import { ButtonLink } from "@/components/button";
+import { getShareForEntry, recipientVisitorIds, shareVoiceLinks } from "@/lib/shares";
 import { LocalDate } from "@/components/local-date";
 import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
@@ -24,11 +27,21 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [afterglow, share] = await Promise.all([getAfterglow(db, user.id, id), getShareForEntry(db, user.id, id)]);
-    return afterglow && { entry, afterglow, share };
+    const [afterglow, share, names, clips] = await Promise.all([
+      getAfterglow(db, user.id, id),
+      getShareForEntry(db, user.id, id),
+      namesForEntry(db, user.id, id),
+      listClips(db, user.id, id),
+    ]);
+    const [inPhoto, voice] = share
+      ? await Promise.all([recipientVisitorIds(db, share.id), shareVoiceLinks(db, share.id)])
+      : [new Set<string>(), { normal: false, people: [] }];
+    // Share again goes through Before you share when there's something to ask (4f-3).
+    const askFirst = names.length > 0 || clips.length > 0;
+    return afterglow && { entry, afterglow, share, inPhoto, voice: clips.length ? voice : { normal: false, people: [] }, askFirst };
   });
   if (!found) notFound();
-  const { entry, afterglow, share } = found;
+  const { entry, afterglow, share, inPhoto, voice, askFirst } = found;
   const { env } = await getCloudflareContext({ async: true });
 
   return (
@@ -69,11 +82,11 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
                 <ul className="flex flex-wrap gap-x-4 gap-y-1">
                   {person.reactions.map((reaction) => (
                     <li key={reaction.id} className="flex items-center gap-1">
-                      {REACTION_LABELS[reaction.kind]}
+                      {reactionLabel(reaction.kind, inPhoto.has(person.visitorId))}
                       <RemoveButton
                         entryId={entry.id}
                         target={{ reactionId: reaction.id }}
-                        label={`Remove ${person.name}'s ${REACTION_LABELS[reaction.kind]}`}
+                        label={`Remove ${person.name}'s ${reactionLabel(reaction.kind, inPhoto.has(person.visitorId))}`}
                       />
                     </li>
                   ))}
@@ -92,13 +105,25 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
 
       {share ? (
         <>
-          <ShareButton entryId={entry.id} initialUrl={`${env.BETTER_AUTH_URL}/s/${share.id}`} label="Share again" />
-          <LinkSettings entryId={entry.id} share={{ url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} />
+          {askFirst ? (
+            <ButtonLink href={`/journal/${entry.id}/share`} variant="action" className="w-full">
+              Share again
+            </ButtonLink>
+          ) : (
+            <ShareButton entryId={entry.id} initialUrl={`${env.BETTER_AUTH_URL}/s/${share.id}`} label="Share again" />
+          )}
+          <LinkSettings entryId={entry.id} share={{ url: `${env.BETTER_AUTH_URL}/s/${share.id}`, place: share.place }} voice={voice} />
         </>
       ) : (
         <section className="flex flex-col gap-3">
           <p className="text-ink-muted">Not shared. Share it to get a new link friends can open and react to.</p>
-          <ShareButton entryId={entry.id} initialUrl={null} />
+          {askFirst ? (
+            <ButtonLink href={`/journal/${entry.id}/share`} variant="action" className="w-full">
+              Share
+            </ButtonLink>
+          ) : (
+            <ShareButton entryId={entry.id} initialUrl={null} />
+          )}
         </section>
       )}
       <BottomBar current="journal" />

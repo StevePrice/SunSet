@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createShareAction } from "../actions";
+import type { ShareChoice } from "@/lib/shares";
 import { Button, type ButtonVariant } from "@/components/button";
 import { noticeClass } from "@/components/styles";
 
@@ -26,38 +27,50 @@ export function ShareButton({
   initialUrl,
   label = "Share",
   variant = "action",
+  choice,
+  icon,
 }: {
   entryId: string;
   initialUrl: string | null;
   label?: string;
   variant?: ButtonVariant;
+  /** From Before you share (4f-3): who it's for and whether it includes the voice. */
+  choice?: ShareChoice;
+  icon?: ReactNode;
 }) {
   const router = useRouter();
-  const [url, setUrl] = useState(initialUrl);
+  // With a choice, the link depends on it (a personal link, the voice switch), so it's made on the
+  // tap and kept for that choice only. The Stories card is the same for every link to the sunset.
+  const choiceKey = choice ? JSON.stringify(choice) : "";
+  const [made, setMade] = useState<{ key: string; url: string } | null>(choice ? null : initialUrl ? { key: "", url: initialUrl } : null);
+  const url = made?.key === choiceKey ? made.url : null;
+  const imageSource = url ?? initialUrl;
   const [image, setImage] = useState<{ url: string; file: File | null } | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const canShare = useBrowserCheck(() => typeof navigator.share === "function");
 
   // Fetch the Stories card ahead of the tap, once there's a link and the browser can share files.
   useEffect(() => {
-    if (!url || !canShare || image?.url === url) return;
+    if (!imageSource || !canShare) return;
+    const path = new URL(imageSource).pathname;
+    if (image?.url === path) return;
     let live = true;
-    loadStoriesImage(url).then((file) => live && setImage({ url, file }));
+    loadStoriesImage(path).then((file) => live && setImage({ url: path, file }));
     return () => {
       live = false;
     };
-  }, [url, canShare, image?.url]);
+  }, [imageSource, canShare, image?.url]);
 
   async function share() {
     setStatus({ kind: "working" });
     let link = url;
     let created = false;
     if (!link) {
-      const result = await createShareAction(entryId, Intl.DateTimeFormat().resolvedOptions().timeZone);
+      const result = await createShareAction(entryId, Intl.DateTimeFormat().resolvedOptions().timeZone, choice);
       if ("error" in result) return setStatus({ kind: "error", message: result.error });
       link = result.url;
       created = true;
-      setUrl(link);
+      setMade({ key: choiceKey, url: link });
     }
 
     if (!canShare) {
@@ -67,7 +80,7 @@ export function ShareButton({
       return;
     }
 
-    const file = image?.url === link ? image.file : null;
+    const file = image?.url === new URL(link).pathname ? image.file : null;
     const data: ShareData = file
       ? { files: [file], title: SHARE_TITLE, text: `${SHARE_TEXT}: ${link}` }
       : { title: SHARE_TITLE, text: SHARE_TEXT, url: link };
@@ -86,7 +99,10 @@ export function ShareButton({
   return (
     <div className="flex flex-col gap-2">
       <Button variant={variant} className="w-full" disabled={status.kind === "working"} onClick={share} aria-live="polite">
-        {text}
+        <span className="inline-flex items-center justify-center gap-2">
+          {status.kind === "idle" && icon}
+          {text}
+        </span>
       </Button>
       {status.kind === "copied" && (
         <p role="status" className="text-caption text-ink-muted">
@@ -103,9 +119,9 @@ export function ShareButton({
 }
 
 /** The Stories card as a file to share, or null if it can't be fetched or shared. */
-async function loadStoriesImage(url: string): Promise<File | null> {
+async function loadStoriesImage(path: string): Promise<File | null> {
   // Same-origin path, so it also works where BETTER_AUTH_URL differs from the page's origin.
-  const blob = await fetch(`${new URL(url).pathname}/stories`)
+  const blob = await fetch(`${path}/stories`)
     .then((r) => (r.ok ? r.blob() : null))
     .catch(() => null);
   if (!blob) return null;

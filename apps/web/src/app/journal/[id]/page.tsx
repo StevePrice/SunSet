@@ -11,7 +11,7 @@ import { getShareForEntry } from "@/lib/shares";
 import { listClips } from "@/lib/story/clips";
 import { formatDuration } from "@/lib/story/voice";
 import { AppHeader, BottomBar } from "@/components/app-nav";
-import { buttonClass } from "@/components/button";
+import { buttonClass, ButtonLink } from "@/components/button";
 import { LocalDate } from "@/components/local-date";
 import { NameLink } from "@/components/people";
 import { PhotoCard } from "@/components/photo-card";
@@ -134,7 +134,14 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
             Edit
           </Link>
 
-          <ShareButton entryId={entry.id} initialUrl={share && `${env.BETTER_AUTH_URL}/s/${share.id}`} />
+          {/* Before you share (4f-3) only when there's something to ask: names, or a spoken story. */}
+          {names.length > 0 || clips.length > 0 ? (
+            <ButtonLink href={`/journal/${entry.id}/share`} variant="action" className="w-full">
+              Share
+            </ButtonLink>
+          ) : (
+            <ShareButton entryId={entry.id} initialUrl={share && `${env.BETTER_AUTH_URL}/s/${share.id}`} />
+          )}
 
           <Link
             href={`/journal/${entry.id}/afterglow`}

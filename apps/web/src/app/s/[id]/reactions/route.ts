@@ -9,6 +9,7 @@ import {
   VISITOR_COOKIE_MAX_AGE,
 } from "@/lib/reaction-input";
 import { createVisitor, getVisitorName, isShareLive, setReactionNote, toggleReaction } from "@/lib/reactions";
+import { getRecipient, linkRecipientVisitor } from "@/lib/shares";
 
 // A friend reacting to a shared sunset: no account, just an anonymous id in a cookie and the
 // first name they gave on their first tap. Positive reactions only; counts are public, names
@@ -36,13 +37,18 @@ export async function POST(request: Request, ctx: RouteContext<"/s/[id]/reaction
     // The name is asked for once per device; a cookie whose visitor is gone counts as new.
     let visitorId = cookieId && (await getVisitorName(db, cookieId)) !== null ? cookieId : null;
     let isNew = false;
+    // A personal link (4f-3) knows who it's for, so it never asks for a first name.
+    const recipient = await getRecipient(db, id, input.recipient ?? null);
     if (!visitorId) {
       // Don't create a visitor (or set a cookie) for a link that's been stopped.
       if (!(await isShareLive(db, id))) return { status: "not_found" as const };
-      if (!input.name) return { status: "need_name" as const };
-      visitorId = await createVisitor(db, input.name);
+      const name = input.name ?? recipient?.name;
+      if (!name) return { status: "need_name" as const };
+      visitorId = await createVisitor(db, name);
       isNew = true;
     }
+    // So From your friends shows their "Wish I was there" as "I was there!".
+    if (recipient && !recipient.visitorId) await linkRecipientVisitor(db, recipient.id, visitorId);
     const outcome =
       input.action === "toggle"
         ? await toggleReaction(db, id, visitorId, input.kind)
@@ -71,7 +77,7 @@ export async function POST(request: Request, ctx: RouteContext<"/s/[id]/reaction
     input.action === "toggle" ? result.reactions.mine.includes(input.kind) : input.note !== null;
   if (received) {
     const facts = await withDrizzle((db) => shareFacts(db, id));
-    const extra: Properties = input.action === "toggle" ? { kind: input.kind } : {};
+    const extra: Properties = { personal: Boolean(input.recipient), ...(input.action === "toggle" && { kind: input.kind }) };
     await track(input.action === "toggle" ? "reaction_received" : "note_received", result.visitorId, anonymous({ ...facts, ...extra }).properties);
   }
   return Response.json(result.reactions, { headers: { "Cache-Control": "no-store" } });

@@ -8,7 +8,7 @@ import {
   MAX_NOTE_LENGTH,
   MAX_VISITOR_NAME_LENGTH,
   REACTION_KINDS,
-  REACTION_LABELS,
+  reactionLabel,
   type PublicReactions,
   type ReactionKind,
 } from "@/lib/reaction-input";
@@ -17,7 +17,18 @@ type Pending = { action: "toggle"; kind: ReactionKind } | { action: "note"; note
 
 // The reaction buttons on a Share Page (PRD 6.9a). Friends see counts only; the first tap asks
 // for a first name once, then the browser remembers this visitor with a cookie.
-export function Reactions({ shareId, initial, ownerName }: { shareId: string; initial: PublicReactions; ownerName: string | null }) {
+export function Reactions({
+  shareId,
+  initial,
+  ownerName,
+  recipientToken = null,
+}: {
+  shareId: string;
+  initial: PublicReactions;
+  ownerName: string | null;
+  /** A personal link (4f-3): the person's name is known, and they were there. */
+  recipientToken?: string | null;
+}) {
   const [state, setState] = useState(initial);
   const [askingName, setAskingName] = useState<Pending | null>(null);
   const [name, setName] = useState("");
@@ -35,7 +46,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
     const response = await fetch(`/s/${shareId}/reactions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...pending, ...(withName && { name: withName }) }),
+      body: JSON.stringify({ ...pending, ...(withName && { name: withName }), ...(recipientToken && { recipient: recipientToken }) }),
     }).catch(() => null);
     setBusy(false);
     if (!response) {
@@ -99,7 +110,7 @@ export function Reactions({ shareId, initial, ownerName }: { shareId: string; in
             <ReactionChip
               key={kind}
               kind={kind}
-              label={REACTION_LABELS[kind]}
+              label={reactionLabel(kind, recipientToken !== null)}
               count={state.counts[kind]}
               selected={state.mine.includes(kind)}
               animate={justTapped === kind && state.mine.includes(kind)}
