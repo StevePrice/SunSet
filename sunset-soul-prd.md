@@ -1,6 +1,6 @@
 # Sunset Soul — Product Requirements Document (PRD)
 **Status:** Draft — MVP scope
-**Last updated:** November 22, 2026 (added 6.10 Sunsets Together and the November 22 wording decisions; see `sunset-soul-build-spec-sunsets-together.md`). Previously November 8, 2026 (MVP flow fixes; see `sunset-soul-build-spec-flow-fixes.md`)
+**Last updated:** November 24, 2026 (6.3: place details for the future Sunset Map, mostly already saved by the app; see "Your Sunset Map" in `sunset-soul-later-list.md`. Wording: friends now **"Add to the story"**, replacing "side of the story" and "memory"). Previously November 22, 2026 (added 6.10 Sunsets Together and the November 22 wording decisions; see `sunset-soul-build-spec-sunsets-together.md`) and November 8, 2026 (MVP flow fixes; see `sunset-soul-build-spec-flow-fixes.md`)
 **Companion docs:** Sunset Soul – Concept & Strategy (sunset-soul-concept.md) · Build Spec, Phase 4e flow fixes (sunset-soul-build-spec-flow-fixes.md) · Build Spec, Phase 4f Sunsets Together (sunset-soul-build-spec-sunsets-together.md) · Later List (sunset-soul-later-list.md)
 
 ---
@@ -33,7 +33,7 @@ This document defines the requirements for the **MVP** — the smallest version 
   - % of photos with people where the user adds names
   - Use of the With people filter and of Sunsets with [Name]
   - % of shares that include the user's voice
-  - % of shared sunsets that receive a friend's memory (typed or spoken)
+  - % of shared sunsets where a friend adds to the story (typed or spoken)
   - "Start your own Journal" rate for people named in a photo vs. other friends
 
 ## 4. Target User
@@ -56,7 +56,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
   - As a user, I want to note who is in a sunset photo, so the memory includes the people I was with.
   - As a user, I want to see every sunset I've shared with one person, and send them the whole set, so we can relive them together.
   - As a user, I want friends to hear my story in my own voice, if I choose, so the share feels personal.
-  - As a friend who received a sunset, I want to add my side of the story by typing or speaking, so the memory holds both of our versions.
+  - As a friend who received a sunset, I want to add to the story by typing or speaking, so it holds both of our words.
   - As a friend who is in the photo, I want the Share Page to tell me I'm in it and let me say "I was there!"
 
 ## 6. Functional Requirements
@@ -78,6 +78,12 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - After choosing a photo, the New sunset screen shows the photo, date taken and place (each with **Change**), an **Add your story** button (main) and a **Save for now** link. There is no story box on this screen.
 - **Add your story** saves the entry first, then opens **The story behind this moment**: a typing box first (hint: "Where were you, and what made you stop to take this?"), **Need ideas?** (story ideas for this photo, closed until tapped), and below it **Rather talk than type?** (voice; see the Story Capture PRD). A story is never required.
 - User can optionally tag a general location (auto-detected via device location, editable/removable by user)
+- **Place details for the future Sunset Map (noted November 24, 2026; already mostly in place):**
+  - The app already saves each entry's **map location** and a **place name** ("Town, State" from the app's own town list, or a name the user types).
+  - The **state and country can always be looked up from the location**, using the app's town list, so older entries will work with the future **Your Sunset Map** (sunset and place counts, places grouped by state and country, trips). No new building is needed for the MVP. See "Your Sunset Map" in the Later List.
+  - Keep saving the location even when the user types their own place name, so the state and country can still be found.
+  - The location is private to the owner. It is never shown on the Share Page, share images or the public map (the public map uses a general area, see 6.7).
+  - **Questions for Steve (later, not before launch):** how named spots such as parks, beaches and landmarks ("Torrey Pines", "Sequoia National Park") get named, since the town list covers towns only; and whether the state and country should be stored on each entry or looked up when needed.
 - If the AI sees people in the photo, the story screen offers "Who's in this one?" (see 6.10b)
 - On save, the entry is scored automatically (see 6.4) and added to the user's Journal
 
@@ -138,7 +144,7 @@ Everyday people who are moved by beautiful, fleeting moments — not photographe
 - Nothing is drawn on the photos (no score).
 - Shared entries show "Shared · [n] reactions" (see 6.9)
 - Entries are private by default
-- User can open an entry to view full detail: photo (full bleed), title, date and place, Wow reason line, full story, the recording if spoken, names ("With Steve"), friends' memories, Share, the "See what friends sent" row, Score details (closed), Delete
+- User can open an entry to view full detail: photo (full bleed), title, date and place, Wow reason line, full story, the recording if spoken, names ("With Steve"), what friends added to the story, Share, the "See what friends sent" row, Score details (closed), Delete
 - **Navigation:** a header with the logo and a **New sunset** button (camera icon) on the main screens, and a bottom bar with **Journal · You**. Hidden while saving a sunset or telling a story; never on the Share Page.
 
 ### 6.6 Sharing (Share-Out, MVP)
@@ -206,19 +212,19 @@ The web page that opens when a friend taps a shared link. Its look matches the f
   - The button fills with the `reaction-selected` color (peach blush), a small checkmark appears beside the count (never color alone), the icon gives one short animation (skipped under reduced motion), and the count goes up by one
   - A box appears to add a short note, with the placeholder text **"Add a note for [Name] (optional)"** and a **Send** button in the `action` color
   - Tapping the reaction again undoes it
-- **After sending,** a short thank-you replaces the note box: **"Sent! [Name] will see your reaction."** Friends can still change their reactions afterward.
-- Under the reactions and note: **"Were you there? Add your side of the story."** (type it or say it, see 6.10e). One **Send** button sends the reactions, note and memory together.
+- **After sending,** a short thank-you replaces the note box: **"Sent! [Name] will see your reaction."** (or, if the friend added to the story, **"Sent! [Name] will see your reaction and what you added to the story."**). Friends can still change their reactions afterward.
+- Under the reactions and note: **"Were you there? Add to the story."** (type it or say it, see 6.10e). One **Send** button sends the reactions, note and what they added together.
 - At the bottom: a **Start your own Journal** link that invites friends to join the app (the built-in growth path). It's styled as a text link, not a button, so Send stays the one main button on the page (design system rule).
 - No app download or account is needed to react
 
 #### 6.9b What the user sees (From your friends)
-A screen opened from Entry Detail. The title is **"From your friends"**. The row that opens it on Entry Detail reads **"See what friends sent"**, with the status on a second line underneath ("Shared · 4 reactions · 2 memories"; "Not shared yet" before sharing), so it never wraps, even with large text.
+A screen opened from Entry Detail. The title is **"From your friends"**. The row that opens it on Entry Detail reads **"See what friends sent"**, with the status on a second line underneath ("Shared · 4 reactions · 2 added to the story"; "Not shared yet" before sharing), so it never wraps, even with large text.
 
 **Naming (decided November 22, 2026):** "Afterglow" is the team's working internal name for this screen and feature. It is never shown in the app, because "From your friends" is clearer.
 
 - A small photo and the entry title
 - Reaction totals (how many of each of the four reactions)
-- **Their side of the story:** friends' memories, typed or spoken, each marked "Private to you" (see 6.10e)
+- **Added to the story:** what friends added, typed or spoken, each marked "Private to you" (see 6.10e)
 - A list of who reacted and any notes they left (e.g., *Steve: "Best night of the whole trip"*)
 - A **Share again** button (same as 6.6)
 - **Link settings:** Copy link, the place name friends see, and Stop sharing (moved here from Entry Detail)
@@ -243,14 +249,14 @@ When a sunset is shared by email, the email works like a postcard that invites t
 
 **Not in MVP (later ideas)**
 - More reactions beyond the four ("Sending love" is covered by Sending hugs)
-- (Voice from friends is now in the MVP as part of Two sides of the story, 6.10e.)
-- "Send one back" — friend replies with their own sunset
+- (Voice from friends is now in the MVP as part of Add to the story, 6.10e.)
+- "Send one back" — friend replies with their own sunset (now planned: see the Friends Become Users PRD)
 - Replying to a friend's reaction
 - Push notification when a friend reacts
 
 ### 6.10 Sunsets Together (people in your sunsets)
 
-**Purpose:** People like to be in their sunset photos, and photos with people are likely to be shared more. Sunsets Together helps users remember who they were with, share sunsets with the people in them, and let those people add their own side of the memory. It stays within the MVP's "no friend list" rule: everything works through names the user types and links they send.
+**Purpose:** People like to be in their sunset photos, and photos with people are likely to be shared more. Sunsets Together helps users remember who they were with, share sunsets with the people in them, and let those people add to the story. It stays within the MVP's "no friend list" rule: everything works through names the user types and links they send.
 
 **Main principle: the AI notices people; the user names them.** No face recognition at any stage.
 
@@ -281,16 +287,17 @@ When a sunset is shared by email, the email works like a postcard that invites t
   - Friends react once to the whole set (one set of reactions, not one per photo).
   - **Stop sharing** works for the set as it does for single sunsets.
 
-#### 6.10e Two sides of the story (type it or say it)
-- On the Share Page, under the reactions: **"Were you there? Add your side of the story."**
-- **Every friend the user sends the sunset to can add a memory,** on the normal link and on personal links.
+#### 6.10e Add to the story (type it or say it)
+**Wording (decided November 24, 2026):** "Add to the story" replaces "Add your side of the story" and "memory" everywhere, because "side of the story" can sound like a disagreement. It also works for friends who weren't there.
+- On the Share Page, under the reactions: **"Were you there? Add to the story."**
+- **Every friend the user sends the sunset to can add to the story,** on the normal link and on personal links.
 - The friend chooses to **type it** or **say it**:
-  - **Type it:** a box for a short memory (longer than a note; limit to be set, e.g. about 500 characters).
+  - **Type it:** a box for what they want to add (longer than a note; limit to be set, e.g. about 500 characters).
   - **Say it:** a record button in the web page. The browser asks once for microphone permission. **Up to 1 minute.** The AI turns it into text as well, so the user can read or listen.
   - If recording isn't available (some in-app browsers inside Facebook, Instagram or messaging apps block the microphone, as do some older phones), the page quietly offers typing only.
 - No app or account needed. The friend gives their first name (same prompt as reactions), or it's already known from a personal link (6.10g).
-- The user sees each memory on Entry Detail and on the From your friends screen as **"Steve's memory"**, with a play button if it was spoken.
-- Only the user sees or hears friends' memories. The user can delete any memory.
+- The user sees each one on Entry Detail and on the From your friends screen as **"Steve added to the story"**, with a play button if it was spoken.
+- Only the user sees or hears what friends add. The user can delete anything a friend added.
 - **Build note:** reuse the pieces from the user's own voice story (recording, time limit, saving, playback, speech to text). The new part is recording inside a web page.
 
 #### 6.10f Share it in your own voice
@@ -298,7 +305,7 @@ When a sunset is shared by email, the email works like a postcard that invites t
 - When on, the Share Page shows a play button, *"Hear Louise tell it"*, above the written story.
 - The voice is never on share images or the public map, only on the Share Page link.
 - If the user turns it off later, or deletes the recording, the voice disappears from the Share Page.
-- **Change to the November 8 voice decisions (decided November 22):** "Only you can hear it" and "Friends never hear it" are replaced everywhere. New wording: **"Private until you share it"** on recording rows (story screen, Entry Detail); **"Your recording is private. You decide if friends hear it."** on the first-time microphone sheet; **"Your recording and story stay private until you share them."** as the note on the story screen. Friends' memories (6.10e) are marked **"Private to you"**. Updated in the screen designs and the flow fixes doc.
+- **Change to the November 8 voice decisions (decided November 22):** "Only you can hear it" and "Friends never hear it" are replaced everywhere. New wording: **"Private until you share it"** on recording rows (story screen, Entry Detail); **"Your recording is private. You decide if friends hear it."** on the first-time microphone sheet; **"Your recording and story stay private until you share them."** as the note on the story screen. What friends add to the story (6.10e) is marked **"Private to you"**. Updated in the screen designs and the flow fixes doc.
 
 #### 6.10g "You're in Louise's sunset" and "I was there!"
 - When the user shares a photo that has names, the Before you share step asks **"Who are you sending this to?"**, with the name chips plus **Someone else**.
@@ -314,12 +321,12 @@ When a sunset is shared by email, the email works like a postcard that invites t
 - No face recognition and no face fingerprints, at any stage.
 - The Wow line never identifies people (6.4a).
 - People in a photo never raise its score by themselves, and appearance is never judged.
-- Names, friends' memories and the user's voice are private to the user unless the user shares them as described above.
+- Names, what friends add to the story, and the user's voice are private to the user unless the user shares them as described above.
 - Public map (later phase): photos with people are not posted by default. Before posting one: "There are people in this photo. Post it publicly anyway?" **Photos of children are never allowed on the public map.**
 
 #### Sunsets Together — Phase 2 (not in MVP)
 - Gift a sunset: send a sunset as a card on a chosen date (anniversary, birthday), with a personal message
-- Afterglow keepsake (Afterglow is the internal name for From your friends): save the photo, story, reactions and friends' memories as one keepsake page
+- Afterglow keepsake (Afterglow is the internal name for From your friends): save the photo, story, reactions and what friends added as one keepsake page
 - A Share Page that opens like a sunset (the photo warms from dusk to full color)
 - We found your sunsets: simple version first (pick many sunset photos at once on day one, landing with their real dates and places), then a full version where the app finds the sunsets in the camera roll
 
@@ -331,7 +338,7 @@ Uses the photo and story fingerprints (6.10a) together with dates, places and na
 - **Automatic collections:** by sky (On fire, Pastels, Stormy), by place (Ocean, Mountains), by people moment (Silhouettes, Family, Just the two of us, Pets) and by trip
 
 #### Later
-- Sunset books (printed, with stories and friends' memories)
+- Sunset books (printed, with stories and what friends added)
 - Season recaps ("Your sunset people this summer")
 - Same spot over the years
 - Look-alike sunsets on the Live Map
@@ -345,10 +352,10 @@ Designs for every MVP screen, in dark and light mode: https://claude.ai/artifact
 3. **Journal** — Stories and Photos views, the All · With people · Pure sunset filter (opens on Stories and All), empty state; header with New sunset, bottom bar Journal · You
 4. **New sunset** — choose from your photos (first) or take a photo, date and place, Add your story / Save for now
 5. **The story behind this moment** — type first, "Who's in this one?" names (when the AI sees people), Need ideas?, Rather talk than type?; first-use microphone note; recording; review and edit (recording playback, Add more, Delete recording, Help me polish it, title, Save)
-6. **Entry Detail** — full photo, title, date and place, names ("With Steve"), Wow line, story, recording, friends' memories, Edit, Share, "See what friends sent" row, Score details (closed), Delete
-7. **From your friends** (internal name: Afterglow) — totals for four reactions, friends' memories, names, notes, Share again, link settings
+6. **Entry Detail** — full photo, title, date and place, names ("With Steve"), Wow line, story, recording, what friends added to the story, Edit, Share, "See what friends sent" row, Score details (closed), Delete
+7. **From your friends** (internal name: Afterglow) — totals for four reactions, what friends added to the story, names, notes, Share again, link settings
 8. **You** — first name, email, Sign out
-9. **Share Page (web)** — "[Name] shared a sunset with you", photo, title, optional "Hear [Name] tell it", story, "Let [Name] know you saw it", four reactions, note box, "Add your side of the story" (type it or say it), one Send, thank-you, "Start your own Journal". Variants: personal link ("Steve, you're in Louise's sunset", with "I was there!") and a shared set ("Steve, Louise shared 11 sunsets with you")
+9. **Share Page (web)** — "[Name] shared a sunset with you", photo, title, optional "Hear [Name] tell it", story, "Let [Name] know you saw it", four reactions, note box, "Add to the story" (type it or say it), one Send, thank-you, "Start your own Journal". Variants: personal link ("Steve, you're in Louise's sunset", with "I was there!") and a shared set ("Steve, Louise shared 11 sunsets with you")
 10. **Sunsets with [Name]** — every sunset with one person, "Send Steve all your sunsets together", then a review step to leave any out
 11. **Before you share** — "Who are you sending this to?" and Include my voice (shown only when they apply)
 12. **Live Map** and **Settings** — later; designed right before they're built (see the Later List)
@@ -370,6 +377,7 @@ The full list of later features lives in `sunset-soul-later-list.md`.
 - Physical products, brand partnerships, or any monetization features
 - Real-time "sunset happening now" map behavior
 - Sunsets Together Phase 2 items and Finding Your Sunsets (see 6.10 and the Later List)
+- Your Sunset Map and Sunset Bucket List (Later List). The MVP already saves the location and place name they need (6.3).
 - Face recognition, at any stage
 
 ## 9. Open Questions / Dependencies
@@ -383,8 +391,11 @@ The full list of later features lives in `sunset-soul-later-list.md`.
 - [ ] Platform priority — iOS first, Android first, or simultaneous
 - [ ] Friend Reactions: does a share link stay open forever, or expire after a set time?
 - [ ] Friend Reactions: can the user turn reactions off for a specific share?
-- [ ] Sunsets Together: character limit for typed friend memories (about 500?)
+- [ ] Sunsets Together: character limit for what friends type when they add to the story (about 500?)
 - [ ] Sunsets Together: confirm the photo fingerprint can be saved cheaply in the MVP (optional)
 - [ ] Public map (later): how to tell when a photo includes children (AI check plus the user's confirmation)
+- [ ] Place details (6.3, for Steve, later): how named spots like Torrey Pines get named, and whether state and country are stored on each entry or looked up from its location
 
-**Decided November 22, 2026:** friends' spoken memories are up to 1 minute; every friend the sunset is sent to can add a memory; photos of children are never allowed on the public map; voice wording is "Private until you share it" (6.10f); the reactions screen is titled "From your friends" and its row says "See what friends sent" (Afterglow stays the internal name); the Journal switch is "Stories · Photos" with the filter "All · With people · Pure sunset"; "Choose from your photos" comes before "Take a photo"; in the MVP (web app), photos taken in the app stay in the Journal with no extra save step.
+**Decided November 22, 2026:** what friends add by speaking is up to 1 minute; every friend the sunset is sent to can add to the story; photos of children are never allowed on the public map; voice wording is "Private until you share it" (6.10f); the reactions screen is titled "From your friends" and its row says "See what friends sent" (Afterglow stays the internal name); the Journal switch is "Stories · Photos" with the filter "All · With people · Pure sunset"; "Choose from your photos" comes before "Take a photo"; in the MVP (web app), photos taken in the app stay in the Journal with no extra save step.
+
+**Noted November 24, 2026:** the app already saves each entry's location and place name, and the state and country can be looked up from the location, so the future Sunset Map needs no new building in the MVP (6.3). A place, for the Sunset Map, is a city or a named location such as a park or beach. **"Add to the story"** replaces "Add your side of the story" and "memory" for what friends add (6.10e).

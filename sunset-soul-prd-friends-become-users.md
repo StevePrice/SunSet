@@ -1,7 +1,7 @@
 # Sunset Soul — PRD: Friends Become Users (Release A)
 **Status:** Draft. Comes first, before Your Sunset Map (decided November 24).
 **Started:** November 24, 2026, by Louise, with Claude.
-**Companion docs:** MVP PRD (`sunset-soul-prd.md`, especially 6.9 Friend Reactions and 6.10 Sunsets Together) · Sunset Map PRD (`sunset-soul-prd-sunset-map.md`, Release B) · Later List (`sunset-soul-later-list.md`: "From friends to a family circle") · Phase 4f Build Spec (`sunset-soul-build-spec-sunsets-together.md`) · Steve's build plan (`app-strategy-phases.md`)
+**Companion docs:** MVP PRD (`sunset-soul-prd.md`, especially 6.9 Friend Reactions and 6.10 Sunsets Together) · Sunset Map PRD (`sunset-soul-prd-sunset-map.md`, Release B) · Later List (`sunset-soul-later-list.md`: "From friends to a family circle") · **Build Spec (`sunset-soul-build-spec-friends-become-users.md`)** · Screen pictures 27–37 (`design/screens/`) · Phase 4f Build Spec (`sunset-soul-build-spec-sunsets-together.md`) · Steve's build plan (`app-strategy-phases.md`)
 **Phase number:** "Release A" is a working name. Steve gives it a phase number when he plans it (Phases 5 to 10 are already used).
 
 ---
@@ -152,6 +152,7 @@ The app has each account holder's sign-in email (friends who haven't joined have
 - Replying to reactions
 
 ## 9. Open questions
+- [ ] When Steve shares his copy, does the Share Page show his own story, Louise's story, or both? (Suggested: his story if he wrote one, otherwise Louise's, labelled "Louise's story".)
 - [x] Louise's notices (Steve joined, Steve sent one back) also go by email, one email per event (B3). **Decided November 24.**
 - [x] After Steve joins, new personal links go straight into his Journal. **Decided November 24.**
 - [x] Steve's copy gets the general (town-level) location, so it can appear on his own Sunset Map later. **Decided November 24.**
