@@ -1,7 +1,9 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { createEntry, photoKey } from "@/lib/entries";
+import { DAILY_ENTRY_LIMIT, ENTRY_LIMIT_MESSAGE, entriesToday } from "@/lib/limits";
 import { nearestPlace } from "@/lib/places";
 import { requestScore } from "@/lib/scores";
 import { isJpeg, MAX_PHOTO_BYTES, MAX_THUMB_BYTES, parseEntryForm } from "@/lib/entry-input";
@@ -24,6 +26,9 @@ export async function POST(request: Request) {
   if (!(await isJpeg(photo)) || !(await isJpeg(thumb))) return badRequest("The photo must be a JPEG.");
   const input = parseEntryForm(form);
   if (!input.ok) return badRequest(input.error);
+  if ((await withDrizzle((db) => entriesToday(db, user.id))) >= DAILY_ENTRY_LIMIT) {
+    return Response.json({ error: ENTRY_LIMIT_MESSAGE }, { status: 429 });
+  }
 
   const { env, ctx } = await getCloudflareContext({ async: true });
   const id = crypto.randomUUID();
@@ -49,6 +54,7 @@ export async function POST(request: Request) {
         console.error(`Couldn't queue scoring for ${entry.id}:`, error),
       ),
     );
+    await track("entry_saved", user.id, { entry_id: entry.id, has_location: Boolean(input.value.location) });
     return Response.json({ id: entry.id }, { status: 201 });
   } catch (error) {
     await env.PHOTOS.delete(keys);

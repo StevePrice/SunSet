@@ -3,6 +3,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { entryFacts, track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
@@ -11,6 +12,10 @@ import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
 import { deleteAllRecordings, deleteEntryRecordings, listClips } from "@/lib/story/clips";
 import { fillMissingTitle } from "@/lib/titles";
 import {
+  applyShareChoice,
+  stopSharingAllVoices,
+  stopSharingVoice,
+  type ShareChoice,
   createShare,
   deleteShare,
   getShareForEntry,
@@ -57,7 +62,11 @@ export async function deleteEntryAction(id: string): Promise<void> {
 export async function deleteRecordingAction(entryId: string): Promise<void> {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const keys = await withDrizzle((db) => deleteEntryRecordings(db, user.id, entryId));
+  // Include my voice turns off with it (4f-3), so a new recording is never shared without asking.
+  const keys = await withDrizzle(async (db) => {
+    await stopSharingVoice(db, user.id, entryId);
+    return deleteEntryRecordings(db, user.id, entryId);
+  });
   await deleteObjects(keys);
   revalidatePath(`/journal/${entryId}`);
 }
@@ -66,7 +75,10 @@ export async function deleteRecordingAction(entryId: string): Promise<void> {
 export async function deleteAllRecordingsAction(): Promise<{ deleted: number }> {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const keys = await withDrizzle((db) => deleteAllRecordings(db, user.id));
+  const keys = await withDrizzle(async (db) => {
+    await stopSharingAllVoices(db, user.id);
+    return deleteAllRecordings(db, user.id);
+  });
   await deleteObjects(keys);
   revalidatePath("/journal", "layout");
   return { deleted: keys.length };
@@ -81,14 +93,43 @@ async function deleteObjects(keys: string[]) {
 
 export type ShareLink = { url: string; place: string | null };
 
-export async function createShareAction(entryId: string, timeZone: string): Promise<ShareLink | { error: string }> {
+/**
+ * Share: makes the link if there isn't one. With a choice from Before you share (4f-3), also makes
+ * the named person's personal link, and sets whether the link carries the owner's voice.
+ */
+export async function createShareAction(
+  entryId: string,
+  timeZone: string,
+  choice?: ShareChoice,
+): Promise<ShareLink | { error: string }> {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
-  const share = await withDrizzle((db) => createShare(db, user.id, entryId, parseTimeZone(timeZone)));
-  if (!share) return { error: "This entry no longer exists." };
+  const result = await withDrizzle(async (db) => {
+    const share = await createShare(db, user.id, entryId, parseTimeZone(timeZone));
+    if (!share) return null;
+    const applied = choice ? await applyShareChoice(db, user.id, share.id, choice) : { token: null };
+    return applied && { share, token: applied.token };
+  });
+  if (!result) return { error: "This entry no longer exists." };
+  const { share, token } = result;
+  // Every tap of Share (a new link or the same one again); share rate counts distinct entry_ids.
+  await track("entry_shared", user.id, {
+    ...(await withDrizzle((db) => entryFacts(db, entryId))),
+    share_id: share.id,
+    personal: token !== null,
+    include_voice: choice?.includeVoice ?? false,
+  });
   revalidatePath(`/journal/${entryId}`);
   revalidatePath(`/journal/${entryId}/afterglow`);
-  return { url: await shareUrl(share.id), place: share.place };
+  return { url: `${await shareUrl(share.id)}${token ? `?r=${token}` : ""}`, place: share.place };
+}
+
+/** Link settings: "Stop sharing my voice" turns the voice off on every link to this sunset. */
+export async function stopSharingVoiceAction(entryId: string): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  await withDrizzle((db) => stopSharingVoice(db, user.id, entryId));
+  revalidatePath(`/journal/${entryId}/afterglow`);
 }
 
 export async function updateSharePlaceAction(entryId: string, _prev: ActionResult, form: FormData): Promise<ActionResult> {

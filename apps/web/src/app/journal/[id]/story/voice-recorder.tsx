@@ -304,7 +304,7 @@ export function MicNote({ onContinue, onTypeInstead }: { onContinue: () => void;
         Tell it in your own voice
       </h2>
       <p>Your phone will ask if Sunset Soul can use the microphone. Tap Allow.</p>
-      <p>Your recording stays private. Friends never hear it.</p>
+      <p>Your recording is private. You decide if friends hear it.</p>
       <p>AI turns what you say into text you can change.</p>
       <button type="button" onClick={onContinue} className={buttonClass("action", "w-full")}>
         Continue

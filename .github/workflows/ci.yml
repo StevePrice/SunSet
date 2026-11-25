@@ -132,3 +132,6 @@ jobs:
         env:
           POSTGRES_PASSWORD: ci
           TUNNEL_TOKEN: ci
+          R2_ACCOUNT_ID: ci
+          R2_BACKUP_ACCESS_KEY_ID: ci
+          R2_BACKUP_SECRET_ACCESS_KEY: ci

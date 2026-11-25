@@ -13,6 +13,17 @@ export const REACTION_LABELS: Record<ReactionKind, string> = {
   hugs: "Sending hugs",
 };
 
+/**
+ * On a personal link (4f-3) the person is in the photo, so "Wish I was there" becomes "I was there!"
+ * (the same wish reaction and icon; only the words change).
+ */
+export function reactionLabel(kind: ReactionKind, inThePhoto = false): string {
+  return inThePhoto && kind === "wish" ? "I was there!" : REACTION_LABELS[kind];
+}
+
+/** A personal link's token: 22 base62 characters. */
+export const recipientTokenSchema = z.string().regex(/^[0-9A-Za-z]{22}$/);
+
 export const MAX_NOTE_LENGTH = 100;
 export const MAX_VISITOR_NAME_LENGTH = 40;
 
@@ -37,8 +48,8 @@ export const noteSchema = z
   .transform((s) => s || null);
 
 export const reactionRequestSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("toggle"), kind: z.enum(REACTION_KINDS), name: visitorNameSchema.optional() }),
-  z.object({ action: z.literal("note"), note: noteSchema, name: visitorNameSchema.optional() }),
+  z.object({ action: z.literal("toggle"), kind: z.enum(REACTION_KINDS), name: visitorNameSchema.optional(), recipient: recipientTokenSchema.optional() }),
+  z.object({ action: z.literal("note"), note: noteSchema, name: visitorNameSchema.optional(), recipient: recipientTokenSchema.optional() }),
 ]);
 
 export type ReactionRequest = z.infer<typeof reactionRequestSchema>;

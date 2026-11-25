@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupByMonth, journalViewHref, parseJournalView } from "./journal-view";
+import { groupByMonth, journalHref, parseJournalShow, parseJournalView } from "./journal-view";
 
 describe("parseJournalView", () => {
   it("defaults to Stories and only accepts photos as the other view", () => {
@@ -19,9 +19,20 @@ describe("parseJournalView", () => {
   });
 
   it("round-trips through the URL", () => {
-    expect(journalViewHref("photos")).toBe("/journal?view=photos");
-    expect(journalViewHref("stories")).toBe("/journal?view=stories");
-    expect(parseJournalView(new URL(journalViewHref("photos"), "https://x").searchParams.get("view") ?? undefined)).toBe("photos");
+    expect(journalHref("photos", "all")).toBe("/journal?view=photos&show=all");
+    const params = new URL(journalHref("stories", "people"), "https://x").searchParams;
+    expect(parseJournalView(params.get("view") ?? undefined)).toBe("stories");
+    expect(parseJournalShow(params.get("show") ?? undefined)).toBe("people");
+  });
+});
+
+describe("parseJournalShow", () => {
+  it("defaults to All, opens the last filter used, and the URL wins", () => {
+    expect(parseJournalShow(undefined)).toBe("all");
+    expect(parseJournalShow("pure")).toBe("pure");
+    expect(parseJournalShow("nonsense")).toBe("all");
+    expect(parseJournalShow(undefined, "people")).toBe("people");
+    expect(parseJournalShow("all", "people")).toBe("all");
   });
 });
 

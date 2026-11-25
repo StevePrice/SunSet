@@ -9,6 +9,7 @@ import { createEntry } from "./entries";
 import {
   deleteAccount,
   deleteAccountFiles,
+  deleteOwnAccount,
   onSessionStart,
   parseAdminEmails,
   promoteListedAdmin,
@@ -221,5 +222,28 @@ describe.skipIf(!url)("user administration", () => {
     };
     expect(await deleteAccountFiles(bucket as never, "u1", ["s1"])).toBe(3);
     expect([...keys].sort()).toEqual(["entries/u10/e/display.jpg", "shares/s2/card.jpg"]);
+  });
+
+  it("lets people delete their own account, with its sunsets, and logs it (Phase 7a)", async () => {
+    const me = await makeUser();
+    const entryId = crypto.randomUUID();
+    await createEntry(db, me, entryId, { story: "Mine", takenAt: null, location: null, photoWidth: 10, photoHeight: 10 });
+    await addSession(me);
+    const result = await deleteOwnAccount(db, me, none);
+    expect(result).toMatchObject({ ok: true, userId: me });
+    expect((await db.select().from(schema.users).where(eq(schema.users.id, me))).length).toBe(0);
+    expect((await db.select().from(schema.entries).where(eq(schema.entries.id, entryId))).length).toBe(0);
+    expect(await sessionCount(me)).toBe(0);
+    expect(await actionsFor(me)).toMatchObject([{ action: "delete_own_account" }]);
+  });
+
+  it("won't let the last admin, or one listed in ADMIN_EMAILS, delete their own account", async () => {
+    const last = await makeUser("admin");
+    await aloneAsAdmin(last, async (tx) => {
+      expect(await deleteOwnAccount(tx, last, none)).toEqual({ ok: false, error: "There must always be at least one admin." });
+    });
+    const listed = await makeUser("admin");
+    const result = await deleteOwnAccount(db, listed, parseAdminEmails(`${listed}@example.com`));
+    expect(result.ok).toBe(false);
   });
 });

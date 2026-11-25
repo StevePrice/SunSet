@@ -1,19 +1,7 @@
 // Drizzle table definitions. `entries` is the Journal; Better Auth owns users, sessions, accounts, verifications and
 // rate_limits (field names follow its core schema; table names are plural via `usePlural`).
-import {
-  bigint,
-  boolean,
-  index,
-  integer,
-  jsonb,
-  numeric,
-  pgTable,
-  primaryKey,
-  smallint,
-  text,
-  timestamp,
-  unique,
-} from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { bigint, boolean, index, integer, jsonb, numeric, pgTable, primaryKey, smallint, text, timestamp, unique, uniqueIndex } from "drizzle-orm/pg-core";
 import { point4326 } from "./point";
 
 const timestamps = {
@@ -120,6 +108,10 @@ export const entries = pgTable(
     // The IANA time zone the date is shown in everywhere (Phase 4e, one date rule): the time zone
     // of the place, or of the owner's phone when saved. Null for old entries without either.
     timeZone: text("time_zone"),
+    // The scorer's people check (Phase 4f, PRD 6.10a): whether anyone is in the photo and roughly
+    // how many. Never who. Hidden from the user; null until scored by scorer v2.1 or later.
+    hasPeople: boolean("has_people"),
+    peopleCount: smallint("people_count"),
     photoWidth: integer("photo_width").notNull(),
     photoHeight: integer("photo_height").notNull(),
     ...timestamps,
@@ -190,9 +182,34 @@ export const shares = pgTable(
     place: text("place"),
     // The owner's time zone when they shared, so the date shown is the day they saw the sunset.
     timeZone: text("time_zone").notNull(),
+    // Include my voice (Phase 4f-3) for the normal link: friends can hear the owner tell the story.
+    // Off unless the owner turns it on. Personal links have their own switch (share_recipients).
+    includeVoice: boolean("include_voice").notNull().default(false),
     ...timestamps,
   },
   (table) => [index("shares_user_idx").on(table.userId)],
+);
+
+// A personal link (Phase 4f-3, Build Spec 2.7–2.8): the share sent to someone named in the photo.
+// /s/[share id]?r=[token] greets them by name ("Steve, you're in Louise's sunset"), skips the
+// first-name question and offers "I was there!". One per name per share; Stop sharing (deleting the
+// share) ends every personal link with it.
+export const shareRecipients = pgTable(
+  "share_recipients",
+  {
+    id: text("id").primaryKey(),
+    shareId: text("share_id")
+      .notNull()
+      .references(() => shares.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    // 22 random base62 characters; the link works only with it.
+    token: text("token").notNull().unique(),
+    includeVoice: boolean("include_voice").notNull().default(false),
+    // The reaction visitor made the first time they reacted, so "I was there!" can be shown as theirs.
+    visitorId: text("visitor_id").references(() => reactionVisitors.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("share_recipients_share_name_idx").on(table.shareId, sql`lower(${table.name})`)],
 );
 
 // A friend who reacted to a shared sunset (Phase 4b). No account: the id lives in a long-lived
@@ -300,6 +317,28 @@ export const storyClips = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("story_clips_entry_idx").on(table.entryId, table.createdAt), index("story_clips_user_idx").on(table.userId)],
+);
+
+// Who's in a sunset (Phase 4f, Sunsets Together): names the owner typed or tapped. Owner-only,
+// never shown to friends unless shared later (4f-3). No face recognition: the scorer only says
+// whether people are in the photo; the owner says who. A name appears once per entry, ignoring case.
+export const entryPeople = pgTable(
+  "entry_people",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("entry_people_entry_name_idx").on(table.entryId, sql`lower(${table.name})`),
+    index("entry_people_user_idx").on(table.userId, table.createdAt.desc()),
+  ],
 );
 
 // One row per AI call, for the per-user daily limit.

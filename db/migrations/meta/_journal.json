@@ -78,6 +78,27 @@
       "when": 1795206760022,
       "tag": "0010_places_and_time_zones",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795403032782,
+      "tag": "0011_people_check",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795502694088,
+      "tag": "0012_people_names",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795531599066,
+      "tag": "0013_personal_links",
+      "breakpoints": true
     }
   ]
 }

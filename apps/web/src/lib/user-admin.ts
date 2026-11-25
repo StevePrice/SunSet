@@ -175,38 +175,65 @@ export function deleteAccount(
     if (!target) return { ok: false, error: GONE };
     const refusal = await checkCanRemoveAccess(tx, actorId, target, "delete", adminEmails);
     if (refusal) return { ok: false, error: refusal };
-
-    const shareIds = (await tx.select({ id: shares.id }).from(shares).where(eq(shares.userId, targetId))).map((s) => s.id);
-    // Friends who reacted are people without accounts; the ones who only reacted here go too.
-    const ownEntries = tx.select({ id: entries.id }).from(entries).where(eq(entries.userId, targetId));
-    const visitorIds = [
-      ...new Set([
-        ...(await tx.select({ id: reactions.visitorId }).from(reactions).where(inArray(reactions.entryId, ownEntries))),
-        ...(await tx.select({ id: reactionNotes.visitorId }).from(reactionNotes).where(inArray(reactionNotes.entryId, ownEntries))),
-      ].map((v) => v.id)),
-    ];
-
-    await logAdminAction(tx, {
-      adminId: actorId,
-      action: "delete_account",
-      targetUserId: targetId,
-      targetEmail: target.email,
-      details: { shares: shareIds.length },
-    });
-    await tx.delete(users).where(eq(users.id, targetId));
-    if (visitorIds.length) {
-      await tx.delete(reactionVisitors).where(
-        and(
-          inArray(reactionVisitors.id, visitorIds),
-          notExists(tx.select({ x: sql`1` }).from(reactions).where(eq(reactions.visitorId, reactionVisitors.id))),
-          notExists(tx.select({ x: sql`1` }).from(reactionNotes).where(eq(reactionNotes.visitorId, reactionVisitors.id))),
-        ),
-      );
-    }
-    // Magic-link and password-reset tokens are keyed by the email address.
-    await tx.delete(verifications).where(or(eq(verifications.identifier, target.email), eq(verifications.identifier, target.email.toLowerCase())));
-    return { ok: true, userId: targetId, shareIds };
+    const removed = await removeAccount(tx, target, { adminId: actorId, action: "delete_account" });
+    return { ok: true, ...removed };
   });
+}
+
+/**
+ * Deletes the signed-in person's own account (You → Delete my account; Phase 7a user rights).
+ * The same removal as deleteAccount. An admin can't leave the app without an admin, or remove an
+ * account that ADMIN_EMAILS would bring straight back.
+ */
+export function deleteOwnAccount(db: Db, userId: string, adminEmails: Set<string>): Promise<Result<{ userId: string; shareIds: string[] }>> {
+  return db.transaction(async (tx): Promise<Result<{ userId: string; shareIds: string[] }>> => {
+    const target = await findTarget(tx, userId);
+    if (!target) return { ok: false, error: GONE };
+    // Checked as if someone else were removing this account, so the last-admin rule applies.
+    const refusal = await checkCanRemoveAccess(tx, null, target, "delete", adminEmails);
+    if (refusal) return { ok: false, error: refusal };
+    const removed = await removeAccount(tx, target, { adminId: userId, action: "delete_own_account" });
+    return { ok: true, ...removed };
+  });
+}
+
+/** The removal itself, inside a transaction, after the caller's checks. Logged. */
+async function removeAccount(
+  tx: Executor & Pick<Db, "delete">,
+  target: Target,
+  log: { adminId: string; action: "delete_account" | "delete_own_account" },
+): Promise<{ userId: string; shareIds: string[] }> {
+  const targetId = target.id;
+  const shareIds = (await tx.select({ id: shares.id }).from(shares).where(eq(shares.userId, targetId))).map((s) => s.id);
+  // Friends who reacted are people without accounts; the ones who only reacted here go too.
+  const ownEntries = tx.select({ id: entries.id }).from(entries).where(eq(entries.userId, targetId));
+  const visitorIds = [
+    ...new Set([
+      ...(await tx.select({ id: reactions.visitorId }).from(reactions).where(inArray(reactions.entryId, ownEntries))),
+      ...(await tx.select({ id: reactionNotes.visitorId }).from(reactionNotes).where(inArray(reactionNotes.entryId, ownEntries))),
+    ].map((v) => v.id)),
+  ];
+
+  await logAdminAction(tx, {
+    adminId: log.adminId,
+    action: log.action,
+    targetUserId: targetId,
+    targetEmail: target.email,
+    details: { shares: shareIds.length },
+  });
+  await tx.delete(users).where(eq(users.id, targetId));
+  if (visitorIds.length) {
+    await tx.delete(reactionVisitors).where(
+      and(
+        inArray(reactionVisitors.id, visitorIds),
+        notExists(tx.select({ x: sql`1` }).from(reactions).where(eq(reactions.visitorId, reactionVisitors.id))),
+        notExists(tx.select({ x: sql`1` }).from(reactionNotes).where(eq(reactionNotes.visitorId, reactionVisitors.id))),
+      ),
+    );
+  }
+  // Magic-link and password-reset tokens are keyed by the email address.
+  await tx.delete(verifications).where(or(eq(verifications.identifier, target.email), eq(verifications.identifier, target.email.toLowerCase())));
+  return { userId: targetId, shareIds };
 }
 
 type Bucket = Pick<R2Bucket, "list" | "delete">;

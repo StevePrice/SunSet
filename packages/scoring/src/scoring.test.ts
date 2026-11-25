@@ -80,6 +80,7 @@ describe("Wow Factor", () => {
     const metrics = { colouredFraction: 0.5, sunsetFraction: 0.5, hueBinsUsed: 3, vividness: 0.5 };
     const scene = (score: number): SceneReport => ({
       is_sunset: true,
+      people: { present: false, count: 0 },
       content_flag: "none",
       setting: { type: "trees", score: 6, reason: "" },
       phenomena: [],
@@ -101,6 +102,7 @@ describe("composite", () => {
 describe("scene validation", () => {
   const valid: SceneReport = {
     is_sunset: true,
+    people: { present: true, count: 2 },
     content_flag: "none",
     setting: { type: "ocean", score: 7, reason: "The sea horizon frames it." },
     phenomena: [{ kind: "reflection", confidence: "clear", striking: false, description: "on wet sand" }],
@@ -112,5 +114,11 @@ describe("scene validation", () => {
     expect(parseScene({ ...valid, setting: { ...valid.setting, type: "desert" } })).toBeNull();
     expect(parseScene({ ...valid, wow: { ...valid.wow, drivers: ["colour"] } })).toBeNull();
     expect(parseScene("not json")).toBeNull();
+  });
+
+  it("requires the people check (Phase 4f), and never anything that identifies people", () => {
+    const { people: _people, ...withoutPeople } = valid;
+    expect(parseScene(withoutPeople)).toBeNull();
+    expect(Object.keys(valid.people).sort()).toEqual(["count", "present"]);
   });
 });

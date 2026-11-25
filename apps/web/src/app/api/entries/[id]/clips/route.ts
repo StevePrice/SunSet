@@ -2,6 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
+import { CLIP_LIMIT_MESSAGE, clipsToday, DAILY_CLIP_LIMIT } from "@/lib/limits";
 import { AI_OFF_MESSAGE, getStorySettings, storyHelpAllowed } from "@/lib/settings";
 import { withAi } from "@/lib/story/ai-guard";
 import { clipKey, createClip, setClipTranscript } from "@/lib/story/clips";
@@ -22,9 +23,12 @@ export async function POST(request: Request, ctx: RouteContext<"/api/entries/[id
 
   const allowed = await withDrizzle(async (db) => {
     if (!(await getEntry(db, user.id, entryId))) return "missing";
+    if ((await clipsToday(db, user.id)) >= DAILY_CLIP_LIMIT) return "limited";
     return storyHelpAllowed(await getStorySettings(db, user.id)) ? "ok" : "off";
   });
   if (allowed === "missing") return fail("This entry no longer exists.", 404);
+  // 403 with a message makes the recorder switch to typing and show it (story/voice-recorder.tsx).
+  if (allowed === "limited") return fail(CLIP_LIMIT_MESSAGE, 403);
   // Voice answers exist to be transcribed, which is AI; with AI story help off there are none.
   if (allowed === "off") return fail(AI_OFF_MESSAGE, 403);
 
