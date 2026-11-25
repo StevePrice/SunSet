@@ -24,7 +24,7 @@
 
 **Louise's decisions (November 24):** the personal map comes before the Live Map; the work is split into three smaller releases (together it was about three times the size of Phase 4f); **Friends become users (Release A) comes first**, before the Sunset Map (Release B), since it needs no friend list, builds on the personal links Steve just finished, and helps the app grow as the beta starts. Releases D and E are proposed and can move.
 
-**To agree with Steve:** his plan (updated November 20) has the Live Global Map (Phase 6) next. Louise's decision puts Friends become users (Release A) next, then Your Sunset Map (Release B), both before the Live Map. The two share a lot (the map, clustering, the Map tab), so building the personal map first may also make the Live Map quicker.
+**To agree with Steve:** his plan (updated November 20) has the Live Global Map (Phase 6) next. Louise's decision puts Friends become users (Release A) next, then Your Sunset Map (Release B), both before the Live Map. The two share a lot (the map, clustering, the Map tab), so building the personal map first may also make the Live Map quicker. **Agreed November 25 (Steve):** Release A comes before Phase 6 in `app-strategy-phases.md`.
 
 **The story travels with every share (decided November 24).** Anywhere a sunset is shared in these phases (from a map pin, a map link, a trip, a set, or a friend's "Send one back"), the story goes with it, along with the voice if the user chose to include it. A sunset is never shared as a bare photo.
 
