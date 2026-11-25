@@ -1,5 +1,5 @@
 # Sunset Soul — Later List
-**Started:** November 8, 2026, by Louise. **Updated:** November 24, 2026: reorganized by *when* each feature should be built (Release A Your Sunset Map, Release B Friends become users, Release C Bucket List and trips; the story travels with every share; Phase 6 Live Map; proposed Release D Family Circle and Release E finding and looking back). Keepsakes and business are no longer tied to the holidays. Earlier updates: November 22 (Sunsets Together, Finding Your Sunsets, native app section).
+**Started:** November 8, 2026, by Louise. **Updated:** November 24, 2026: reorganized by *when* each feature should be built (Release A Friends become users, then Release B Your Sunset Map, then Release C Bucket List and trips; the story travels with every share; Phase 6 Live Map; proposed Release D Family Circle and Release E finding and looking back). Keepsakes and business are no longer tied to the holidays. Earlier updates: November 22 (Sunsets Together, Finding Your Sunsets, native app section).
 **What this is:** features we've decided are *not* in the MVP, kept in one place so good ideas aren't lost, and arranged in the order we expect to build them. Each one is designed right before it's built, using the design system and the flow map. When a group is chosen for building, it gets its own build spec (like Phase 4e flow fixes and Phase 4f Sunsets Together).
 **Related:** MVP requirements in `sunset-soul-prd.md` · MVP decisions in `claude/sunset-soul-flow-fixes.md` · Concept doc "Later (v2+)".
 
@@ -11,8 +11,8 @@
 |---|---|---|
 | **Now** | MVP (PRD), Phases 4e and 4f | Test the core habit and whether photos with people are shared more |
 | **Soon after launch** | Small fixes and basics | Things real users will need in the first weeks |
-| **Release A** | Your Sunset Map | Something new and different; a reason to come back that grows over time, and works for one person alone |
-| **Release B** | Friends become users: "Claim your sunsets" and "Send one back" | Turns people who receive sunsets into people who keep their own |
+| **Release A** | Friends become users: "Claim your sunsets" and "Send one back" | Turns people who receive sunsets into people who keep their own |
+| **Release B** | Your Sunset Map | Something new and different; a reason to come back that grows over time, and works for one person alone |
 | **Release C** | Bucket List and trips | More reasons to open the app between sunsets |
 | **Phase 6** | Live Map | Needs enough users posting to feel alive |
 | **Release D** *(proposed)* | Family Circle | Connects people who are both users |
@@ -22,9 +22,9 @@
 
 **Release letters are working names.** Steve's build plan (`app-strategy-phases.md`) already uses Phase 5 to 10 (5 AI Story Capture, 5b user admin, 5c CI, 6 Live Global Map, 7 Hardening and beta, 8 Daily Ritual, 9 and 10 native apps). Steve gives each release a phase number when it's planned.
 
-**Louise's decisions (November 24):** the personal map comes before the Live Map; the map work is split into three smaller releases, map first (together it was about three times the size of Phase 4f); Steps 1 and 2 of the friends-to-family path are Release B, since they need no friend list and help the app grow. Releases D and E are proposed and can move.
+**Louise's decisions (November 24):** the personal map comes before the Live Map; the work is split into three smaller releases (together it was about three times the size of Phase 4f); **Friends become users (Release A) comes first**, before the Sunset Map (Release B), since it needs no friend list, builds on the personal links Steve just finished, and helps the app grow as the beta starts. Releases D and E are proposed and can move.
 
-**To agree with Steve:** his plan (updated November 20) has the Live Global Map (Phase 6) next. Louise's decision puts Your Sunset Map (Release A) first. The two share a lot (the map, clustering, the Map tab), so building the personal map first may also make the Live Map quicker.
+**To agree with Steve:** his plan (updated November 20) has the Live Global Map (Phase 6) next. Louise's decision puts Friends become users (Release A) next, then Your Sunset Map (Release B), both before the Live Map. The two share a lot (the map, clustering, the Map tab), so building the personal map first may also make the Live Map quicker.
 
 **The story travels with every share (decided November 24).** Anywhere a sunset is shared in these phases (from a map pin, a map link, a trip, a set, or a friend's "Send one back"), the story goes with it, along with the voice if the user chose to include it. A sunset is never shared as a bare photo.
 
@@ -44,10 +44,13 @@ Small, low-risk additions that real users will need quickly. Could be one small 
 
 ---
 
-## Releases A–C: the map, friends, and the bucket list
+## Releases A–C: friends, the map, and the bucket list
 **Decided November 24, 2026:** comes after the MVP and before the Live Map, split into three releases so each ships something people can use and we can learn before building the next.
 
-**Release A: Your Sunset Map (first)**
+**Release A: Friends become users (first)**
+- **Step 1, "Claim your sunsets," and Step 2, "Send one back"** (details under "From friends to a family circle" below)
+
+**Release B: Your Sunset Map (second)**
 - **Your Sunset Map, people first** (details below)
 - **We found your sunsets, simple version:** pick many old sunset photos at once; they land with real dates and places, AI titles and Wow lines, so the map is full on day one. Without it, the map starts empty. Each one can get a story later, and the app gently invites it ("Add the story behind this one?"). (The full version, where the app finds them for you, is under "When it's a native app".)
   - **Limit: 10 past sunsets per person for now** (decided November 24), to keep AI costs down (each photo gets an AI title and Wow score). The limit is a setting the team can raise later without new building. It applies only to adding photos in bulk; adding sunsets one at a time works as it does today.
@@ -55,9 +58,6 @@ Small, low-risk additions that real users will need quickly. Could be one small 
 - **Jump to:** a button in Photos that lists years and months, needed once people add old photos in bulk.
 - **Celebrations** (details below)
 - **Map share card** (details below)
-
-**Release B: Friends become users**
-- **Step 1, "Claim your sunsets," and Step 2, "Send one back"** (details under "From friends to a family circle" below)
 
 **Release C: Bucket List and trips**
 - **Sunset Bucket List** (details below)
@@ -68,7 +68,7 @@ Small, low-risk additions that real users will need quickly. Could be one small 
 
 **Not in Releases A–C:** Same Sky and two-person maps (they need the family circle, Release D), and anything that needs the native app.
 **Timing:** let the MVP run first and check the main test (are photos with people shared more?). A yes is strong evidence for a people-first map.
-**Already in place:** the MVP saves place details with every entry (PRD 6.3), so Release A won't need to reprocess old sunsets.
+**Already in place:** the MVP saves place details with every entry (PRD 6.3), so Release B won't need to reprocess old sunsets.
 
 ### Your Sunset Map (a personal map of every sunset you've seen)
 Inspired by Been, an app that fills in a world map with the countries you've visited. Sunset Soul borrows the map and the satisfying numbers, but **not the focus on travel.** Been is about how many countries you've been to. Sunset Soul is about **the sunsets you've shared with the people in your life.** The map should feel like "every place we've watched the sun go down together," not a travel scoreboard. Each pin holds the photo and story behind it, which Been can't do.
@@ -168,14 +168,14 @@ Inspired by Been, an app that fills in a world map with the countries you've vis
 
 ---
 
-## From friends to a family circle (Steps 1–2 in Release B, Step 3 in Release D)
-**Decided November 24, 2026.** Sharing with family and friends is the heart of the app. Today friends can view, react and add their memories without becoming users. This path turns people who *receive* sunsets into people who *keep* their own: a ladder where each step gives a friend a reason to come one step closer. **Steps 1 and 2 are built in Release B**, since they need no friend list. **Step 3, the Family Circle, is proposed Release D** (the in-app friend connection, Phase 2 in the PRD).
+## From friends to a family circle (Steps 1–2 in Release A, Step 3 in Release D)
+**Decided November 24, 2026.** Sharing with family and friends is the heart of the app. Today friends can view, react and add their memories without becoming users. This path turns people who *receive* sunsets into people who *keep* their own: a ladder where each step gives a friend a reason to come one step closer. **Steps 1 and 2 are built in Release A**, since they need no friend list. **Step 3, the Family Circle, is proposed Release D** (the in-app friend connection, Phase 2 in the PRD).
 
 **Two principles**
 - **Friends can always react without the app.** Joining is a bonus, never a gate; not everyone in the family will download an app.
 - **Invite at emotional moments, not with pop-ups.** "You're in this sunset" and "Send one back" feel like invitations. "Download our app!" feels like an ad.
 
-**Step 1: "Claim your sunsets" (the biggest lever; Release B)**
+**Step 1: "Claim your sunsets" (the biggest lever; Release A)**
 - Builds on personal links (PRD 6.10g), which already know who's in a photo.
 - On Steve's Share Page: **"Steve, you're in 8 of Louise's sunsets. Start your own Journal and they'll be waiting for you."** This replaces the plain "Start your own Journal" link on personal links.
 - When Steve joins, the sunsets he's in appear in his new Journal **with Louise's story and his own memory together** (both sides of the story), **only those Louise has shared with him.** Louise's original stays hers; Steve's copy shows "Shared by Louise."
@@ -185,7 +185,7 @@ Inspired by Been, an app that fills in a world map with the countries you've vis
 - Why it works: most apps make new users start from zero. Steve arrives with a Journal already full of his own memories.
 - **Open questions:** how Steve's account is matched to the name on Louise's photos (likely through the personal link he signs up from); whether sunsets Louise shares with Steve after he joins go straight into his Journal (assumed yes).
 
-**Step 2: "Send one back" (Release B)**
+**Step 2: "Send one back" (Release A)**
 - On the Share Page: **"Seen a great sunset lately? Send one back to Louise."** The friend adds a photo **and its story, typed or spoken**, with no account (reusing Two sides of the story, PRD 6.10e).
 - Louise sees it in From your friends, photo and story together, and can react to it.
 - The friend then sees **"Want to keep this one? Save it to your own Journal,"** a natural, no-pressure moment to sign up.
@@ -214,7 +214,7 @@ Inspired by Been, an app that fills in a world map with the countries you've vis
 Sunset Soul is a web app for the MVP. These features need, or work much better in, a native phone app. In Steve's plan this is Phase 9 (a native shell around the web app, after the beta) and, only if needed, Phase 10 (fully native apps).
 - **Photos save to the phone automatically:** every photo taken in the app is copied to the phone's photo library, with no extra step (the phone asks permission once). In the MVP, photos taken in the app stay in the Journal; a "Save to your photos" step after every photo was tried and dropped on November 22 because it slowed people down.
 - **"From today" photo strip:** at the top of the New sunset choose-a-photo step, a row of photos taken in the last few hours, so someone who just took ten shots of tonight's sunset can tap the best one without searching.
-- **We found your sunsets, full version:** the app finds the sunsets in the camera roll for you. (The simple pick-many version is in Release A.)
+- **We found your sunsets, full version:** the app finds the sunsets in the camera roll for you. (The simple pick-many version is in Release B.)
 - **One-tap Instagram, Snapchat, TikTok and Facebook buttons** on the share panel.
 - **Sunset reminders** that work reliably (PRD 6.8; on a web app they need the app installed to the home screen on iPhone).
 - **Golden-hour daily moment:** a nudge to capture tonight's sunset (BeReal-style), possibly saying whether tonight's sky looks promising ("Worth stepping outside").
@@ -235,7 +235,7 @@ Most valuable once Journals are large. Uses the photo and story "fingerprints" (
 - Never: face recognition or face fingerprints.
 
 **Looking back**
-- **On this day:** "A year ago today…" memories of past sunsets. (Works sooner for people who added old photos in Release A.)
+- **On this day:** "A year ago today…" memories of past sunsets. (Works sooner for people who added old photos in Release B.)
 - **Season recaps:** a look back at a season's sunsets (Spotify Wrapped-style), including "Your sunset people this summer" and the map filling in over the year. A year-end recap is a natural December share.
 
 **Scoring**
