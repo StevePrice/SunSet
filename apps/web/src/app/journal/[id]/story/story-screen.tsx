@@ -22,6 +22,7 @@ import {
   declineAiNoticeAction,
   openersAction,
   polishAction,
+  retryTranscriptionAction,
   saveStoryTextAction,
   suggestTitleAction,
   tidyAction,
@@ -124,7 +125,8 @@ export function StoryScreen({
   }
 
   const voice = useVoiceRecorder({
-    entryId,
+    uploadUrl: `/api/entries/${entryId}/clips`,
+    retryTranscription: (clipId) => retryTranscriptionAction(entryId, clipId),
     onClip: (clip) => setClips((list) => [...list, clip]),
     onTranscript: (text, clipId) => {
       // Kept as one spoken answer ("What you said", playback), then tidied into the box.

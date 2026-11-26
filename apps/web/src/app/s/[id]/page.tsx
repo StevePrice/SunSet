@@ -10,6 +10,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { CARD_HEIGHT, CARD_WIDTH, cardContent, cardVersion, shareByline } from "@/lib/share-card";
 import { parseVisitorId, VISITOR_COOKIE } from "@/lib/reaction-input";
+import { getMyAddition } from "@/lib/additions";
 import { getPublicReactions } from "@/lib/reactions";
 import { getPublicShare, getRecipient, parseRecipientToken, type Recipient } from "@/lib/shares";
 import { listClips } from "@/lib/story/clips";
@@ -58,8 +59,8 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
   const visitorId = parseVisitorId((await cookies()).get(VISITOR_COOKIE)?.value);
   const token = tokenFrom(await props.searchParams);
   const recipient = await loadRecipient(id, token);
-  const [reactions, clips] = await withDrizzle((db) =>
-    Promise.all([getPublicReactions(db, id, visitorId), listClips(db, share.ownerId, share.entryId)]),
+  const [reactions, clips, addition] = await withDrizzle((db) =>
+    Promise.all([getPublicReactions(db, id, visitorId), listClips(db, share.ownerId, share.entryId), getMyAddition(db, id, visitorId)]),
   );
   if (!reactions) notFound();
   // Include my voice: the personal link's own switch, else the normal link's. Deleting the
@@ -104,6 +105,7 @@ export default async function SharedSunsetPage(props: PageProps<"/s/[id]">) {
       <Reactions
         shareId={id}
         initial={recipient && !reactions.name ? { ...reactions, name: recipient.name } : reactions}
+        initialAddition={addition}
         ownerName={share.ownerName}
         recipientToken={recipient ? token : null}
       />

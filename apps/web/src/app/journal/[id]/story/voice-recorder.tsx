@@ -13,7 +13,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { buttonClass } from "@/components/button";
 import { noticeClass } from "@/components/styles";
 import { formatDuration, MAX_RECORDING_SECONDS, pickRecorderMime } from "@/lib/story/voice";
-import { retryTranscriptionAction } from "./actions";
 
 export type VoiceState =
   | { kind: "idle" }
@@ -39,12 +38,25 @@ export function MicIcon({ size = 24 }: { size?: number }) {
 }
 
 export function useVoiceRecorder({
-  entryId,
+  uploadUrl,
+  fields,
+  maxSeconds = MAX_RECORDING_SECONDS,
+  retryTranscription,
+  onRecorded,
   onClip,
   onTranscript,
   onTypeInstead,
 }: {
-  entryId: string;
+  /** The recording itself, as soon as it stops (before upload), e.g. to play it back. */
+  onRecorded?: (blob: Blob, durationMs: number) => void;
+  /** Where the clip is posted: the owner's story (/api/entries/[id]/clips) or a friend's (4f-4). */
+  uploadUrl: string;
+  /** Extra form fields sent with the clip. */
+  fields?: () => Record<string, string>;
+  /** The recorder stops itself here. */
+  maxSeconds?: number;
+  /** Turns a stored clip into text again. Without it, a failed transcription offers typing only. */
+  retryTranscription?: (clipId: string) => Promise<{ transcript: string } | { error: string }>;
   /** Every clip saved on the server, transcribed or not. */
   onClip: (clip: { id: string; durationMs: number }) => void;
   /** The transcript, with the clip it came from. */
@@ -84,11 +96,12 @@ export function useVoiceRecorder({
     const body = new FormData();
     body.set("audio", blob, "answer");
     body.set("durationMs", String(durationMs));
-    const response = await fetch(`/api/entries/${entryId}/clips`, { method: "POST", body }).catch(() => null);
+    for (const [key, value] of Object.entries(fields?.() ?? {})) body.set(key, value);
+    const response = await fetch(uploadUrl, { method: "POST", body }).catch(() => null);
     const reply = (await response?.json().catch(() => null)) as
-      | { clipId?: string; transcript?: string; transcribeError?: string; error?: string }
+      | { clipId?: string; transcript?: string | null; transcribeError?: string; error?: string }
       | null;
-    if (!response?.ok || !reply?.clipId) {
+    if (!response?.ok || !reply) {
       if (response?.status === 403 && reply?.error) {
         setState({ kind: "idle" });
         onTypeInstead(reply.error);
@@ -97,16 +110,18 @@ export function useVoiceRecorder({
       setState({ kind: "uploadFailed", blob, durationMs });
       return;
     }
-    onClip({ id: reply.clipId, durationMs });
+    // A friend's recording (4f-4) has no clip id of its own: it's their one addition.
+    const clipId = reply.clipId ?? "";
+    onClip({ id: clipId, durationMs });
     if (reply.transcript) {
       setState({ kind: "idle" });
-      onTranscript(reply.transcript, reply.clipId);
+      onTranscript(reply.transcript, clipId);
     } else {
       const message =
         reply.transcribeError === "limited"
           ? "You've reached today's limit for story help, so we couldn't turn that into text."
           : TRANSCRIBE_FAILED;
-      setState({ kind: "transcribeFailed", clipId: reply.clipId, message });
+      setState({ kind: "transcribeFailed", clipId, message });
     }
   }
 
@@ -152,6 +167,7 @@ export function useVoiceRecorder({
         setState({ kind: "idle" });
         return;
       }
+      onRecorded?.(blob, durationMs);
       void upload(blob, durationMs);
     };
     startedAt.current = Date.now();
@@ -166,8 +182,8 @@ export function useVoiceRecorder({
     setState({ kind: "recording", elapsedMs: 0 });
     timer.current = setInterval(() => {
       const elapsedMs = Date.now() - startedAt.current;
-      // At 2 minutes, recording stops on its own.
-      if (elapsedMs >= MAX_RECORDING_SECONDS * 1000) stop();
+      // At the limit (2 minutes for the owner, 1 for a friend), recording stops on its own.
+      if (elapsedMs >= maxSeconds * 1000) stop();
       else setState({ kind: "recording", elapsedMs });
     }, 250);
   }
@@ -186,10 +202,10 @@ export function useVoiceRecorder({
 
   async function retry() {
     if (state.kind === "uploadFailed") return upload(state.blob, state.durationMs);
-    if (state.kind !== "transcribeFailed") return;
+    if (state.kind !== "transcribeFailed" || !retryTranscription) return;
     const clipId = state.clipId;
     setState({ kind: "retrying", clipId });
-    const result = await retryTranscriptionAction(entryId, clipId).catch(() => ({ error: TRANSCRIBE_FAILED }));
+    const result = await retryTranscription(clipId).catch(() => ({ error: TRANSCRIBE_FAILED }));
     if ("transcript" in result) {
       setState({ kind: "idle" });
       onTranscript(result.transcript, clipId);
@@ -203,7 +219,7 @@ export function useVoiceRecorder({
     onTypeInstead();
   }
 
-  return { state, start, stop, cancel, retry, typeInstead };
+  return { state, start, stop, cancel, retry, typeInstead, canRetry: retryTranscription !== undefined };
 }
 
 /** Recording (B3c): fills the screen, so the box and buttons underneath can't be tapped mid-recording. */
@@ -212,10 +228,13 @@ export function RecordingScreen({
   onStop,
   onCancel,
   header,
+  limitLabel = "2 minutes",
 }: {
   elapsedMs: number;
   onStop: () => void;
   onCancel: () => void;
+  /** "Up to …" under the Stop button. */
+  limitLabel?: string;
   /** The thumbnail with date and place, and the heading, as on the story screen. */
   header: ReactNode;
 }) {
@@ -245,7 +264,7 @@ export function RecordingScreen({
             <span aria-hidden className="size-7 rounded-ss-sm bg-on-action" />
           </button>
           <p className="text-label font-bold">Tap to stop</p>
-          <p className="text-caption text-ink-muted">Take your time. Pauses are fine. Up to 2 minutes.</p>
+          <p className="text-caption text-ink-muted">Take your time. Pauses are fine. Up to {limitLabel}.</p>
         </div>
         <p className="mt-auto text-center text-caption text-ink-muted">When you stop, your words appear so you can read and change them.</p>
       </div>
@@ -254,7 +273,18 @@ export function RecordingScreen({
 }
 
 /** Uploading, transcribing, or what went wrong (Retry, Type instead). Nothing when idle or recording. */
-export function VoiceStatus({ state, onRetry, onTypeInstead }: { state: VoiceState; onRetry: () => void; onTypeInstead: () => void }) {
+export function VoiceStatus({
+  state,
+  onRetry,
+  onTypeInstead,
+  canRetry = true,
+}: {
+  state: VoiceState;
+  onRetry: () => void;
+  onTypeInstead: () => void;
+  /** False when a failed transcription can't be tried again (a friend's recording, 4f-4). */
+  canRetry?: boolean;
+}) {
   if (state.kind === "uploading" || state.kind === "retrying") {
     return (
       <p role="status" className="animate-pulse rounded-ss-lg bg-surface-raised p-5 text-center text-ink-muted">
@@ -271,9 +301,11 @@ export function VoiceStatus({ state, onRetry, onTypeInstead }: { state: VoiceSta
           : `${state.message} Your recording is saved.`}
       </p>
       <div className="flex flex-wrap gap-3">
-        <button type="button" className={buttonClass("secondary")} onClick={onRetry}>
-          Retry
-        </button>
+        {(canRetry || state.kind === "uploadFailed") && (
+          <button type="button" className={buttonClass("secondary")} onClick={onRetry}>
+            Retry
+          </button>
+        )}
         <button type="button" className={buttonClass("secondary")} onClick={onTypeInstead}>
           Type instead
         </button>

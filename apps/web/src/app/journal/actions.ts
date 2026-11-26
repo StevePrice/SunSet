@@ -3,6 +3,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { additionKeysForEntry, deleteAddition } from "@/lib/additions";
 import { entryFacts, track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
@@ -46,8 +47,10 @@ export async function deleteEntryAction(id: string): Promise<void> {
   const { deleted, shareId, clipKeys } = await withDrizzle(async (db) => {
     const share = await getShareForEntry(db, user.id, id);
     // Voice recordings go with the entry; their rows are removed by the cascade.
+    // So do friends' recordings (Add to the story, 4f-4).
     const clips = await listClips(db, user.id, id);
-    return { deleted: await deleteEntry(db, user.id, id), shareId: share?.id, clipKeys: clips.map((c) => c.r2Key) };
+    const additionKeys = await additionKeysForEntry(db, user.id, id);
+    return { deleted: await deleteEntry(db, user.id, id), shareId: share?.id, clipKeys: [...clips.map((c) => c.r2Key), ...additionKeys] };
   });
   if (deleted) {
     const { env } = await getCloudflareContext({ async: true });
@@ -168,6 +171,15 @@ export async function deleteReactionNoteAction(entryId: string, noteId: string):
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
   await withDrizzle((db) => deleteReactionNote(db, user.id, noteId));
+  revalidateAfterglow(entryId);
+}
+
+/** Remove, on something a friend added to the story (4f-4): the words and any recording. */
+export async function deleteAdditionAction(entryId: string, additionId: string): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  const { r2Key } = await withDrizzle((db) => deleteAddition(db, user.id, additionId));
+  if (r2Key) await deleteObjects([r2Key]);
   revalidateAfterglow(entryId);
 }
 

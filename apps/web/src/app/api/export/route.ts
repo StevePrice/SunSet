@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries, photoKey } from "@/lib/entries";
 import { EXPORT_README, exportSunset, type ExportSunset } from "@/lib/export";
+import { listAdditions } from "@/lib/additions";
 import { getAfterglow } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
 import { listClips } from "@/lib/story/clips";
@@ -24,14 +25,15 @@ export async function GET() {
     const [entries, names] = await Promise.all([listEntries(db, user.id), namesByEntry(db, user.id)]);
     const out: ExportSunset[] = [];
     for (const entry of entries) {
-      const [score, afterglow, clips, session] = await Promise.all([
+      const [score, afterglow, clips, session, additions] = await Promise.all([
         getScore(db, user.id, entry.id),
         getAfterglow(db, user.id, entry.id),
         listClips(db, user.id, entry.id),
         getSession(db, user.id, entry.id),
+        listAdditions(db, user.id, entry.id),
       ]);
       const turns = session?.turns ?? [];
-      out.push({ entry, score, afterglow, clips, originalWords: turns.length ? originalWords(turns) : null, people: names.get(entry.id) ?? [] });
+      out.push({ entry, score, afterglow, clips, originalWords: turns.length ? originalWords(turns) : null, people: names.get(entry.id) ?? [], additions });
     }
     return out;
   });
