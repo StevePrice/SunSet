@@ -38,6 +38,11 @@ link-preview bots are skipped. Without `POSTHOG_KEY`, nothing is sent.
 | `reaction_received` | friend's visitor id | `share_id`, `entry_id`, `kind`, `personal` (`wish` on a personal link is "I was there!"), the people/story facts |
 | `note_received` | friend's visitor id | `share_id`, `entry_id`, the people/story facts |
 | `story_added` | friend's visitor id | `share_id`, `entry_id`, `spoken` (a recording is kept with it), `personal`, the people/story facts. Sent when a friend taps Send on Add to the story (4f-4), including changes |
+| `set_shared` | user | `set_id`, `sunsets` (how many in the set), `left_out` (unchecked on review), `include_voice`, `new_set` (false when sharing again changes the same link). Sent on Share N sunsets (4f-5) |
+| `set_page_viewed` | friend's visitor id, or anonymous | `set_id`, `sunsets`, `returning_friend`, `voice_included` |
+| `set_reaction_received` | friend's visitor id | `set_id`, `kind` (`wish` is shown as "I was there!": a set is always for the named person) |
+| `set_note_received` | friend's visitor id | `set_id` |
+| `share_signup_tapped` from a set | friend's visitor id, or anonymous | `set_id`, `set: true`, `personal: true` |
 | `data_exported` | user | `sunsets` |
 | `account_deleted` | user | none |
 

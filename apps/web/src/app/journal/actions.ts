@@ -10,6 +10,7 @@ import { withDrizzle } from "@/lib/db";
 import { deleteEntry, entryPhotoKeys, updateEntry } from "@/lib/entries";
 import { parseStory } from "@/lib/entry-input";
 import { deleteReaction, deleteReactionNote } from "@/lib/reactions";
+import { stopSetVoices } from "@/lib/share-sets";
 import { deleteAllRecordings, deleteEntryRecordings, listClips } from "@/lib/story/clips";
 import { fillMissingTitle } from "@/lib/titles";
 import {
@@ -68,6 +69,7 @@ export async function deleteRecordingAction(entryId: string): Promise<void> {
   // Include my voice turns off with it (4f-3), so a new recording is never shared without asking.
   const keys = await withDrizzle(async (db) => {
     await stopSharingVoice(db, user.id, entryId);
+    await stopSetVoices(db, user.id, entryId);
     return deleteEntryRecordings(db, user.id, entryId);
   });
   await deleteObjects(keys);
@@ -80,6 +82,7 @@ export async function deleteAllRecordingsAction(): Promise<{ deleted: number }> 
   if (!user) redirect("/sign-in");
   const keys = await withDrizzle(async (db) => {
     await stopSharingAllVoices(db, user.id);
+    await stopSetVoices(db, user.id);
     return deleteAllRecordings(db, user.id);
   });
   await deleteObjects(keys);

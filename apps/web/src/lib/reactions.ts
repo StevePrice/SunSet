@@ -27,7 +27,7 @@ export type ReactionResult = { status: "ok"; reactions: PublicReactions } | { st
 
 const isKind = (k: string): k is ReactionKind => (REACTION_KINDS as readonly string[]).includes(k);
 
-function tally(rows: { kind: string; n: number }[]): ReactionCounts {
+export function tally(rows: { kind: string; n: number }[]): ReactionCounts {
   const counts = emptyCounts();
   for (const { kind, n } of rows) if (isKind(kind)) counts[kind] = n;
   return counts;
@@ -216,7 +216,17 @@ export async function getAfterglow(db: Db, userId: string, entryId: string): Pro
       .orderBy(asc(reactionNotes.createdAt)),
   ]);
 
-  // One row per friend, in the order they first reacted.
+  return groupByFriend(reactionRows, noteRows);
+}
+
+/**
+ * Totals and one row per friend, in the order they first replied, from reaction and note rows
+ * (oldest first). Shared by From your friends and the replies to a set (4f-5).
+ */
+export function groupByFriend(
+  reactionRows: { id: string; kind: string; visitorId: string; name: string; at: Date }[],
+  noteRows: { id: string; body: string; visitorId: string; name: string; at: Date }[],
+): Afterglow {
   const people = new Map<string, AfterglowPerson & { at: Date }>();
   const person = (visitorId: string, name: string, at: Date) => {
     let p = people.get(visitorId);

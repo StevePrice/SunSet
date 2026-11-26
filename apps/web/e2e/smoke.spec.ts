@@ -218,6 +218,68 @@ test("a personal link greets the person in the photo, who taps I was there! with
   await expect(page.getByRole("listitem").filter({ hasText: "Smoke Friend" }).getByText("I was there!")).toBeVisible();
 });
 
+test("send someone all your sunsets together as one link, and they reply once for the set (Phase 4f-5)", async ({ page, context, browser }) => {
+  await context.addCookies(session);
+  await page.addInitScript(() => {
+    const w = window as unknown as { shared?: ShareData };
+    navigator.share = async (data?: ShareData) => {
+      w.shared = data;
+    };
+    navigator.canShare = () => false;
+  });
+  await page.goto(`/journal/people/${encodeURIComponent("Smoke Friend")}`);
+  await page.getByRole("link", { name: /^Send Smoke Friend (all )?your sunsets? together$/ }).click();
+
+  // Review: everything checked to start; with nothing checked there's nothing to share.
+  await expect(page.getByRole("heading", { name: "Share with Smoke Friend" })).toBeVisible();
+  const row = page.getByRole("list", { name: "Sunsets to send" }).getByRole("listitem").filter({ has: page.locator(`img[src*="${entryUrl.split("/").pop()}"]`) });
+  const box = row.getByRole("checkbox");
+  await expect(box).toBeChecked();
+  await expect(page.getByRole("switch")).toHaveCount(0);
+  await box.uncheck();
+  const total = await page.getByRole("list", { name: "Sunsets to send" }).getByRole("checkbox").count();
+  await expect(page.getByText(`${total - 1} of ${total} selected`)).toBeVisible();
+  await box.check();
+  await page.getByRole("button", { name: /^Share \d+ sunsets?$/ }).click();
+  const shared = await page.waitForFunction(() => (window as unknown as { shared?: ShareData }).shared);
+  const data = (await shared.jsonValue())!;
+  expect(data.url).toMatch(/\/s\/set\/[0-9A-Za-z]{22}$/);
+  expect(data.text).toMatch(/^Smoke Friend, .+ shared \d+ sunsets? with you$/);
+  await expect(page.getByRole("heading", { name: "Shared with Smoke Friend" })).toBeVisible();
+
+  // The friend: greeted by name, the sunsets in a list, one reply for the set, no name asked.
+  const friend = await browser.newContext();
+  const friendPage = await friend.newPage();
+  const path = new URL(data.url!).pathname;
+  expect((await friendPage.goto(path))?.status()).toBe(200);
+  await expect(friendPage.getByText(/^Smoke Friend, .+ shared \d+ sunsets? with you$/)).toBeVisible();
+  await expect(friendPage.getByRole("heading", { name: "Our sunsets together" })).toBeVisible();
+  await expect(friendPage.getByText("One reply for the whole set. Tap one or more.")).toBeVisible();
+  await expect(friendPage.getByText("Were you there? Add to the story.")).toHaveCount(0);
+  const photo = friendPage.getByRole("list", { name: "The sunsets" }).locator("img").first();
+  await expect(photo).toBeVisible();
+  expect((await friendPage.request.get(new URL((await photo.getAttribute("src"))!, data.url!).pathname)).status()).toBe(200);
+  await friendPage.getByRole("button", { name: /I was there!/ }).click();
+  await expect(friendPage.getByRole("button", { name: /I was there!/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(friendPage.getByLabel(/first name/)).toHaveCount(0);
+  await friendPage.getByLabel(/A short note to/).fill("Best summer ever");
+  await friendPage.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(friendPage.getByRole("status")).toContainText("will see your reaction and note");
+
+  // The owner sees the reply on Sunsets with [Name], then stops sharing: the link is gone.
+  await page.reload();
+  const replies = page.getByRole("region", { name: "Replies to your sunsets together" });
+  await expect(replies.getByText("I was there!")).toBeVisible();
+  await expect(replies.getByText("“Best summer ever”")).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Stop sharing" }).click();
+  await expect(page.getByRole("heading", { name: "Shared with Smoke Friend" })).toHaveCount(0);
+  // The reply stays with the owner.
+  await expect(replies.getByText("“Best summer ever”")).toBeVisible();
+  expect((await friendPage.goto(path))?.status()).toBe(404);
+  await friend.close();
+});
+
 test("the web app manifest is public, so phones can install it (Phase 7a)", async ({ request }) => {
   const response = await request.get("/manifest.webmanifest");
   expect(response.status()).toBe(200);

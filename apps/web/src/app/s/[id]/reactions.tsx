@@ -41,12 +41,14 @@ function draftFrom(addition: MyAddition | null): AdditionDraft {
 // The friend's side of a Share Page (PRD 6.9a and 6.10e): the four reactions (each saved as it's
 // tapped), a short note, and Add to the story, with one Send for the note and what they added.
 // The first name is asked for once, the first time it's needed; a personal link already knows it.
+// On a set page (4f-5) it's one reply for the whole set: reactions and a note, no Add to the story.
 export function Reactions({
   shareId,
   initial,
   initialAddition,
   ownerName,
   recipientToken = null,
+  set = false,
 }: {
   shareId: string;
   initial: PublicReactions;
@@ -54,6 +56,8 @@ export function Reactions({
   ownerName: string | null;
   /** A personal link (4f-3): the person's name is known, and they were there. */
   recipientToken?: string | null;
+  /** A set page (4f-5): `shareId` is the set's id, and it's always for the named person. */
+  set?: boolean;
 }) {
   const [state, setState] = useState(initial);
   // What to do once the friend has given their first name.
@@ -95,7 +99,7 @@ export function Reactions({
   );
 
   async function post(path: string, body: object): Promise<{ ok: boolean; body: Record<string, unknown> } | null> {
-    const response = await fetch(`/s/${shareId}/${path}`, {
+    const response = await fetch(`/s/${set ? "set/" : ""}${shareId}/${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...body, ...identity() }),
@@ -179,7 +183,7 @@ export function Reactions({
         setLastSent({ reacted: state.mine.length > 0, noted: state.note !== null, added: Boolean(addition?.sent) });
         setSent(true);
       } else {
-        setError("Tap a reaction, write a note, or add to the story first.");
+        setError(set ? "Tap a reaction or write a note first." : "Tap a reaction, write a note, or add to the story first.");
       }
       return;
     }
@@ -191,9 +195,9 @@ export function Reactions({
       <section aria-labelledby="reactions-heading" className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 id="reactions-heading" className="font-serif text-title-3">
-            Let {who} know you saw it
+            Let {who} know you saw {set ? "them" : "it"}
           </h2>
-          <p className="text-ink-muted">Tap one or more, and add a note if you like.</p>
+          <p className="text-ink-muted">{set ? "One reply for the whole set. Tap one or more." : "Tap one or more, and add a note if you like."}</p>
         </div>
         {/* Two rows of two (Build Spec 3.12). */}
         <div className="grid grid-cols-2 gap-3">
@@ -201,7 +205,7 @@ export function Reactions({
             <ReactionChip
               key={kind}
               kind={kind}
-              label={reactionLabel(kind, recipientToken !== null)}
+              label={reactionLabel(kind, set || recipientToken !== null)}
               count={state.counts[kind]}
               selected={state.mine.includes(kind)}
               animate={justTapped === kind && state.mine.includes(kind)}
@@ -258,23 +262,25 @@ export function Reactions({
             />
           </div>
 
-          <AddToStory
-            shareId={shareId}
-            ownerName={who}
-            personal={recipientToken !== null}
-            draft={draft}
-            onChange={setDraft}
-            ensureName={ensureName}
-            recordFields={identity}
-            disabled={busy}
-          />
+          {!set && (
+            <AddToStory
+              shareId={shareId}
+              ownerName={who}
+              personal={recipientToken !== null}
+              draft={draft}
+              onChange={setDraft}
+              ensureName={ensureName}
+              recordFields={identity}
+              disabled={busy}
+            />
+          )}
 
           <div className="flex flex-col gap-2">
             <Button type="submit" variant="action" disabled={busy} className="w-full">
               Send
             </Button>
             <p className="text-caption text-ink-muted">
-              {knownName ? `Sending as ${knownName}. ` : ""}Only {ownerName ?? "the person who shared this"} sees your name, note and what you add.
+              {knownName ? `Sending as ${knownName}. ` : ""}Only {ownerName ?? "the person who shared this"} sees {set ? "your note" : "your name, note and what you add"}.
             </p>
           </div>
         </form>

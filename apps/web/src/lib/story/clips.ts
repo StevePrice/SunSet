@@ -1,7 +1,7 @@
 // Voice recordings for AI Story Capture, one clip per spoken answer. Like entries.ts, every
 // function is scoped to the owner. The audio itself lives in R2 next to the entry's photos; callers
 // delete the R2 objects using the keys these functions return.
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { entries, storyClips, storySessions, type StoryTurn } from "@/db/schema";
 import type { Db } from "@/lib/db";
 
@@ -106,4 +106,14 @@ export function deleteEntryRecordings(db: Db, userId: string, entryId: string): 
 /** "Delete all recordings" in Settings. Returns the R2 keys to delete; stories and transcripts stay. */
 export function deleteAllRecordings(db: Db, userId: string): Promise<string[]> {
   return deleteClips(db, userId, null);
+}
+
+/** Total recording length of each of the user's entries that has any (Share with [Name], 4f-5). */
+export async function recordingLengths(db: Db, userId: string): Promise<Map<string, number>> {
+  const rows = await db
+    .select({ entryId: storyClips.entryId, ms: sql<number>`sum(${storyClips.durationMs})::int` })
+    .from(storyClips)
+    .where(eq(storyClips.userId, userId))
+    .groupBy(storyClips.entryId);
+  return new Map(rows.map((r) => [r.entryId, r.ms]));
 }
