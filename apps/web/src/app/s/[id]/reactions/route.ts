@@ -2,14 +2,9 @@ import { cookies } from "next/headers";
 import { anonymous, type Properties, shareFacts, track } from "@/lib/analytics";
 import { withDrizzle } from "@/lib/db";
 import { clientIp, hitRateLimit } from "@/lib/rate-limit";
-import {
-  parseReactionRequest,
-  parseVisitorId,
-  VISITOR_COOKIE,
-  VISITOR_COOKIE_MAX_AGE,
-} from "@/lib/reaction-input";
-import { createVisitor, getVisitorName, isShareLive, setReactionNote, toggleReaction } from "@/lib/reactions";
-import { getRecipient, linkRecipientVisitor } from "@/lib/shares";
+import { parseReactionRequest, parseVisitorId, VISITOR_COOKIE } from "@/lib/reaction-input";
+import { resolveVisitor, setReactionNote, toggleReaction } from "@/lib/reactions";
+import { setVisitorCookie } from "@/lib/visitor-cookie";
 
 // A friend reacting to a shared sunset: no account, just an anonymous id in a cookie and the
 // first name they gave on their first tap. Positive reactions only; counts are public, names
@@ -34,37 +29,16 @@ export async function POST(request: Request, ctx: RouteContext<"/s/[id]/reaction
     if (!(await hitRateLimit(db, `reactions:ip:${clientIp(request.headers)}`, IP_LIMIT, IP_WINDOW_MS))) {
       return { status: "limited" as const };
     }
-    // The name is asked for once per device; a cookie whose visitor is gone counts as new.
-    let visitorId = cookieId && (await getVisitorName(db, cookieId)) !== null ? cookieId : null;
-    let isNew = false;
-    // A personal link (4f-3) knows who it's for, so it never asks for a first name.
-    const recipient = await getRecipient(db, id, input.recipient ?? null);
-    if (!visitorId) {
-      // Don't create a visitor (or set a cookie) for a link that's been stopped.
-      if (!(await isShareLive(db, id))) return { status: "not_found" as const };
-      const name = input.name ?? recipient?.name;
-      if (!name) return { status: "need_name" as const };
-      visitorId = await createVisitor(db, name);
-      isNew = true;
-    }
-    // So From your friends shows their "Wish I was there" as "I was there!".
-    if (recipient && !recipient.visitorId) await linkRecipientVisitor(db, recipient.id, visitorId);
+    const visitor = await resolveVisitor(db, id, { cookieId, name: input.name, recipientToken: input.recipient });
+    if (visitor.status !== "ok") return visitor;
     const outcome =
       input.action === "toggle"
-        ? await toggleReaction(db, id, visitorId, input.kind)
-        : await setReactionNote(db, id, visitorId, input.note);
-    return { ...outcome, visitorId, isNew };
+        ? await toggleReaction(db, id, visitor.visitorId, input.kind)
+        : await setReactionNote(db, id, visitor.visitorId, input.note);
+    return { ...outcome, visitorId: visitor.visitorId, isNew: visitor.isNew };
   });
 
-  if ("isNew" in result && result.isNew) {
-    cookieStore.set(VISITOR_COOKIE, result.visitorId, {
-      httpOnly: true,
-      secure: new URL(request.url).protocol === "https:",
-      sameSite: "lax",
-      path: "/",
-      maxAge: VISITOR_COOKIE_MAX_AGE,
-    });
-  }
+  if ("isNew" in result && result.isNew) setVisitorCookie(cookieStore, request, result.visitorId);
   if (result.status === "limited") {
     return Response.json({ error: "That's a lot of taps. Please try again later." }, { status: 429 });
   }

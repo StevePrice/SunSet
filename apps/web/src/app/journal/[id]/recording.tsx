@@ -11,8 +11,11 @@ export function HearYourVoice({
   title,
   subtitle,
   action,
+  playLabel = "your recording",
 }: {
   clips: string[];
+  /** Whose recording, for screen readers: "Play Steve's recording". */
+  playLabel?: string;
   title: ReactNode;
   subtitle: ReactNode;
   /** Something on the right of the row, e.g. "Add more" on the story screen. */
@@ -62,7 +65,7 @@ export function HearYourVoice({
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? "Pause your recording" : "Play your recording"}
+        aria-label={`${playing ? "Pause" : "Play"} ${playLabel}`}
         className="flex size-12 shrink-0 items-center justify-center rounded-ss-pill border-[1.5px] border-border-subtle bg-surface text-ink"
       >
         <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="currentColor">

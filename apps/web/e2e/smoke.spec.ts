@@ -147,10 +147,13 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
   await friendPage.getByLabel(/first name/).fill("Maria");
   await friendPage.getByRole("button", { name: "Continue" }).click();
   await expect(friendPage.getByRole("button", { name: /Sending hugs/ })).toHaveAttribute("aria-pressed", "true");
-  await expect(friendPage.getByText("Reacting as Maria.", { exact: false })).toBeVisible();
-  await friendPage.getByLabel(/Your note to/).fill("Beautiful, thank you");
+  await expect(friendPage.getByText("Sending as Maria.", { exact: false })).toBeVisible();
+  await friendPage.getByLabel(/A short note to/).fill("Beautiful, thank you");
+  // Add to the story (4f-4): typed, sent with the note by the one Send button.
+  await expect(friendPage.getByRole("heading", { name: "Were you there? Add to the story." })).toBeVisible();
+  await friendPage.getByLabel("What you'd like to add").fill("You sent me a photo from that same trip.");
   await friendPage.getByRole("button", { name: "Send", exact: true }).click();
-  await expect(friendPage.getByRole("status")).toContainText("will see your reaction");
+  await expect(friendPage.getByRole("status")).toContainText("will see your reaction, note and what you added to the story");
 
   // "Start your own Journal" goes through /join (counted, Phase 7a) to sign-up.
   await friendPage.getByRole("link", { name: "Start your own Journal" }).click();
@@ -158,10 +161,17 @@ test("share in one tap, open the link signed out, then stop sharing from From yo
 
   // From your friends has Share again and the link settings; Stop sharing kills the link.
   await page.reload();
-  await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Shared · 1 reaction");
+  await expect(page.getByRole("link", { name: /See what friends sent/ })).toContainText("Shared · 1 reaction · 1 added to the story");
+  // What Maria added shows on Entry Detail too, for the owner only.
+  await expect(page.getByRole("heading", { name: "Maria added to the story" })).toBeVisible();
   await page.getByRole("link", { name: /See what friends sent/ }).click();
-  await expect(page.getByText("Maria", { exact: true })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Reactions and notes" }).getByText("Maria", { exact: true })).toBeVisible();
   await expect(page.getByText("Beautiful, thank you")).toBeVisible();
+  await expect(page.getByText("“You sent me a photo from that same trip.”")).toBeVisible();
+  await expect(page.getByText("Written · Private to you")).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Remove what Maria added" }).click();
+  await expect(page.getByRole("heading", { name: "Maria added to the story" })).toHaveCount(0);
   await expect(page.getByRole("term").filter({ hasText: "Sending hugs" })).toBeVisible();
   // A link to Before you share, since this sunset has a name on it (4f-3).
   await expect(page.getByRole("link", { name: "Share again" })).toHaveAttribute("href", `${entryUrl}/share`);

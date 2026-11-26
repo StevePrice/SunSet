@@ -341,6 +341,39 @@ export const entryPeople = pgTable(
   ],
 );
 
+// Add to the story (Phase 4f-4, PRD 6.10e): what a friend adds on the Share Page, typed or spoken
+// (up to 1 minute). One per friend per share link, which they can change. Owner-only. A spoken one
+// is stored as soon as it's recorded, so its words can be shown back for editing; until the friend
+// taps Send, `sent_at` is null and the owner doesn't see it. The audio lives in R2 under the
+// owner's entry (entries/{owner}/{entry}/additions/), so deleting the entry or account removes it.
+export const storyAdditions = pgTable(
+  "story_additions",
+  {
+    id: text("id").primaryKey(),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    shareId: text("share_id").references(() => shares.id, { onDelete: "set null" }),
+    visitorId: text("visitor_id")
+      .notNull()
+      .references(() => reactionVisitors.id, { onDelete: "cascade" }),
+    // What they typed, or the words from their recording as they left them.
+    body: text("body"),
+    r2Key: text("r2_key"),
+    contentType: text("content_type"),
+    durationMs: integer("duration_ms"),
+    sizeBytes: integer("size_bytes"),
+    // What speech-to-text heard, before the friend changed anything.
+    transcript: text("transcript"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    unique("story_additions_share_visitor_unique").on(table.shareId, table.visitorId),
+    index("story_additions_entry_idx").on(table.entryId, table.sentAt),
+  ],
+);
+
 // One row per AI call, for the per-user daily limit.
 export const aiCalls = pgTable(
   "ai_calls",

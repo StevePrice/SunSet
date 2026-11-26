@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { notFound, redirect } from "next/navigation";
+import { listAdditions } from "@/lib/additions";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
@@ -13,13 +14,15 @@ import { LocalDate } from "@/components/local-date";
 import { AppHeader, BottomBar } from "@/components/app-nav";
 import { PhotoCard } from "@/components/photo-card";
 import { ReactionIcon } from "@/components/reaction-icons";
+import { AddedToStory } from "../added-to-story";
 import { LinkSettings } from "../link-settings";
 import { ShareButton } from "../share-button";
 import { RemoveButton } from "./remove-button";
 
 export const metadata = { title: "From your friends · Sunset Soul" };
 
-// What friends sent for one entry (PRD 6.9b): totals, who reacted, their notes. Owner only.
+// What friends sent for one entry (PRD 6.9b): totals, what they added to the story (4f-4), who
+// reacted, their notes. Owner only.
 export default async function AfterglowPage(props: PageProps<"/journal/[id]/afterglow">) {
   const { id } = await props.params;
   const user = await getCurrentUser();
@@ -27,21 +30,22 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [afterglow, share, names, clips] = await Promise.all([
+    const [afterglow, share, names, clips, additions] = await Promise.all([
       getAfterglow(db, user.id, id),
       getShareForEntry(db, user.id, id),
       namesForEntry(db, user.id, id),
       listClips(db, user.id, id),
+      listAdditions(db, user.id, id),
     ]);
     const [inPhoto, voice] = share
       ? await Promise.all([recipientVisitorIds(db, share.id), shareVoiceLinks(db, share.id)])
       : [new Set<string>(), { normal: false, people: [] }];
     // Share again goes through Before you share when there's something to ask (4f-3).
     const askFirst = names.length > 0 || clips.length > 0;
-    return afterglow && { entry, afterglow, share, inPhoto, voice: clips.length ? voice : { normal: false, people: [] }, askFirst };
+    return afterglow && { entry, afterglow, share, inPhoto, voice: clips.length ? voice : { normal: false, people: [] }, askFirst, additions };
   });
   if (!found) notFound();
-  const { entry, afterglow, share, inPhoto, voice, askFirst } = found;
+  const { entry, afterglow, share, inPhoto, voice, askFirst, additions } = found;
   const { env } = await getCloudflareContext({ async: true });
 
   return (
@@ -69,12 +73,16 @@ export default async function AfterglowPage(props: PageProps<"/journal/[id]/afte
         ))}
       </dl>
 
+      <AddedToStory entryId={entry.id} additions={additions} headingClass="font-serif text-title-2" />
+
       {afterglow.people.length === 0 ? (
-        <p className="text-ink-muted">
-          No reactions yet. When friends react to your share link, you&apos;ll see who reacted and any notes here.
-        </p>
+        additions.length === 0 && (
+          <p className="text-ink-muted">
+            No reactions yet. When friends react to your share link or add to the story, you&apos;ll see it here.
+          </p>
+        )
       ) : (
-        <ul className="flex flex-col divide-y divide-divider">
+        <ul aria-label="Reactions and notes" className="flex flex-col divide-y divide-divider">
           {afterglow.people.map((person) => (
             <li key={person.visitorId} className="flex flex-col gap-2 py-4">
               <p className="text-label font-bold">{person.name}</p>

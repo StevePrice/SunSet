@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { deleteReactionAction, deleteReactionNoteAction } from "../../actions";
+import { deleteAdditionAction, deleteReactionAction, deleteReactionNoteAction } from "../../actions";
 
-/** Deletes one reaction or note from Afterglow, after a confirm. */
+/** Deletes one reaction, note, or addition to the story (4f-4), after a confirm. */
 export function RemoveButton({
   entryId,
   target,
   label,
 }: {
   entryId: string;
-  target: { reactionId: string } | { noteId: string };
+  target: { reactionId: string } | { noteId: string } | { additionId: string };
   label: string;
 }) {
   const [pending, setPending] = useState(false);
@@ -24,7 +24,8 @@ export function RemoveButton({
         if (!confirm(`${label}? This can't be undone.`)) return;
         setPending(true);
         if ("reactionId" in target) await deleteReactionAction(entryId, target.reactionId);
-        else await deleteReactionNoteAction(entryId, target.noteId);
+        else if ("noteId" in target) await deleteReactionNoteAction(entryId, target.noteId);
+        else await deleteAdditionAction(entryId, target.additionId);
         setPending(false);
       }}
     >

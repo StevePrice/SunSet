@@ -1,6 +1,8 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { listAdditions } from "@/lib/additions";
+import { friendsStatus } from "@/lib/friends-status";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { getEntry } from "@/lib/entries";
@@ -16,6 +18,7 @@ import { LocalDate } from "@/components/local-date";
 import { NameLink } from "@/components/people";
 import { PhotoCard } from "@/components/photo-card";
 import { ScoreDetails, ScoreProvider, WowLine } from "@/components/score-card";
+import { AddedToStory } from "./added-to-story";
 import { DeleteEntryButton } from "./entry-controls";
 import { FillTitle } from "./fill-title";
 import { HearYourVoice } from "./recording";
@@ -34,12 +37,13 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
   const found = await withDrizzle(async (db) => {
     const entry = await getEntry(db, user.id, id);
     if (!entry) return null;
-    const [score, share, totals, clips, names] = await Promise.all([
+    const [score, share, totals, clips, names, additions] = await Promise.all([
       getScore(db, user.id, id),
       getShareForEntry(db, user.id, id),
       reactionTotals(db, user.id),
       listClips(db, user.id, id),
       namesForEntry(db, user.id, id),
+      listAdditions(db, user.id, id),
     ]);
     return {
       entry,
@@ -48,21 +52,16 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
       reactionCount: totals.get(id) ?? 0,
       clips: clips.map((c) => ({ id: c.id, durationMs: c.durationMs })),
       names,
+      additions,
     };
   });
   if (!found) notFound();
-  const { entry, score, share, reactionCount, clips, names } = found;
+  const { entry, score, share, reactionCount, clips, names, additions } = found;
   const { env } = await getCloudflareContext({ async: true });
   const place = entry.placeName;
   // The "See what friends sent" row's second line (4f Build Spec 1.2). Reactions stay after Stop
   // sharing, so a sunset with reactions but no link was shared before.
-  const afterglowStatus = !share
-    ? reactionCount > 0
-      ? "Not shared"
-      : "Not shared yet"
-    : reactionCount === 0
-      ? "No reactions yet"
-      : `Shared · ${reactionCount} ${reactionCount === 1 ? "reaction" : "reactions"}`;
+  const afterglowStatus = friendsStatus(share !== null, reactionCount, additions.length);
 
   return (
     <main className="flex w-full flex-1 flex-col pb-8">
@@ -134,6 +133,8 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
             Edit
           </Link>
 
+          <AddedToStory entryId={entry.id} additions={additions} headingClass="text-label font-bold" />
+
           {/* Before you share (4f-3) only when there's something to ask: names, or a spoken story. */}
           {names.length > 0 || clips.length > 0 ? (
             <ButtonLink href={`/journal/${entry.id}/share`} variant="action" className="w-full">
@@ -165,3 +166,4 @@ export default async function EntryPage(props: PageProps<"/journal/[id]">) {
     </main>
   );
 }
+

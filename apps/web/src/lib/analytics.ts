@@ -27,6 +27,7 @@ export type AnalyticsEvent =
   | "share_signup_tapped"
   | "reaction_received"
   | "note_received"
+  | "story_added"
   | "account_deleted"
   | "data_exported";
 

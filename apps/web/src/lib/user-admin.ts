@@ -6,7 +6,7 @@
 // activity log or R2 clean-up. The one thing worth copying from it, refusing to start a session for
 // a banned user whatever the sign-in method, is `onSessionStart` below, wired into auth.ts.
 import { and, eq, inArray, isNull, ne, notExists, or, sql } from "drizzle-orm";
-import { entries, reactionNotes, reactions, reactionVisitors, sessions, shares, users, verifications } from "@/db/schema";
+import { entries, reactionNotes, reactions, reactionVisitors, sessions, shares, storyAdditions, users, verifications } from "@/db/schema";
 import { logAdminAction, type Executor } from "@/lib/admin-log";
 import type { Db } from "@/lib/db";
 
@@ -160,7 +160,7 @@ export function signOutEverywhere(db: Db, actorId: string, targetId: string): Pr
 
 /**
  * Deletes the account and, through the foreign keys, its sessions, sign-in methods, entries,
- * scores, shares, reactions on its entries, story interviews, recording rows and AI-call counts.
+ * scores, shares, reactions and what friends added to its entries, story interviews, recording rows and AI-call counts.
  * Returns what the caller must now delete from R2 (see deleteAccountFiles). Its calibration
  * votes go too; the activity log keeps its rows, which hold no foreign keys.
  */
@@ -211,6 +211,7 @@ async function removeAccount(
     ...new Set([
       ...(await tx.select({ id: reactions.visitorId }).from(reactions).where(inArray(reactions.entryId, ownEntries))),
       ...(await tx.select({ id: reactionNotes.visitorId }).from(reactionNotes).where(inArray(reactionNotes.entryId, ownEntries))),
+      ...(await tx.select({ id: storyAdditions.visitorId }).from(storyAdditions).where(inArray(storyAdditions.entryId, ownEntries))),
     ].map((v) => v.id)),
   ];
 
@@ -228,6 +229,7 @@ async function removeAccount(
         inArray(reactionVisitors.id, visitorIds),
         notExists(tx.select({ x: sql`1` }).from(reactions).where(eq(reactions.visitorId, reactionVisitors.id))),
         notExists(tx.select({ x: sql`1` }).from(reactionNotes).where(eq(reactionNotes.visitorId, reactionVisitors.id))),
+        notExists(tx.select({ x: sql`1` }).from(storyAdditions).where(eq(storyAdditions.visitorId, reactionVisitors.id))),
       ),
     );
   }

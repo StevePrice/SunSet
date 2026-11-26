@@ -17,7 +17,7 @@ import {
   type ReactionCounts,
   type ReactionKind,
 } from "@/lib/reaction-input";
-import { newShareId } from "@/lib/shares";
+import { getRecipient, linkRecipientVisitor, newShareId } from "@/lib/shares";
 
 /** Spam limit: changes (taps and notes) one visitor can make on one entry per day. */
 export const MAX_VISITOR_CHANGES_PER_ENTRY = 30;
@@ -45,6 +45,34 @@ export async function createVisitor(db: Db, name: string): Promise<string> {
 export async function getVisitorName(db: Db, visitorId: string): Promise<string | null> {
   const [row] = await db.select({ name: reactionVisitors.name }).from(reactionVisitors).where(eq(reactionVisitors.id, visitorId));
   return row?.name ?? null;
+}
+
+export type VisitorResult = { status: "ok"; visitorId: string; isNew: boolean } | { status: "need_name" } | { status: "not_found" };
+
+/**
+ * Who is reacting or adding to the story on this link: the visitor in their cookie, or a new one.
+ * The name is asked for once per device; a personal link (4f-3) already knows it. A cookie whose
+ * visitor is gone counts as new. No visitor is made for a stopped link. Shared by reactions and
+ * Add to the story, so a friend gives their name once for both.
+ */
+export async function resolveVisitor(
+  db: Db,
+  shareId: string,
+  input: { cookieId: string | null; name?: string; recipientToken?: string | null },
+): Promise<VisitorResult> {
+  let visitorId = input.cookieId && (await getVisitorName(db, input.cookieId)) !== null ? input.cookieId : null;
+  let isNew = false;
+  const recipient = await getRecipient(db, shareId, input.recipientToken ?? null);
+  if (!visitorId) {
+    if (!(await isShareLive(db, shareId))) return { status: "not_found" };
+    const name = input.name ?? recipient?.name;
+    if (!name) return { status: "need_name" };
+    visitorId = await createVisitor(db, name);
+    isNew = true;
+  }
+  // So From your friends shows their "Wish I was there" as "I was there!".
+  if (recipient && !recipient.visitorId) await linkRecipientVisitor(db, recipient.id, visitorId);
+  return { status: "ok", visitorId, isNew };
 }
 
 // ---- Public, by share id --------------------------------------------------------------------

@@ -37,6 +37,7 @@ link-preview bots are skipped. Without `POSTHOG_KEY`, nothing is sent.
 | `share_signup_tapped` | as above | `share_id` |
 | `reaction_received` | friend's visitor id | `share_id`, `entry_id`, `kind`, `personal` (`wish` on a personal link is "I was there!"), the people/story facts |
 | `note_received` | friend's visitor id | `share_id`, `entry_id`, the people/story facts |
+| `story_added` | friend's visitor id | `share_id`, `entry_id`, `spoken` (a recording is kept with it), `personal`, the people/story facts. Sent when a friend taps Send on Add to the story (4f-4), including changes |
 | `data_exported` | user | `sunsets` |
 | `account_deleted` | user | none |
 

@@ -50,8 +50,9 @@ export default function PrivacyPage() {
         </p>
         <p>
           <strong>Friends who react:</strong> when someone reacts to a sunset you shared, we keep the first name they type,
-          their reactions and any note they leave, and give their browser a cookie so they aren&apos;t asked again. They
-          don&apos;t need an account.
+          their reactions, any note they leave and anything they add to the story (typed, or a recording of up to a
+          minute with its transcript), and give their browser a cookie so they aren&apos;t asked again. They don&apos;t
+          need an account. Only the person who shared the sunset can read or hear what they add, and can remove it.
         </p>
         <p>
           <strong>Security and limits:</strong> for each signed-in session, the IP address and browser it came from, and
@@ -120,7 +121,8 @@ export default function PrivacyPage() {
           A share link shows the photo, its title and story, the date and the town to anyone who has the link. It never
           shows your exact location or your email, and plays your recording only if you turned on Include my voice for
           that link. When you send a sunset to someone you named in the photo, their link greets them by name; the names
-          on your other sunsets stay private. You choose the place name friends see, and you can
+          on your other sunsets stay private. What friends add to the story comes only to you; other friends never see it.
+          You choose the place name friends see, and you can
           stop sharing at any time; the link then stops working. Shared pages are hidden from search engines.
         </p>
       </Section>
@@ -137,7 +139,8 @@ export default function PrivacyPage() {
 
       <Section title="How long we keep it, and deleting it">
         <p>
-          We keep your sunsets until you delete them. Deleting a sunset removes its photo, story and recordings. Deleting
+          We keep your sunsets until you delete them. Deleting a sunset removes its photo, story and recordings, and what
+          friends added to its story. Deleting
           your account (You → Delete my account) removes your account, every sunset, recording and share link at once.
         </p>
         <p>
