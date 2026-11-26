@@ -286,6 +286,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
+**Before starting (set 2026-11-25, Steve):** stop and ask Steve questions before any Phase 6 work begins. He wants to confirm the map architecture, the map tiles and the map server first.
 - A "Post to map" action, separate from share-out
 - Public pins rounded to roughly city level; the exact location is never public
 - `visible_until` = posting time + 72 hours + a bonus based on the score (both values tunable)
