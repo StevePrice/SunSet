@@ -6,7 +6,7 @@
 // activity log or R2 clean-up. The one thing worth copying from it, refusing to start a session for
 // a banned user whatever the sign-in method, is `onSessionStart` below, wired into auth.ts.
 import { and, eq, inArray, isNull, ne, notExists, or, sql } from "drizzle-orm";
-import { entries, reactionNotes, reactions, reactionVisitors, sessions, shares, storyAdditions, users, verifications } from "@/db/schema";
+import { entries, reactionNotes, reactions, reactionVisitors, sessions, setNotes, setReactions, shares, shareSets, storyAdditions, users, verifications } from "@/db/schema";
 import { logAdminAction, type Executor } from "@/lib/admin-log";
 import type { Db } from "@/lib/db";
 
@@ -207,11 +207,14 @@ async function removeAccount(
   const shareIds = (await tx.select({ id: shares.id }).from(shares).where(eq(shares.userId, targetId))).map((s) => s.id);
   // Friends who reacted are people without accounts; the ones who only reacted here go too.
   const ownEntries = tx.select({ id: entries.id }).from(entries).where(eq(entries.userId, targetId));
+  const ownSets = tx.select({ id: shareSets.id }).from(shareSets).where(eq(shareSets.userId, targetId));
   const visitorIds = [
     ...new Set([
       ...(await tx.select({ id: reactions.visitorId }).from(reactions).where(inArray(reactions.entryId, ownEntries))),
       ...(await tx.select({ id: reactionNotes.visitorId }).from(reactionNotes).where(inArray(reactionNotes.entryId, ownEntries))),
       ...(await tx.select({ id: storyAdditions.visitorId }).from(storyAdditions).where(inArray(storyAdditions.entryId, ownEntries))),
+      ...(await tx.select({ id: setReactions.visitorId }).from(setReactions).where(inArray(setReactions.setId, ownSets))),
+      ...(await tx.select({ id: setNotes.visitorId }).from(setNotes).where(inArray(setNotes.setId, ownSets))),
     ].map((v) => v.id)),
   ];
 
@@ -230,6 +233,8 @@ async function removeAccount(
         notExists(tx.select({ x: sql`1` }).from(reactions).where(eq(reactions.visitorId, reactionVisitors.id))),
         notExists(tx.select({ x: sql`1` }).from(reactionNotes).where(eq(reactionNotes.visitorId, reactionVisitors.id))),
         notExists(tx.select({ x: sql`1` }).from(storyAdditions).where(eq(storyAdditions.visitorId, reactionVisitors.id))),
+        notExists(tx.select({ x: sql`1` }).from(setReactions).where(eq(setReactions.visitorId, reactionVisitors.id))),
+        notExists(tx.select({ x: sql`1` }).from(setNotes).where(eq(setNotes.visitorId, reactionVisitors.id))),
       ),
     );
   }

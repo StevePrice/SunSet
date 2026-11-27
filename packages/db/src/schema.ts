@@ -374,6 +374,85 @@ export const storyAdditions = pgTable(
   ],
 );
 
+// A shared set (Phase 4f-5, Build Spec 2.3–2.5): "Send Steve all your sunsets together", one link
+// at /s/set/{id} with the sunsets the owner left checked. Always for one named person, so the page
+// greets them ("Steve, Louise shared 11 sunsets with you") and offers "I was there!". At most one
+// live set per person: sharing again changes the same link. Stop sharing sets `stopped_at`, so the
+// link stops working for good while the owner keeps the replies.
+export const shareSets = pgTable(
+  "share_sets",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    personName: text("person_name").notNull(),
+    includeVoice: boolean("include_voice").notNull().default(false),
+    // The owner's time zone when they shared, for sunsets that have none of their own.
+    timeZone: text("time_zone").notNull(),
+    // The reaction visitor the named person became the first time they replied (shown as theirs).
+    visitorId: text("visitor_id").references(() => reactionVisitors.id, { onDelete: "set null" }),
+    stoppedAt: timestamp("stopped_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    index("share_sets_user_idx").on(table.userId),
+    uniqueIndex("share_sets_live_person_idx")
+      .on(table.userId, sql`lower(${table.personName})`)
+      .where(sql`${table.stoppedAt} is null`),
+  ],
+);
+
+// The sunsets in a set, in the order shown (newest first when shared). Deleting a sunset takes it
+// out of every set.
+export const shareSetEntries = pgTable(
+  "share_set_entries",
+  {
+    setId: text("set_id")
+      .notNull()
+      .references(() => shareSets.id, { onDelete: "cascade" }),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => entries.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.setId, table.entryId] }), index("share_set_entries_entry_idx").on(table.entryId)],
+);
+
+// One reply for the whole set (Build Spec 2.5): reactions and a note attach to the set, not to
+// each sunset. Same kinds and limits as single-sunset reactions.
+export const setReactions = pgTable(
+  "set_reactions",
+  {
+    id: text("id").primaryKey(),
+    setId: text("set_id")
+      .notNull()
+      .references(() => shareSets.id, { onDelete: "cascade" }),
+    visitorId: text("visitor_id")
+      .notNull()
+      .references(() => reactionVisitors.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [unique("set_reactions_set_visitor_kind_unique").on(table.setId, table.visitorId, table.kind)],
+);
+
+export const setNotes = pgTable(
+  "set_notes",
+  {
+    id: text("id").primaryKey(),
+    setId: text("set_id")
+      .notNull()
+      .references(() => shareSets.id, { onDelete: "cascade" }),
+    visitorId: text("visitor_id")
+      .notNull()
+      .references(() => reactionVisitors.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    ...timestamps,
+  },
+  (table) => [unique("set_notes_set_visitor_unique").on(table.setId, table.visitorId)],
+);
+
 // One row per AI call, for the per-user daily limit.
 export const aiCalls = pgTable(
   "ai_calls",

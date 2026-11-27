@@ -121,7 +121,10 @@ export default function PrivacyPage() {
           A share link shows the photo, its title and story, the date and the town to anyone who has the link. It never
           shows your exact location or your email, and plays your recording only if you turned on Include my voice for
           that link. When you send a sunset to someone you named in the photo, their link greets them by name; the names
-          on your other sunsets stay private. What friends add to the story comes only to you; other friends never see it.
+          on your other sunsets stay private. When you send someone all your sunsets together, one link shows the sunsets
+          you left checked, the same way (the photos, titles, stories, dates and towns, and your voice only if you turned
+          it on); it greets that person by name, and you can stop sharing it at any time.
+          What friends add to the story comes only to you; other friends never see it.
           You choose the place name friends see, and you can
           stop sharing at any time; the link then stops working. Shared pages are hidden from search engines.
         </p>

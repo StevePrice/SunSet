@@ -5,7 +5,8 @@ import { namesByEntry } from "@/lib/people";
 import { getCurrentUser } from "@/lib/auth";
 import { withDrizzle } from "@/lib/db";
 import { listEntries, photoKey } from "@/lib/entries";
-import { EXPORT_README, exportSunset, type ExportSunset } from "@/lib/export";
+import { EXPORT_README, exportSets, exportSunset, type ExportSunset } from "@/lib/export";
+import { listSetsForExport } from "@/lib/share-sets";
 import { listAdditions } from "@/lib/additions";
 import { getAfterglow } from "@/lib/reactions";
 import { getScore } from "@/lib/scores";
@@ -21,6 +22,7 @@ export async function GET() {
   if (!user) return Response.json({ error: "Please sign in." }, { status: 401 });
   const { env, ctx } = await getCloudflareContext({ async: true });
 
+  const sets = await withDrizzle((db) => listSetsForExport(db, user.id));
   const sunsets: ExportSunset[] = await withDrizzle(async (db) => {
     const [entries, names] = await Promise.all([listEntries(db, user.id), namesByEntry(db, user.id)]);
     const out: ExportSunset[] = [];
@@ -76,14 +78,16 @@ export async function GET() {
     try {
       addText("README.txt", EXPORT_README);
       const records = [];
+      const photoOf = new Map<string, string>();
       for (const sunset of sunsets) {
         const { photo, recordings, record } = exportSunset(sunset);
+        photoOf.set(sunset.entry.id, photo);
         const hasPhoto = await addObject(photo, photoKey(user.id, sunset.entry.id, "display"));
         const files: string[] = [];
         for (const { clip, path } of recordings) if (await addObject(path, clip.r2Key)) files.push(path);
         records.push({ ...record, photo: hasPhoto ? photo : null, recordings: record.recordings.filter((r) => files.includes(r.file)) });
       }
-      addText("journal.json", JSON.stringify({ exportedAt: new Date().toISOString(), name: user.name, email: user.email, sunsets: records }, null, 2));
+      addText("journal.json", JSON.stringify({ exportedAt: new Date().toISOString(), name: user.name, email: user.email, sunsets: records, sharedSets: exportSets(sets, photoOf) }, null, 2));
       zip.end();
     } catch (error) {
       console.error(`Export for ${user.id} failed:`, error);

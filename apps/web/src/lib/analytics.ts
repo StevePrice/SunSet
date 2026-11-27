@@ -28,6 +28,10 @@ export type AnalyticsEvent =
   | "reaction_received"
   | "note_received"
   | "story_added"
+  | "set_shared"
+  | "set_page_viewed"
+  | "set_reaction_received"
+  | "set_note_received"
   | "account_deleted"
   | "data_exported";
 

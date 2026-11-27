@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MicIcon } from "@/app/journal/[id]/story/voice-recorder";
+import { ShareIcon } from "@/components/share-icon";
 import { Switch } from "@/components/switch";
 import { joinNames } from "@/lib/people-input";
 import { formatDuration } from "@/lib/story/voice";
@@ -99,13 +100,5 @@ export function BeforeYouShareForm({
         Next, your phone&apos;s share menu opens. This step only appears when a photo has names or a spoken story.
       </p>
     </div>
-  );
-}
-
-function ShareIcon() {
-  return (
-    <svg aria-hidden width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 15V3M7.5 7.5 12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
-    </svg>
   );
 }

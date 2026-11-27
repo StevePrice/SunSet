@@ -4,7 +4,10 @@ import type { Addition } from "@/lib/additions";
 import type { Entry } from "@/lib/entries";
 import type { Afterglow } from "@/lib/reactions";
 import type { EntryScore } from "@/lib/scores";
-import { REACTION_LABELS } from "@/lib/reaction-input";
+import { REACTION_KINDS, REACTION_LABELS, reactionLabel, type ReactionKind } from "@/lib/reaction-input";
+import type { listSetsForExport } from "@/lib/share-sets";
+
+const isReactionKind = (k: string): k is ReactionKind => (REACTION_KINDS as readonly string[]).includes(k);
 
 export type ExportClip = { id: string; r2Key: string; contentType: string; durationMs: number; transcript: string | null };
 
@@ -74,12 +77,26 @@ export function exportSunset(sunset: ExportSunset) {
   return { photo, recordings, record };
 }
 
+/** Sunsets you sent someone as one link (4f-5), each sunset named by its photo's file name. */
+export function exportSets(sets: Awaited<ReturnType<typeof listSetsForExport>>, photoOf: Map<string, string>) {
+  return sets.map((set) => ({
+    sharedWith: set.sharedWith,
+    sharedAt: set.sharedAt,
+    stoppedSharingAt: set.stoppedAt,
+    sunsets: set.entryIds.flatMap((id) => photoOf.get(id) ?? []),
+    // A set is always for the named person, so "Wish I was there" is their "I was there!".
+    reactions: set.reactions.flatMap((r) => (isReactionKind(r.kind) ? [{ name: r.from, reaction: reactionLabel(r.kind, true) }] : [])),
+    notes: set.notes.map((n) => ({ name: n.from, note: n.note })),
+  }));
+}
+
 export const EXPORT_README = `Your sunsets from Sunset Soul
 
 photos/      every photo, named by the date it was taken and its title
 recordings/  your voice recordings, where you told a story out loud
 journal.json every sunset's title, date, place, who was there, story, your original words, its score and what
-             friends sent (reactions, notes and what they added to the story), linked to its photo and recordings by file name
+             friends sent (reactions, notes and what they added to the story), linked to its photo and recordings by file name,
+             and the sunsets you sent someone together as one link, with their replies
 
 journal.json is plain text: any text editor opens it, and spreadsheet apps can import it.
 `;
