@@ -277,14 +277,22 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - Delete a branch once its pull request merges.
 - **Phone checks at the end of each phase (set 2026-11-20):** each part is merged and deployed to staging as it's done, but the phone check is done once, at the end of the phase, against its "Done when" and a list of what each part changed.
 
-### Release A: Friends become users (added 2026-11-25)
+### Phase 4g: Friends become users (added 2026-11-25 as "Release A"; numbered 2026-11-27)
 **Goal:** people who receive sunsets start a Journal of their own. Full detail: [sunset-soul-build-spec-friends-become-users.md](sunset-soul-build-spec-friends-become-users.md); requirements in [sunset-soul-prd-friends-become-users.md](sunset-soul-prd-friends-become-users.md); designs in the row "Journey E · Friends become users" on the canvas; pictures 27–37 in `design/screens/`.
 - **Claim your sunsets:** someone who is *in* your sunsets starts their Journal with those sunsets already in it
 - **Send one back:** any friend can reply with a sunset of their own, and then keep it in a Journal of their own
 
-"Release A" is a working name until it gets a phase number. Starts right away, next after 4f-3, and before Phase 6 (set 2026-11-25, Steve; see "Order and dependencies"). **First step: 4f-4 Add to the story** (Phase 4f, built with the new wording), since Release A copies what friends add and reuses its recording pieces.
+Called "Release A" until 2026-11-27. Starts right away, next after 4f-3, and before Phase 6 (set 2026-11-25, Steve; see "Order and dependencies"). **First step: 4f-4 Add to the story** (Phase 4f, built with the new wording), since Release A copies what friends add and reuses its recording pieces.
 
-**Done when:** see "Done when" in the Release A Build Spec.
+**Done when:** see "Done when" in the Phase 4g Build Spec.
+
+**Decisions (2026-11-27, Steve):** the Build Spec is approved, with these changes (written into it):
+- **Claiming copies only what the link Steve opened brings:** one sunset for a personal link, every sunset in the set for a set link (4f-5). Nothing else is matched by first name, so two friends with the same name can't get each other's sunsets. The invitation lines count only those sunsets.
+- **Later links aren't copied automatically:** a link Steve opens while signed in offers a one-tap **Add to my Journal** instead (this changes Louise's November 24 decision that they go straight in; Louise to confirm).
+- **The safety check on a sunset sent back counts against the owner's daily AI limit,** like friends' recordings in 4f-4, on top of the 4-per-friend-per-day cap.
+- **"Not Steve?"** on the owner's notice writes an entry to the admin activity log.
+
+**Next:** the end-of-4f phone check first (set 2026-11-27, Steve), then step 2 of the Build Spec, Claim (4f-4, step 1, is done). About 7–8 days for all of 4g, with phone checks.
 
 ### Phase 6: Live Global Map
 **Goal:** public sunsets on a world map.
@@ -364,6 +372,7 @@ c. **Restricted credentials:** CI deploys with a Cloudflare API token limited to
 - **Update (2026-11-22):** Phase 4f (Sunsets Together) added, and comes before Phase 6: Louise has moved the Live Global Map to a later phase. Native-app items decided on 2026-11-22 (photos saving to the phone automatically, the "From today" photo strip, finding sunsets in the camera roll) are on the Later List for Phase 9.
 - ~~**7** follows Phase 6, and **8** comes last.~~ Replaced on 2026-11-22, below.
 - **Order (set 2026-11-22, Steve): the beta first, the map last.** 4f-1 → 7a beta essentials → 4f-2 → 4f-3 → **private beta starts** → 4f-4 and 4f-5 during the beta → 8 Daily Ritual (late in the beta or right after, to see whether reminders bring people back) → **6 Live Global Map, last of the MVP** (with the 6.10 rules: photos with people not posted by default, photos of children never) → 9 and 10 native apps after the beta. About 6–7 days of building before the beta starts, plus owner tasks (privacy policy and terms; Google and Apple sign-in if wanted for the beta).
+- **Update (2026-11-27, Steve):** Release A is now **Phase 4g**, its Build Spec approved; the end-of-4f phone check comes before 4g step 2.
 - **Update (2026-11-25, Steve): Release A starts right away, before Phase 6.** 4f-1 → 7a beta essentials → 4f-2 → 4f-3 → **private beta starts** → **Release A Friends become users, next, starting with 4f-4 Add to the story** → 4f-5 during the beta → 8 Daily Ritual → **6 Live Global Map, last of the MVP** → 9 and 10 native apps after the beta. Everything else in the 2026-11-22 order stays the same.
 - **Native apps (set 2026-11-20):** 9 (native shell, Capacitor) after the beta in Phase 7; 10 (fully native, React Native with Expo) only if Phase 9 isn't good enough. The web version stays throughout.
 

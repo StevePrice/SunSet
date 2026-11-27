@@ -1,7 +1,13 @@
-# Sunset Soul — Build Spec: Release A, Friends Become Users
-**Status:** Draft for Steve's review · **Date:** November 24, 2026 · **Decided by:** Louise (product), designed with Claude
+# Sunset Soul — Build Spec: Phase 4g, Friends Become Users
+**Status:** Approved by Steve, November 27, 2026, with the changes under "Decisions" · **Date:** November 24, 2026 · **Decided by:** Louise (product), designed with Claude
 **For:** Steve, or Claude Code working in this repo
-**Phase number:** "Release A" is a working name. Please give it a phase number in `app-strategy-phases.md` when you plan it.
+**Phase number:** Phase 4g (called "Release A" until November 27).
+
+**Decisions (Steve, November 27, 2026).** These change the spec below where they disagree; the sections they touch are marked.
+1. **Claim only what the link brings.** Claiming copies the sunsets of the link Steve opened: one sunset for a personal link (4f-3), every sunset in the set for a set link (4f-5, `/s/set/[id]`). No other sunsets are matched by first name, so two friends called Steve can't receive each other's sunsets. Louise sends someone all their sunsets at once with a set.
+2. **Later links aren't copied automatically.** When Steve, signed in, opens a new link from Louise, the Share Page offers one tap, **Add to my Journal**, which copies it. (This replaces "go straight into his Journal" in 1.1 and the PRD's November 24 decision; Louise to confirm. "New from Louise" is not needed.)
+3. **The safety check on a sunset sent back counts against Louise's daily AI limit,** like friends' recordings in 4f-4, on top of the 4-per-visitor-per-day cap.
+4. **"Not Steve?"** writes an entry to the admin activity log.
 
 This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It turns friends who *receive* sunsets into people who *keep* their own, in two parts: **Claim your sunsets** (someone in your sunsets starts a Journal with them already in it) and **Send Louise a sunset** (any friend replies with a sunset of their own). It doesn't add a friend list, the Family Circle, the Sunset Map or anything else on the Later List.
 
@@ -28,9 +34,9 @@ This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It 
 
 ### 1.1 Claiming (Steve joins from a personal link)
 - **Carry the personal link through sign-up.** `/s/[id]/join` already sets `REF_COOKIE` and redirects to `/sign-in?mode=sign-up`. When the request has a valid `r` token, also set a short-lived, httpOnly **claim cookie** holding the share id and token (1 day, like `REF_COOKIE`). Sign-in by email link or password works as today.
-- **Claim after sign-in.** When a signed-in user has a claim cookie, look up the `share_recipients` row by token, then match **every** `share_recipients` row on shares owned by the same owner whose `lower(name)` equals that recipient's name. Suggested columns on `share_recipients`: `claimed_user_id` (nullable) and `claimed_at`. Clear the cookie afterwards.
+- **Claim after sign-in.** When a signed-in user has a claim cookie, look up the `share_recipients` row by token, then copy that share's sunset (or, for a set link, every sunset in the set). *(Decision 1: no matching of other rows by name.)* Suggested columns on `share_recipients`: `claimed_user_id` (nullable) and `claimed_at`. Clear the cookie afterwards.
 - **Existing accounts.** If Steve already has an account, the Share Page link reads "Add them to your Journal" and does the same claim after sign-in.
-- **Later personal links.** When Louise creates a new personal link for a name that's already claimed by an account, create Steve's copy straight away (1.2) and mark it **New from Louise** until he opens it.
+- **Later links.** *(Decision 2.)* When a signed-in user opens a link from Louise, the Share Page offers **Add to my Journal**, which makes the copy (1.2). Nothing is copied without that tap.
 
 ### 1.2 Copies in Steve's Journal
 - **A copy is Steve's own entry.** Suggested columns on `entries`: `copied_from_entry_id` (nullable, `ON DELETE SET NULL` so the copy survives Louise deleting hers), `shared_by_user_id`, `shared_by_name`, `new_from_owner boolean`.
@@ -49,7 +55,7 @@ This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It 
 ### 1.4 Sunsets sent back (no account needed)
 - `sent_backs (id, share_id, owner_user_id, visitor_id, name, photo_r2_key, story_text, clip_r2_key, clip_duration_ms, transcript, created_at, saved_entry_id, deleted_at)`.
 - **Remove the location from the photo** before it's stored: re-encode the upload server-side without its metadata (EXIF, including GPS), and store only that copy. Never keep the original file.
-- **Safety check:** run the scorer's existing "is this a sunset / is it safe" check. If it fails, store nothing and show "This one couldn't be sent. Try a sunset photo." No title or Wow score yet (no AI cost until the friend joins).
+- **Safety check:** run the scorer's existing "is this a sunset / is it safe" check (counts against Louise's daily AI limit, decision 3). If it fails, store nothing and show "This one couldn't be sent. Try a sunset photo." No title or Wow score yet (no AI cost until the friend joins).
 - **Limit:** up to **4 per visitor per day** (a setting the team can change). After that: "You can send more tomorrow."
 - **Story:** typed, or spoken up to **1 minute**, reusing the 4f-4 recording, upload and speech-to-text pieces. Typing only where the microphone isn't available.
 - **Owner reactions:** `sent_back_reactions (sent_back_id, kind, created_at)` with the four existing reaction kinds. Steve sees them once he has a Journal.
@@ -78,7 +84,7 @@ This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It 
   - Small line: **"No account needed. Only Louise will see it."**
   - Card style: the usual card fill with a **peach outline** (`#F2B08E`), so it stands out from the rest of the page.
   - Before the friend sends their reactions, show the card lower and quieter (secondary button), so **Send** stays the one main button (design system rule).
-- **Footer, personal links only:** heading **"Steve, you're in 8 of Louise's sunsets"** (count from 1.1: shares still shared with a personal link for that name), three small photos plus "+5", the line **"Start your own Journal and they'll be waiting for you."** and the text link **Start your own Journal** → `/s/[id]/join?r=[token]`. One sunset: **"Steve, you're in Louise's sunset … and it'll be waiting for you."** Normal links keep today's plain footer.
+- **Footer, personal links only:** heading **"Steve, you're in 8 of Louise's sunsets"** (count: the sunsets this link brings, decision 1; so on a personal link it's the one-sunset wording below, and on a set link the set's count), three small photos plus "+5", the line **"Start your own Journal and they'll be waiting for you."** and the text link **Start your own Journal** → `/s/[id]/join?r=[token]`. One sunset: **"Steve, you're in Louise's sunset … and it'll be waiting for you."** Normal links keep today's plain footer.
 
 ### 2.2 Send Louise a sunset (E2, picture 28) — new, `/s/[id]/send` (keep `?r=` on personal links)
 - Back link **Louise's sunset**. Title **"Send Louise a sunset"**, line "Share a sunset you've seen lately, and the story behind it."
@@ -179,7 +185,7 @@ This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It 
 5. **Send Louise a sunset:** the card (2.1), send screen (2.2), metadata removal, safety check, daily limit, Sent (2.3).
 6. **Receiving:** 2.9 "Steve sent one back" with owner reactions, Sent to you (2.10), the "sent you a sunset" email.
 7. **Keep it:** "Save it to my Journal" sign-up from a sunset sent back.
-8. **Later personal links** going straight into a claimed Journal ("New from Louise").
+8. **Later links:** Add to my Journal for a signed-in friend (decision 2).
 
 ## Done when
 - Steve opens a personal link, sends a reaction, taps **Start your own Journal**, signs up, sees his name filled in, and lands on "8 sunsets with Louise are in your Journal", with each copy showing Louise's story and what he added.
@@ -190,4 +196,5 @@ This spec builds on Phase 4f (`sunset-soul-build-spec-sunsets-together.md`). It 
 
 ## Open questions
 - [ ] When Steve shares his copy, does the Share Page show his own story, Louise's story, or both? (Suggested: his story if he wrote one, otherwise Louise's labelled "Louise's story". Louise to confirm.)
-- [ ] Phase number for this release (Steve).
+- [x] Phase number for this release: **Phase 4g** (Steve, November 27).
+- [ ] Later links offer Add to my Journal instead of going straight in (decision 2). Louise to confirm.
