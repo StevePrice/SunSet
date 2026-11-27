@@ -262,20 +262,24 @@ test("send someone all your sunsets together as one link, and they reply once fo
   await friendPage.getByRole("button", { name: /I was there!/ }).click();
   await expect(friendPage.getByRole("button", { name: /I was there!/ })).toHaveAttribute("aria-pressed", "true");
   await expect(friendPage.getByLabel(/first name/)).toHaveCount(0);
-  await friendPage.getByLabel(/A short note to/).fill("Best summer ever");
+  // Staging keeps the smoke account between runs, and replies outlive Stop sharing, so each run
+  // writes its own note and looks only at its own reply.
+  const note = `Best summer ever ${Date.now()}`;
+  await friendPage.getByLabel(/A short note to/).fill(note);
   await friendPage.getByRole("button", { name: "Send", exact: true }).click();
   await expect(friendPage.getByRole("status")).toContainText("will see your reaction and note");
 
   // The owner sees the reply on Sunsets with [Name], then stops sharing: the link is gone.
   await page.reload();
   const replies = page.getByRole("region", { name: "Replies to your sunsets together" });
-  await expect(replies.getByText("I was there!")).toBeVisible();
-  await expect(replies.getByText("“Best summer ever”")).toBeVisible();
+  const reply = replies.getByRole("listitem").filter({ hasText: note });
+  await expect(reply.getByText("I was there!")).toBeVisible();
+  await expect(reply.getByText(`“${note}”`)).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Stop sharing" }).click();
   await expect(page.getByRole("heading", { name: "Shared with Smoke Friend" })).toHaveCount(0);
   // The reply stays with the owner.
-  await expect(replies.getByText("“Best summer ever”")).toBeVisible();
+  await expect(replies.getByText(`“${note}”`)).toBeVisible();
   expect((await friendPage.goto(path))?.status()).toBe(404);
   await friend.close();
 });
