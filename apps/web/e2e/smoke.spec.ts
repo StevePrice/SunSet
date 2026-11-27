@@ -15,6 +15,12 @@ const password = deployed ? (process.env.E2E_USER_PASSWORD ?? "") : `Smoke-${cry
 
 test.describe.configure({ mode: "serial" });
 
+// The staging deploy runs only the tests tagged @staging (`--grep @staging`): the core path from
+// sign-in to share, and the public pages. Staging keeps one test account between runs, so the
+// tests that pile up data on it (personal links, shared sets, the ZIP download) run only in CI,
+// where every run starts with an empty database.
+const core = { tag: "@staging" };
+
 test.beforeAll(() => {
   if (deployed && (!email || !password)) throw new Error("Set E2E_USER_EMAIL and E2E_USER_PASSWORD to run against a deployment.");
 });
@@ -28,14 +34,14 @@ test("sign up and verify the email", async ({ page }) => {
 // Sign-in is rate limited, so only this test signs in; the rest reuse its session cookies.
 let session: Awaited<ReturnType<BrowserContext["cookies"]>> = [];
 
-test("sign in", async ({ page, context }) => {
+test("sign in", core, async ({ page, context }) => {
   await signIn(page, email, password);
   session = await context.cookies();
 });
 
 let entryUrl = "";
 
-test("save an entry and see it in the Journal", async ({ page, context }) => {
+test("save an entry and see it in the Journal", core, async ({ page, context }) => {
   await context.addCookies(session);
   await page.goto("/journal/new");
   await page.locator('input[type="file"]').last().setInputFiles("e2e/fixtures/sunset.jpg");
@@ -55,7 +61,7 @@ test("save an entry and see it in the Journal", async ({ page, context }) => {
   await expect(page.getByText(/^\d+ sunsets?$/)).toHaveCount(0);
 });
 
-test("add a story by typing, then change it with Edit", async ({ page, context }) => {
+test("add a story by typing, then change it with Edit", core, async ({ page, context }) => {
   await context.addCookies(session);
   await page.goto(entryUrl);
   await page.getByRole("link", { name: "Add your story" }).click();
@@ -79,7 +85,7 @@ test("add a story by typing, then change it with Edit", async ({ page, context }
   await expect(page.getByText("The sky went gold, then pink, over the water.")).toBeVisible();
 });
 
-test("name who's in a sunset, then find it under With people and Sunsets with (Phase 4f-2)", async ({ page, context }) => {
+test("name who's in a sunset, then find it under With people and Sunsets with (Phase 4f-2)", core, async ({ page, context }) => {
   await context.addCookies(session);
   // The test photo has no people, so the card opens from Edit ("Add who's in it").
   await page.goto(`${entryUrl}/edit`);
@@ -109,7 +115,7 @@ test("name who's in a sunset, then find it under With people and Sunsets with (P
   await expect(page.locator(`a[href="${entryUrl}"]`)).toBeVisible();
 });
 
-test("share in one tap, open the link signed out, then stop sharing from From your friends", async ({ page, context, browser }) => {
+test("share in one tap, open the link signed out, then stop sharing from From your friends", core, async ({ page, context, browser }) => {
   await context.addCookies(session);
   // Test browsers have no share menu: stand in for it and keep what the page shared.
   await page.addInitScript(() => {
@@ -284,7 +290,7 @@ test("send someone all your sunsets together as one link, and they reply once fo
   await friend.close();
 });
 
-test("the web app manifest is public, so phones can install it (Phase 7a)", async ({ request }) => {
+test("the web app manifest is public, so phones can install it (Phase 7a)", core, async ({ request }) => {
   const response = await request.get("/manifest.webmanifest");
   expect(response.status()).toBe(200);
   const manifest = (await response.json()) as { name: string; display: string; icons: { sizes: string; purpose: string; src: string }[] };
@@ -293,7 +299,7 @@ test("the web app manifest is public, so phones can install it (Phase 7a)", asyn
   for (const icon of manifest.icons) expect((await request.get(icon.src)).status()).toBe(200);
 });
 
-test("the privacy policy and terms are public and linked from every page (Phase 7a)", async ({ page }) => {
+test("the privacy policy and terms are public and linked from every page (Phase 7a)", core, async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: "Privacy" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Privacy policy" })).toBeVisible();
@@ -301,7 +307,7 @@ test("the privacy policy and terms are public and linked from every page (Phase 
   await expect(page.getByRole("heading", { level: 1, name: "Terms" })).toBeVisible();
 });
 
-test("an error report from the browser is accepted (Phase 7a)", async ({ request }) => {
+test("an error report from the browser is accepted (Phase 7a)", core, async ({ request }) => {
   const response = await request.post("/api/client-errors", { data: { message: "smoke test", path: "/smoke" } });
   expect(response.status()).toBe(204);
 });
@@ -322,7 +328,7 @@ test("download your sunsets as a ZIP (Phase 7a)", async ({ context }) => {
 });
 
 // Leaves a shared account's Journal as it was (matters on staging, where the account is reused).
-test("delete the test entry", async ({ page, context }) => {
+test("delete the test entry", core, async ({ page, context }) => {
   await context.addCookies(session);
   page.on("dialog", (dialog) => dialog.accept());
   await page.goto(entryUrl);

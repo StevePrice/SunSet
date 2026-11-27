@@ -111,7 +111,8 @@ jobs:
 
       - name: Smoke tests against staging
         id: smoke
-        run: npx playwright test
+        # Only the core tests (tagged @staging in e2e/); CI runs them all on every push.
+        run: npx playwright test --grep @staging
         working-directory: apps/web
         env:
           E2E_BASE_URL: https://staging.sunsetsoul.app

@@ -3,10 +3,15 @@
 // localConnectionString), dummy secrets, and sign-in emails logged instead of sent
 // (NEXTJS_ENV=development), which is how the tests read their verification links.
 import { spawn } from "node:child_process";
-import { createWriteStream, existsSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, rmSync, writeFileSync } from "node:fs";
 
 const logPath = process.env.E2E_SERVER_LOG ?? "e2e/server.log";
-const log = createWriteStream(logPath);
+// The tests read sign-in emails from this file, so the server's output goes straight to it, written
+// at once. It used to be echoed to stdout first, through the pipe Playwright opens; on 2026-11-27 the
+// log stopped growing part-way through a CI run (most likely that pipe stalled) and an email test
+// timed out. Set E2E_SERVER_ECHO=1 to also see the output in the terminal.
+writeFileSync(logPath, "");
+const echo = Boolean(process.env.E2E_SERVER_ECHO);
 
 // Never replace a developer's own .dev.vars; only write (and later remove) our own.
 const wroteVars = !existsSync(".dev.vars");
@@ -29,8 +34,8 @@ const args = ["opennextjs-cloudflare", "preview", "-c", "wrangler.e2e.jsonc", "-
 const child = spawn("npx", args, { stdio: ["ignore", "pipe", "pipe"] });
 for (const stream of [child.stdout, child.stderr]) {
   stream.on("data", (chunk) => {
-    process.stdout.write(chunk);
-    log.write(chunk);
+    appendFileSync(logPath, chunk);
+    if (echo) process.stdout.write(chunk);
   });
 }
 function stop() {
