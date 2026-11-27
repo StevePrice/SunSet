@@ -22,6 +22,16 @@ link-preview bots are skipped. Without `POSTHOG_KEY`, nothing is sent.
 5. In PostHog project settings, turn **off** session replay, autocapture and heatmaps (we don't send
    browser events, so they'd only be noise) and set **Discard client IP data** on.
 
+## The dashboard
+
+`scripts/posthog-dashboard.mjs` builds the **Sunset Soul — PRD metrics** dashboard: one SQL insight
+per metric in the table at the end of this file, plus 4f-4/4f-5 counts and weekly activity. Run it
+again after changing a query; insights are matched by name and updated. It needs a personal API key
+(PostHog → Settings → Personal API keys; scopes `query:read`, `insight:write`, `dashboard:write`,
+this project only), never the `phc_` project key. `--check` runs the queries and prints the
+results without saving; `EXCLUDE_IDS` leaves out test accounts. Instructions are at the top of the
+script.
+
 ## Events
 
 | Event | Id | Properties |
